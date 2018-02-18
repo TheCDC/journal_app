@@ -1,0 +1,19 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[packages]
+
+Flask = "*"
+SQLAlchemy = "*"
+Flask-Migrate = "*"
+Flask-Admin = "*"
+WTForms = "*"
+Flask-WTF = "*"
+
+
+[dev-packages]
+
