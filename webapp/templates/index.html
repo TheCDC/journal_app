@@ -11,9 +11,12 @@
     {{context.file_contents}}
 </div>
 <div>
+    {% for year in get_all_years() %} {{year.year}} {% endfor %}
+</div>
+<div>
     {% for entry in context.entries %}
     <p>
-        <a href="{{url_for('date', date_str=entry.date_string)}}">{{entry.create_date}}</a>
+        <a href="{{link_for_entry(entry)}}">{{entry.date_string}}</a>
     </p>
     {% endfor %}
 </div>

@@ -16,5 +16,9 @@
 </head>
 
 <body>
+    <div>
+        <a href="{{url_for('index')}}">Home</a>
+        <a href="{{link_for_entry(get_latest_entry())}}">Latest</a>
+    </div>
     {% block body %} {% endblock %}
 </body>

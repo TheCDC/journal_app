@@ -1,11 +1,32 @@
-import os
 import flask
 from webapp.app_init import app, db
 from webapp import forms
 import webapp.models as models
 from webapp import parsing
 import datetime
-journal_file = os.path.join('..', 'Oh_Life_You_So_Funny.txt')
+
+
+def link_for_entry(entry):
+    return flask.url_for('date', date_str=entry.date_string)
+
+
+def get_latest_entry():
+    return db.session.query(models.JournalEntry).order_by(
+        models.JournalEntry.create_date.desc()).first()
+
+
+def get_all_years():
+    start_year = db.session.query(models.JournalEntry).first().create_date.year
+    end_year = db.session.query(models.JournalEntry).order_by(
+        models.JournalEntry.create_date.desc()).first().create_date.year
+    for y in range(start_year, end_year + 1):
+        yield datetime.datetime(y, 1, 1, 0, 0)
+
+
+app.jinja_env.globals.update(
+    link_for_entry=link_for_entry,
+    get_latest_entry=get_latest_entry,
+    get_all_years=get_all_years)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -49,7 +70,15 @@ def date(date_str):
     tokens = list(map(int, date_str.split("-")))
     d = datetime.datetime(*(tokens + [0, 0]))
     e = db.session.query(models.JournalEntry).filter_by(create_date=d).first()
-    return e.to_html()
+
+    next_entry = db.session.query(models.JournalEntry).filter(
+        models.JournalEntry.create_date > e.create_date).first()
+    prev_entry = db.session.query(models.JournalEntry).filter(
+        models.JournalEntry.create_date < e.create_date).order_by(
+            models.JournalEntry.create_date.desc()).first()
+    return flask.render_template(
+        'entry.html',
+        context=dict(entry=e, next_entry=next_entry, prev_entry=prev_entry))
 
 
 def main():

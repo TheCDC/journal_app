@@ -1,0 +1,15 @@
+{% extends 'base.html' %} {% block body %} {{super()}}
+<!--  -->
+<div>
+    {% if context.prev_entry %}
+    <a href="{{link_for_entry(context.next_entry)}}">Previous ({{context.prev_entry.date_string}})</a> {% endif %} {% if context.next_entry %}
+    <a href="{{link_for_entry(context.next_entry)}}">Next ({{context.next_entry.date_string}})</a> {% endif %}
+</div>
+<h1>
+{{context.entry.date_string}}
+</h1>
+<div>
+    {{context.entry.to_html()|safe}}
+</div>
+<!--  -->
+{% endblock %}
