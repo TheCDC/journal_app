@@ -10,5 +10,12 @@
     </form>
     {{context.file_contents}}
 </div>
+<div>
+    {% for entry in context.entries %}
+    <p>
+        <a href="{{url_for('date', date_str=entry.date_string)}}">{{entry.create_date}}</a>
+    </p>
+    {% endfor %}
+</div>
 <!--  -->
 {% endblock %}

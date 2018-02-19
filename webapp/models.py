@@ -12,6 +12,13 @@ class JournalEntry(db.Model):
     def __str__(self):
         return str(self.id)
 
+    def to_html(self):
+        return self.contents.replace('\n', '<br>')
+
+    @property
+    def date_string(self):
+        return self.create_date.strftime('%Y-%m-%d')
+
 
 class JournalEntryView(ModelView):
     column_list = (

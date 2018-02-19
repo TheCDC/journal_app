@@ -22,14 +22,34 @@ def index():
         # print('file', vars(file))
         session = db.session()
         for e in parsing.identify_entries(file.read().decode().split('\n')):
-            j = models.JournalEntry(
-                create_date=e.date, contents=e.body.replace('\r', ''))
-            session.add(j)
+            body_text = e.body.replace('\r', '')
+            found = db.session.query(
+                models.JournalEntry).filter_by(create_date=e.date).first()
+            if found:
+                print('found', found)
+                found.contents = body_text
+            else:
+                found = models.JournalEntry(
+                    create_date=e.date, contents=body_text)
+            session.add(found)
         session.flush()
         session.commit()
         # print('file', file.read())
         return flask.redirect(flask.url_for('index'))
-    return flask.render_template('index.html', context=dict(form=form))
+    all_entries = list(
+        db.session.query(models.JournalEntry).order_by(
+            models.JournalEntry.create_date))
+
+    return flask.render_template(
+        'index.html', context=dict(form=form, entries=all_entries))
+
+
+@app.route("/entry/<string:date_str>")
+def date(date_str):
+    tokens = list(map(int, date_str.split("-")))
+    d = datetime.datetime(*(tokens + [0, 0]))
+    e = db.session.query(models.JournalEntry).filter_by(create_date=d).first()
+    return e.to_html()
 
 
 def main():
