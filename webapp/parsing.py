@@ -39,20 +39,20 @@ def identify_entries(lines):
     a = b = c = 0
     results = []
     _x = None
+    d = None
     for index, each_line in enumerate(lines):
         if re_dict["date_header"].search(each_line):
             try:
+                a, b, c = map(int, old_date.split("-"))
                 d = datetime.datetime(a, b, c, 0, 0)
-            except ValueError:
+            except (ValueError,AttributeError):
                 d = None
-            _x = Entry(d, '\n'.join(cur_body_lines))
-            if _x and cur_body_lines and d:
-                results.append(_x)
+            if cur_body_lines and d:
+                results.append(Entry(d, '\n'.join(cur_body_lines)))
             if not old_date:
                 print('start date', each_line)
                 old_date = each_line
             # print(tuple(int(i) for i in cur_date.split("-") if len(i) > 0))
-            a, b, c = map(int, old_date.split("-"))
 
             cur_body_lines = []
             old_date = each_line

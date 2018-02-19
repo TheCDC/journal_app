@@ -11,7 +11,7 @@
     {{context.file_contents}}
 </div>
 <div>
-    {% for year in get_all_years() %} {{year.year}} {% endfor %}
+    Years: {% for year in get_all_years() %} {{year.year}} {% endfor %}
 </div>
 <div>
     {% for entry in context.entries %}

@@ -16,11 +16,13 @@ def get_latest_entry():
 
 
 def get_all_years():
-    start_year = db.session.query(models.JournalEntry).first().create_date.year
+    start_year = db.session.query(models.JournalEntry).order_by(
+        models.JournalEntry.create_date).first()
     end_year = db.session.query(models.JournalEntry).order_by(
-        models.JournalEntry.create_date.desc()).first().create_date.year
-    for y in range(start_year, end_year + 1):
-        yield datetime.datetime(y, 1, 1, 0, 0)
+        models.JournalEntry.create_date.desc()).first()
+    if start_year and end_year:
+        for y in range(start_year.create_date.year, end_year.create_date.year + 1):
+            yield datetime.datetime(y, 1, 1, 0, 0)
 
 
 app.jinja_env.globals.update(
