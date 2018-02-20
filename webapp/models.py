@@ -1,6 +1,5 @@
 from webapp.app_init import db, admin
 from flask_admin.contrib.sqla import ModelView
-from sqlalchemy.sql import func
 import datetime
 
 

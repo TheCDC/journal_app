@@ -30,4 +30,4 @@ db = SQLAlchemy(app)
 # initialize migration engine
 migrate = Migrate(app, db)
 # admin interface
-admin = Admin(app, name='regrOS Admin', template_mode='bootstrap3')
+admin = Admin(app, name='Journal App', template_mode='bootstrap3')
