@@ -1,6 +1,6 @@
 import re
 import datetime
-re_dict = {"date_header": re.compile(r"^[0-9]+-[0-9]+-[0-9]*\w*")}
+DATE_HEADER_PATTERN = re.compile(r"^[0-9]+-[0-9]+-[0-9]*\w*")
 
 
 def datestr(y, m, d):
@@ -41,11 +41,11 @@ def identify_entries(lines):
     _x = None
     d = None
     for index, each_line in enumerate(lines):
-        if re_dict["date_header"].search(each_line):
+        if DATE_HEADER_PATTERN["date_header"].search(each_line):
             try:
                 a, b, c = map(int, old_date.split("-"))
                 d = datetime.datetime(a, b, c, 0, 0)
-            except (ValueError,AttributeError):
+            except (ValueError, AttributeError):
                 d = None
             if cur_body_lines and d:
                 results.append(Entry(d, '\n'.join(cur_body_lines)))

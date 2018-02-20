@@ -1,6 +1,7 @@
 from webapp.app_init import db, admin
 from flask_admin.contrib.sqla import ModelView
 import datetime
+from webapp import parsing
 
 
 class JournalEntry(db.Model):
@@ -13,6 +14,10 @@ class JournalEntry(db.Model):
 
     def to_html(self):
         return self.contents.replace('\n', '<br>')
+
+    @property
+    def tokens(self):
+        raise NotImplementedError('TODO: tokenize entry contents to allow for wiki-style linking.')
 
     @property
     def date_string(self):
