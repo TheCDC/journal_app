@@ -49,7 +49,6 @@ def index():
             found = db.session.query(
                 models.JournalEntry).filter_by(create_date=e.date).first()
             if found:
-                print('found', found)
                 found.contents = body_text
             else:
                 found = models.JournalEntry(
