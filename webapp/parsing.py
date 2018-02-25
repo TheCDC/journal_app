@@ -41,7 +41,7 @@ def identify_entries(lines):
     _x = None
     d = None
     for index, each_line in enumerate(lines):
-        if DATE_HEADER_PATTERN["date_header"].search(each_line):
+        if DATE_HEADER_PATTERN.search(each_line):
             try:
                 a, b, c = map(int, old_date.split("-"))
                 d = datetime.datetime(a, b, c, 0, 0)
