@@ -24,6 +24,9 @@ class Entry:
     @property
     def date(self):
         return self._date
+    @property
+    def date_string(self):
+        return self._date.strftime("%Y-%m-%d")
 
     @property
     def body(self):
@@ -31,6 +34,9 @@ class Entry:
 
     def __repr__(self):
         return "Entry(date='{}',body=\"{}\")".format(self.date, self.body)
+
+    def __eq__(self, other):
+        return self._date == other._date and self._body == other._body
 
 
 def identify_entries(lines):
@@ -58,7 +64,10 @@ def identify_entries(lines):
             old_date = each_line
         else:
             cur_body_lines.append(each_line)
-    d = (datetime.datetime(*(list(map(int, old_date.split("-"))) + [0, 0])))
+    if old_date is not None:
+        d = (datetime.datetime(*(list(map(int, old_date.split("-"))) + [0, 0])))
+    else:
+        d = each_line
     b = '\n'.join(cur_body_lines)
     results.append(Entry(d, b))
     return results
