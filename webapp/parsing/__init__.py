@@ -3,14 +3,14 @@ import datetime
 DATE_HEADER_PATTERN = re.compile(r"^[0-9]+-[0-9]+-[0-9]*\w*")
 
 
-def datestr(y, m, d):
+def datestr(y: str, m: str, d: str) -> str:
     a = leftpad(y, 4, "0")
     b = leftpad(m, 2, '0')
     c = leftpad(d, 2, '0')
     return '-'.join((a, b, c))
 
 
-def leftpad(s, l, c=' '):
+def leftpad(s: str, l: int, c=' ') -> str:
     if l > len(s):
         return c * (l - len(s)) + s
     return s
@@ -22,14 +22,15 @@ class Entry:
         self._body = body
 
     @property
-    def date(self):
+    def date(self) -> datetime.date:
         return self._date
+
     @property
-    def date_string(self):
+    def date_string(self) -> str:
         return self._date.strftime("%Y-%m-%d")
 
     @property
-    def body(self):
+    def body(self) -> str:
         return self._body
 
     def __repr__(self):
@@ -39,13 +40,13 @@ class Entry:
         return self._date == other._date and self._body == other._body
 
 
-def identify_entries(lines):
+def identify_entries(lines) -> "list[Entry]":
     cur_body_lines = []
     old_date = None
     a = b = c = 0
     results = []
-    _x = None
     d = None
+    each_line = None
     for index, each_line in enumerate(lines):
         if DATE_HEADER_PATTERN.search(each_line):
             try:
@@ -65,9 +66,30 @@ def identify_entries(lines):
         else:
             cur_body_lines.append(each_line)
     if old_date is not None:
-        d = (datetime.datetime(*(list(map(int, old_date.split("-"))) + [0, 0])))
+        d = (
+            datetime.datetime(*(list(map(int, old_date.split("-"))) + [0, 0])))
     else:
         d = each_line
     b = '\n'.join(cur_body_lines)
     results.append(Entry(d, b))
     return results
+
+
+class Plugin:
+    def __init__(self):
+        self.requires_initialization = True
+        self.initialized = False
+
+    def init(self):
+        self.initialized = True
+        """The responsibility of this method is to perform long-running
+        initialization tasks such as downloading resources,
+        building large data structures to be read later, etc.
+        It is distinct from __init__ in this respect."""
+        raise NotImplementedError("init() not implemented.")
+
+    def parse_entry(self, e: Entry) -> list:
+        """Return a list of objects found in the Entry."""
+        if self.requires_initialization and not self.initialized:
+            raise RuntimeError("This classes resources must be initialized!")
+        raise NotADirectoryError("parse_entry() not implemented/")
