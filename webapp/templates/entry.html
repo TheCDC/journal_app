@@ -14,7 +14,7 @@
     {% endif %}
 </div>
 <h1>
-{{context.entry.date_string}} ({{context.entry.create_date.strftime('%A')}})
+{{context.entry.date_string}}, a {{context.entry.create_date.strftime('%A')}}
 </h1>
 <div>
     {{context.entry.to_html()|safe}}
