@@ -4,8 +4,8 @@ import webapp.parsing as parsing
 def test_default_instantiate():
     err = None
     try:
-        e = parsing.Plugin()
-        e.init()
+        p = parsing.Plugin()
+        p.init()
     except Exception as e:
         err = e
     assert err is not None
@@ -15,9 +15,9 @@ def test_default_instantiate():
 def test_default_parse():
     en = parsing.Entry('2000-01-01', 'body')
     err = None
-    e = parsing.Plugin()
+    p = parsing.Plugin
     try:
-        e.parse_entry(en)
+        p.parse_entry(en)
     except Exception as e:
         err = e
-    assert isinstance(err, NotADirectoryError)
+    assert isinstance(err, NotImplementedError)

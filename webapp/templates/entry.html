@@ -19,5 +19,19 @@
 <div>
     {{context.entry.to_html()|safe}}
 </div>
+<div>
+    {% for t in context.plugin_manager.parse_entry(context.entry) %}
+    <h3>
+{{t[0]}}
+</h3>
+    <ul>
+        {% for word in t[1] %}
+        <li>
+            {{word}}
+        </li>
+        {% endfor %}
+    </ul>
+    {% endfor %}
+</div>
 <!--  -->
 {% endblock %}

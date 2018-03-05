@@ -6,6 +6,7 @@ import random
 # for editing DB entries
 # hack to get a reference to the templates directory within the package
 import os
+print('importing plugins')
 
 tmpl_dir = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), 'templates')

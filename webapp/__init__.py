@@ -3,6 +3,7 @@ from webapp.app_init import app, db
 from webapp import forms
 import webapp.models as models
 from webapp import parsing
+from webapp import custom_plugins
 import datetime
 
 
@@ -21,7 +22,8 @@ def get_all_years():
     end_year = db.session.query(models.JournalEntry).order_by(
         models.JournalEntry.create_date.desc()).first()
     if start_year and end_year:
-        for y in range(start_year.create_date.year, end_year.create_date.year + 1):
+        for y in range(start_year.create_date.year,
+                       end_year.create_date.year + 1):
             yield datetime.datetime(y, 1, 1, 0, 0)
 
 
@@ -63,7 +65,12 @@ def index():
             models.JournalEntry.create_date))
 
     return flask.render_template(
-        'index.html', context=dict(form=form, entries=all_entries))
+        'index.html',
+        context=dict(
+            form=form,
+            entries=all_entries,
+            plugin_manager=parsing.PluginManager,
+        ))
 
 
 @app.route("/entry/<string:date_str>")
@@ -79,7 +86,12 @@ def date(date_str):
             models.JournalEntry.create_date.desc()).first()
     return flask.render_template(
         'entry.html',
-        context=dict(entry=e, next_entry=next_entry, prev_entry=prev_entry))
+        context=dict(
+            entry=e,
+            next_entry=next_entry,
+            prev_entry=prev_entry,
+            plugin_manager=parsing.PluginManager,
+        ))
 
 
 def main():

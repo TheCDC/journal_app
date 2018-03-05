@@ -11,6 +11,9 @@
     {{context.file_contents}}
 </div>
 <div>
+    Installed plugins: {{context.plugin_manager.registered_plugins}}
+</div>
+<div>
     Years: {% for year in get_all_years() %} {{year.year}} {% endfor %}
 </div>
 <div>

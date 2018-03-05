@@ -76,20 +76,44 @@ def identify_entries(lines) -> "list[Entry]":
 
 
 class Plugin:
-    def __init__(self):
-        self.requires_initialization = True
-        self.initialized = False
+    """Ancestor class for plugins related to parsing
+    and recognizing rich content within Entry(s)."""
+    requires_initialization = True
+    initialized = False
 
-    def init(self):
-        self.initialized = True
+    @classmethod
+    def init(cls):
+        cls.initialized = True
         """The responsibility of this method is to perform long-running
         initialization tasks such as downloading resources,
         building large data structures to be read later, etc.
         It is distinct from __init__ in this respect."""
         raise NotImplementedError("init() not implemented.")
 
-    def parse_entry(self, e: Entry) -> list:
+    @classmethod
+    def parse_entry(cls, e: Entry) -> list:
         """Return a list of objects found in the Entry."""
-        if self.requires_initialization and not self.initialized:
+        if cls.requires_initialization and not cls.initialized:
             raise RuntimeError("This classes resources must be initialized!")
-        raise NotADirectoryError("parse_entry() not implemented/")
+        raise NotImplementedError("parse_entry() not implemented/")
+
+
+class PluginManager:
+    registered_plugins = list()
+    name = 'Plugin'
+
+    @classmethod
+    def register(cls, p: Plugin):
+        cls.registered_plugins.append(p)
+
+    @classmethod
+    def init(cls):
+        for p in cls.registered_plugins:
+            p.init()
+
+    @classmethod
+    def parse_entry(cls, e: Entry) -> 'generator[tuple]':
+        """Return a dictionary mapping each registered
+        plugin to the results of it parsing the target Entry."""
+        for p in cls.registered_plugins:
+            yield (p, list(p.parse_entry(e)))
