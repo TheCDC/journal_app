@@ -23,9 +23,9 @@
 <div>
     <h2>Years</h2>
     <ul>
-        {% for year in get_all_years() %}
+        {% for t in context.years %}
         <li>
-            {{year.year}}
+            <a href="{{t[0]}}">{{t[1]}}</a>
         </li>
         {% endfor %}
     </ul>

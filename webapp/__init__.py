@@ -3,7 +3,7 @@ from webapp.app_init import app, db
 from webapp import forms
 import webapp.models as models
 from webapp import parsing
-from webapp import custom_plugins
+from webapp import parsing_plugins
 import datetime
 from flask import request
 from flask.views import View, MethodView
@@ -93,7 +93,7 @@ def index():
             form=form,
             entries=all_entries,
             plugin_manager=parsing.PluginManager,
-        ))
+            years=[(link_for_date(year=y.year), y.year) for y in get_all_years()]))
 
 
 class EntrySearchView(MethodView):
