@@ -11,6 +11,8 @@ Anything after a date header but before the next one (or the end of the file) is
 2000-1-3
 The application supports plugins written in Python.
 One plugin included as an example can link journal entries together by identifying dates within the contents of entries.
+
+The first entry of this journal occurred on 2000-1-1.
 ```
 
 # Getting Started
