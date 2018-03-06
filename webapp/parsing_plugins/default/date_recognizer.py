@@ -37,15 +37,18 @@ class Plugin(parsing.Plugin):
 
     @classmethod
     def parse_entry(cls, e: models.JournalEntry) -> 'iterable[str]':
+        # find all dates mentioned in the entry
         for f in all_patterns.finditer(e.contents.lower()):
             # aliases
             span = f.span()
-            match = f.group(0)
+            # save both the date of the entry and the capitalization
+            # of the match portion
             original_date = e.create_date
             original_case = e.contents[span[0]:span[1]]
-            # identify whether any patterns match
-            # then identify the first pattern that matched.
             found_date = None
+            match = f.group(0)
+            # check whether any patterns match
+            # then identify the first pattern that matched.
             for c in compiled_patterns:
                 if c[0].search(match):
                     found_date = c[1](original_date, match)
