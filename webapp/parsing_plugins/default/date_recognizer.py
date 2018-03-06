@@ -7,7 +7,7 @@ import re
 import datetime
 
 
-# ========== Regex stuff  ==========
+# ========== Regex and parsing stuff  ==========
 def parse_date_string(s: str):
     tokens = s.split('-')
     year = int(tokens[0])
@@ -16,11 +16,13 @@ def parse_date_string(s: str):
     return datetime.datetime(year, month, day)
 
 
+# regex => date described by match
 patterns = [
     (r'[0-9]+-[0-9]+-[0-9]+', (lambda d, s: (parse_date_string(s)))),
     (r'yesterday', (lambda d, s: d - datetime.timedelta(1))),
     (r'tomorrow', lambda d, s: d + datetime.timedelta(1)),
 ]
+# compile all regexes together to eliminate overlap
 compiled_patterns = [(re.compile(t[0]), t[1]) for t in patterns]
 pattern_string = '|'.join(t[0] for t in patterns)
 all_patterns = re.compile(pattern_string)
@@ -37,6 +39,7 @@ class Plugin(parsing.Plugin):
 
     @classmethod
     def parse_entry(cls, e: models.JournalEntry) -> 'iterable[str]':
+        """Find all dates mentioned in the entry body."""
         seen = set()
         # find all dates mentioned in the entry
         for f in all_patterns.finditer(e.contents.lower()):
@@ -64,4 +67,4 @@ class Plugin(parsing.Plugin):
                 month=found_date.month,
                 day=found_date.day)
             # plugins may return HTML.
-            yield f'<a href="{url}">{original_case} - {found_date.year}-{found_date.month}-{found_date.day}</a>'
+            yield f'<a href="{url}">{original_case} ({found_date.year}-{found_date.month}-{found_date.day})</a>'
