@@ -13,12 +13,18 @@ Each entry is simply a date header on its own line in the form of YYYY-MM-DD. An
 This project requires Python 3. 
 
 ## Dependencies
-You will `pipenv` to get started.
+You will need the `pipenv` package manager.
+
+### Installation
 
 Install `pipenv` with `pip3 install --user pipenv`.
 
-From the repo root execute `pipenv install`.
+From the repo root execute `pipenv install` to instantiate a virtual environment and install all dependencies.
+
+## Starting it up
 
 To start the application with one command execute use `pipenv run python -m webapp` or `pipenv run flask run`.
 
-This project is distributed as a python package and can be executed directly with `python -m webapp`.
+This project is distributed as a python package and can also be executed directly with `python -m webapp`.
+
+The app will be served on `127.0.0.1:5000`.

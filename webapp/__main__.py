@@ -7,4 +7,4 @@ sys.path.append(to_append)
 
 import webapp
 
-webapp.app.run()
+webapp.app.run(debug=False)
