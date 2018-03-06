@@ -167,10 +167,11 @@ class EntrySearchView(MethodView):
 
 
 search_view = EntrySearchView.as_view('entry')
-app.add_url_rule('/entry/<int:year>', view_func=search_view)
-app.add_url_rule('/entry/<int:year>/<int:month>', view_func=search_view)
-app.add_url_rule(
-    '/entry/<int:year>/<int:month>/<int:day>', view_func=search_view)
+url_args = '<int:year>/<int:month>/<int:day>'.split('/')
+# construct url endpoints for searching dates with increasing precision
+for i in range(1, len(url_args) + 1):
+    endpoint = '/entry/' + '/'.join(url_args[:i])
+    app.add_url_rule(endpoint, view_func=search_view)
 
 
 def main():
