@@ -11,7 +11,24 @@
     {{context.file_contents}}
 </div>
 <div>
-    Years: {% for year in get_all_years() %} {{year.year}} {% endfor %}
+    <h2> Installed plugins </h2>
+    <ul>
+        {% for p in context.plugin_manager.registered_plugins %}
+        <li>
+            {{p.name}}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+<div>
+    <h2>Years</h2>
+    <ul>
+        {% for year in get_all_years() %}
+        <li>
+            {{year.year}}
+        </li>
+        {% endfor %}
+    </ul>
 </div>
 <div>
     {% for entry in context.entries %}

@@ -22,6 +22,10 @@ class JournalEntry(db.Model):
     @property
     def date_string(self):
         return self.create_date.strftime('%Y-%m-%d')
+    @property
+    def date_human(self):
+        return self.create_date.strftime('%B %d, %Y')
+
 
 
 class JournalEntryView(ModelView):
