@@ -9,13 +9,19 @@ from flask import request
 from flask.views import View, MethodView
 
 parsing.PluginManager.init()
+
+
 def link_for_date(**kwargs):
+    """Return the app's link for the given date.
+    The date is given as keyuword arguments (year, month,day)."""
     expected = ['year', 'month', 'day']
     d = {k: kwargs[k] for k in expected if k in kwargs}
     return flask.url_for('entry', **d)
 
 
 def link_for_entry(entry: models.JournalEntry):
+    """Return the app's link for the given journal entry.
+    This function is a shortcut for link_for_date."""
     return link_for_date(
         year=entry.create_date.year,
         month=entry.create_date.month,
@@ -23,11 +29,14 @@ def link_for_entry(entry: models.JournalEntry):
 
 
 def get_latest_entry() -> models.JournalEntry:
+    """Return the chronologically latest JournalEntry."""
     return db.session.query(models.JournalEntry).order_by(
         models.JournalEntry.create_date.desc()).first()
 
 
-def get_all_years() -> 'iterable[models.JournalEntry]':
+def get_all_years() -> 'iterable[datetime.datetime]':
+    """Return a list of dates corresponding to the range of
+    years encompassed by all journal entries."""
     start_year = db.session.query(models.JournalEntry).order_by(
         models.JournalEntry.create_date).first()
     end_year = db.session.query(models.JournalEntry).order_by(
@@ -39,11 +48,15 @@ def get_all_years() -> 'iterable[models.JournalEntry]':
 
 
 def next_entry(e: models.JournalEntry) -> models.JournalEntry:
+    """Return the first JournalEntry that falls chronologically after
+    the given entry."""
     return db.session.query(models.JournalEntry).filter(
         models.JournalEntry.create_date > e.create_date).first()
 
 
 def previous_entry(e: models.JournalEntry) -> models.JournalEntry:
+    """Return the first JournalEntry that falls chronologically before
+    the given entry."""
     return db.session.query(models.JournalEntry).filter(
         models.JournalEntry.create_date < e.create_date).order_by(
             models.JournalEntry.create_date.desc()).first()
@@ -154,10 +167,11 @@ class EntrySearchView(MethodView):
 
 
 search_view = EntrySearchView.as_view('entry')
-app.add_url_rule('/entry/<int:year>', view_func=search_view)
-app.add_url_rule('/entry/<int:year>/<int:month>', view_func=search_view)
-app.add_url_rule(
-    '/entry/<int:year>/<int:month>/<int:day>', view_func=search_view)
+url_args = '<int:year>/<int:month>/<int:day>'.split('/')
+# construct url endpoints for searching dates with increasing precision
+for i in range(1, len(url_args) + 1):
+    endpoint = '/entry/' + '/'.join(url_args[:i])
+    app.add_url_rule(endpoint, view_func=search_view)
 
 
 def main():

@@ -1,6 +1,8 @@
 {% extends 'base.html' %} {% block body %} {{super()}}
     <!--  -->
+    <h2>
     {{render_breadcrumbs(context.breadcrumbs)}}
+    </h2>
     <div>
         {% if context.prev_entry %}
             <!--  -->

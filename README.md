@@ -13,6 +13,8 @@ The application supports plugins written in Python.
 One plugin included as an example can link journal entries together by identifying dates within the contents of entries.
 
 The first entry of this journal occurred on 2000-1-1.
+
+Yesterday and tomorrow are also dates.
 ```
 
 # Getting Started
@@ -22,7 +24,7 @@ This project requires Python 3.
 ## Dependencies
 You will need the `pipenv` package manager.
 
-### Installation
+## Installation
 
 Install `pipenv` with `pip3 install --user pipenv`.
 
