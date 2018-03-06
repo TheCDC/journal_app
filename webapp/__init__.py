@@ -8,7 +8,7 @@ import datetime
 from flask import request
 from flask.views import View, MethodView
 
-
+parsing.PluginManager.init()
 def link_for_date(**kwargs):
     expected = ['year', 'month', 'day']
     d = {k: kwargs[k] for k in expected if k in kwargs}
@@ -16,7 +16,6 @@ def link_for_date(**kwargs):
 
 
 def link_for_entry(entry: models.JournalEntry):
-    print('entry:', entry)
     return link_for_date(
         year=entry.create_date.year,
         month=entry.create_date.month,
@@ -69,6 +68,7 @@ def index():
         file = flask.request.files[form.file.name]
         # print('file', vars(file))
         session = db.session()
+        db.session.query(models.JournalEntry).delete()
         for e in parsing.identify_entries(file.read().decode().split('\n')):
             body_text = e.body.replace('\r', '')
             found = db.session.query(
@@ -93,7 +93,8 @@ def index():
             form=form,
             entries=all_entries,
             plugin_manager=parsing.PluginManager,
-            years=[(link_for_date(year=y.year), y.year) for y in get_all_years()]))
+            years=[(link_for_date(year=y.year), y.year)
+                   for y in get_all_years()]))
 
 
 class EntrySearchView(MethodView):

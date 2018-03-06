@@ -10,6 +10,21 @@
 </p>
 {% endmacro %}
 
+{% macro render_breadcrumbs(breadcrumbs) %}
+<!--  -->
+<h2>
+<!--  -->
+{% for br,num in breadcrumbs %}
+<!--  -->
+{% if num %}
+<a href="{{br}}">{{num}}</a>{% if not loop.last %} / {% endif %}
+<!--  -->
+{% endif %}
+<!--  -->
+{% endfor %}
+</h2>
+
+{% endmacro %}
 <head>
     <title>Journal App</title>
     <link rel="stylesheet" type="text/css" href="/static/stylesheets/default.css">
