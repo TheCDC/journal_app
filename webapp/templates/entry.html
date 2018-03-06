@@ -1,5 +1,15 @@
 {% extends 'base.html' %} {% block body %} {{super()}}
 <!--  -->
+Search:
+{% for br,num in context.breadcrumbs %}
+<!--  -->
+{% if num %}
+<a href="{{br}}">{{num}}</a>{% if not loop.last %} / {% endif %}
+<!--  -->
+{% endif %}
+<!--  -->
+{% endfor %}
+<!--  -->
 <div>
     {% if context.prev_entry %}
     <!--  -->
@@ -20,9 +30,13 @@
     {{context.entry.to_html()|safe}}
 </div>
 <div>
-    {% for t in context.plugin_manager.parse_entry(context.entry) %}
+    {% for t in context.plugin_manager.parse_entry(context.entry) %} {% if t[1] %}
     <h3>
-{{t[0]}}
+        {% if t[0].name is defined %}
+{{t[0].name}}
+{% else %}
+undefined
+{% endif %}
 </h3>
     <ul>
         {% for word in t[1] %}
@@ -31,7 +45,7 @@
         </li>
         {% endfor %}
     </ul>
-    {% endfor %}
+    {% endif %} {% endfor %}
 </div>
 <!--  -->
 {% endblock %}

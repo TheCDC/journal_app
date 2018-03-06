@@ -14,13 +14,15 @@ for t in files:
         with open(t[0], 'w') as dest:
             with open(t[1]) as src:
                 dest.write(src.read())
+ALL_PLUGINS = glob.glob(os.path.join(mydir, 'installed', '*.py')) + \
+    glob.glob(os.path.join(mydir, 'default', '*.py'))
 
-for p in glob.glob(os.path.join(mydir, 'installed', '*.py')):
+for p in ALL_PLUGINS:
     name = os.path.basename(p)
     if name != '__init__.py':
-        print(f'found plugin: {p}')
+        # print(f'found plugin: {p}')
         spec = importlib.util.spec_from_file_location(f'{name}', p)
-        print(spec)
+        # print(spec)
         foo = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(foo)
 

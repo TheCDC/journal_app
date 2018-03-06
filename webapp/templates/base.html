@@ -19,7 +19,7 @@
     <div>
         <a href="{{url_for('index')}}">Home</a>
         {% if get_latest_entry() %}
-        <a href="{{link_for_entry(get_latest_entry())}}">Latest</a>
+        <a href="{{link_for_entry(get_latest_entry())}}">Latest Entry</a>
         {% endif %}
     </div>
     {% block body %} {% endblock %}

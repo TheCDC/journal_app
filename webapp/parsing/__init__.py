@@ -17,6 +17,7 @@ def leftpad(s: str, l: int, c=' ') -> str:
 
 
 class Entry:
+
     def __init__(self, date: datetime.date, body: str):
         self._date = date
         self._body = body
