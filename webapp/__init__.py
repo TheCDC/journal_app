@@ -61,10 +61,8 @@ def index():
 
     if flask.request.method == 'POST':
         form = forms.UploadForm(flask.request.form)
-        print('vars(form.file)', vars(form.file))
         if form.validate():
             print('Validated!')
-        print('files', flask.request.files)
         file = flask.request.files[form.file.name]
         # print('file', vars(file))
         session = db.session()
@@ -132,7 +130,10 @@ class EntrySearchView(MethodView):
                         list(my_kwargs.values())[i])
                        for i in range(len(my_kwargs))]
         print('breadcrumbs', breadcrumbs)
-        e = found[0]
+        try:
+            e = found[0]
+        except IndexError:
+            flask.abort(404)
         # handle incompleteley specified date
         # take the user to a search
         if e.create_date != self.args_to_date(
