@@ -5,7 +5,12 @@ This is a simple webapp for extracting rich content from a journal stored as a t
 This is an example of the formatting of the journal.
 
 2000-1-2
-Each entry is simply a date header on its own line in the form of YYYY-MM-DD. Anything after a date header but before the next one (or the end of the file) is the body of the entry.
+Each entry is simply a date header on its own line in the form of YYYY-MM-DD.
+Anything after a date header but before the next one (or the end of the file) is the body of the entry.
+
+2000-1-3
+The application supports plugins written in Python.
+One plugin included as an example can link journal entries together by identifying dates within the contents of entries.
 ```
 
 # Getting Started

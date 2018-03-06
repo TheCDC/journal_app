@@ -22,12 +22,12 @@ def link_for_entry(entry: models.JournalEntry):
         day=entry.create_date.day)
 
 
-def get_latest_entry():
+def get_latest_entry() -> models.JournalEntry:
     return db.session.query(models.JournalEntry).order_by(
         models.JournalEntry.create_date.desc()).first()
 
 
-def get_all_years():
+def get_all_years() -> 'iterable[models.JournalEntry]':
     start_year = db.session.query(models.JournalEntry).order_by(
         models.JournalEntry.create_date).first()
     end_year = db.session.query(models.JournalEntry).order_by(
@@ -38,12 +38,12 @@ def get_all_years():
             yield datetime.datetime(y, 1, 1, 0, 0)
 
 
-def next_entry(e: models.JournalEntry):
+def next_entry(e: models.JournalEntry) -> models.JournalEntry:
     return db.session.query(models.JournalEntry).filter(
         models.JournalEntry.create_date > e.create_date).first()
 
 
-def previous_entry(e: models.JournalEntry):
+def previous_entry(e: models.JournalEntry) -> models.JournalEntry:
     return db.session.query(models.JournalEntry).filter(
         models.JournalEntry.create_date < e.create_date).order_by(
             models.JournalEntry.create_date.desc()).first()
