@@ -3,12 +3,12 @@ from webapp.app_init import app, db
 from webapp import forms
 import webapp.models as models
 from webapp import parsing
-from webapp import custom_plugins
+from webapp import parsing_plugins
 import datetime
 from flask import request
 from flask.views import View, MethodView
 
-
+parsing.PluginManager.init()
 def link_for_date(**kwargs):
     expected = ['year', 'month', 'day']
     d = {k: kwargs[k] for k in expected if k in kwargs}
@@ -16,7 +16,6 @@ def link_for_date(**kwargs):
 
 
 def link_for_entry(entry: models.JournalEntry):
-    print('entry:', entry)
     return link_for_date(
         year=entry.create_date.year,
         month=entry.create_date.month,
@@ -62,13 +61,12 @@ def index():
 
     if flask.request.method == 'POST':
         form = forms.UploadForm(flask.request.form)
-        print('vars(form.file)', vars(form.file))
         if form.validate():
             print('Validated!')
-        print('files', flask.request.files)
         file = flask.request.files[form.file.name]
         # print('file', vars(file))
         session = db.session()
+        db.session.query(models.JournalEntry).delete()
         for e in parsing.identify_entries(file.read().decode().split('\n')):
             body_text = e.body.replace('\r', '')
             found = db.session.query(
@@ -93,7 +91,8 @@ def index():
             form=form,
             entries=all_entries,
             plugin_manager=parsing.PluginManager,
-        ))
+            years=[(link_for_date(year=y.year), y.year)
+                   for y in get_all_years()]))
 
 
 class EntrySearchView(MethodView):
@@ -131,7 +130,10 @@ class EntrySearchView(MethodView):
                         list(my_kwargs.values())[i])
                        for i in range(len(my_kwargs))]
         print('breadcrumbs', breadcrumbs)
-        e = found[0]
+        try:
+            e = found[0]
+        except IndexError:
+            flask.abort(404)
         # handle incompleteley specified date
         # take the user to a search
         if e.create_date != self.args_to_date(

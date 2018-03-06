@@ -2,16 +2,7 @@
 <h1>
 Search
 	</h1>
-<!--  -->
-{% for br,num in context.breadcrumbs %}
-<!--  -->
-{% if num %}
-<a href="{{br}}">{{num}}</a>{% if not loop.last %} / {% endif %}
-<!--  -->
-{% endif %}
-<!--  -->
-{% endfor %}
-<!--  -->
+{{render_breadcrumbs(context.breadcrumbs)}}<!--  -->
 {% for entry,link in context.search_results %}
 <li>
     <!--  -->

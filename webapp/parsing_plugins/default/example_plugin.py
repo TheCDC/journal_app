@@ -3,7 +3,7 @@ from webapp import models
 
 import re
 
-pattern = re.compile(r'[a-zA-Z]+')
+pattern = re.compile(r'\b[^\W\d_]+\b')
 
 
 class Plugin(parsing.Plugin):

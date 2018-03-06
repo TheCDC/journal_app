@@ -110,7 +110,10 @@ class PluginManager:
     @classmethod
     def init(cls):
         for p in cls.registered_plugins:
-            p.init()
+            try:
+                p.init()
+            except NotImplementedError:
+                pass
 
     @classmethod
     def parse_entry(cls, e: Entry) -> 'generator[tuple]':

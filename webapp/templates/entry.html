@@ -1,15 +1,6 @@
 {% extends 'base.html' %} {% block body %} {{super()}}
 <!--  -->
-Search:
-{% for br,num in context.breadcrumbs %}
-<!--  -->
-{% if num %}
-<a href="{{br}}">{{num}}</a>{% if not loop.last %} / {% endif %}
-<!--  -->
-{% endif %}
-<!--  -->
-{% endfor %}
-<!--  -->
+{{render_breadcrumbs(context.breadcrumbs)}}
 <div>
     {% if context.prev_entry %}
     <!--  -->
