@@ -1,42 +1,44 @@
 {% extends 'base.html' %} {% block body %} {{super()}}
-<!--  -->
-{{render_breadcrumbs(context.breadcrumbs)}}
-<div>
-    {% if context.prev_entry %}
     <!--  -->
-    <a href="{{link_for_entry(context.prev_entry)}}">Previous ({{context.prev_entry.date_string}})</a>
-    <!--  -->
-    {% endif %}
-    <!--  -->
-    {% if context.next_entry %}
-    <!--  -->
-    <a href="{{link_for_entry(context.next_entry)}}">Next ({{context.next_entry.date_string}})</a>
-    <!--  -->
-    {% endif %}
-</div>
-<h1>
-{{context.entry.date_string}}, a {{context.entry.create_date.strftime('%A')}}
-</h1>
-<div>
-    {{context.entry.to_html()|safe}}
-</div>
-<div>
-    {% for t in context.plugin_manager.parse_entry(context.entry) %} {% if t[1] %}
-    <h3>
-        {% if t[0].name is defined %}
-{{t[0].name}}
-{% else %}
-undefined
-{% endif %}
-</h3>
-    <ul>
-        {% for word in t[1] %}
-        <li>
-            {{word}}
-        </li>
-        {% endfor %}
-    </ul>
-    {% endif %} {% endfor %}
-</div>
-<!--  -->
-{% endblock %}
+    {{render_breadcrumbs(context.breadcrumbs)}}
+    <div>
+        {% if context.prev_entry %}
+            <!--  -->
+            <a href="{{link_for_entry(context.prev_entry)}}">Previous ({{context.prev_entry.date_string}})</a>
+            <!--  -->
+        {% endif %}
+        <!--  -->
+        {% if context.next_entry %}
+            <!--  -->
+            <a href="{{link_for_entry(context.next_entry)}}">Next ({{context.next_entry.date_string}})</a>
+            <!--  -->
+        {% endif %}
+    </div>
+    <h1>
+    {{context.entry.date_string}}, a {{context.entry.create_date.strftime('%A')}}
+    </h1>
+    <div>
+        {{context.entry.to_html()|safe}}
+    </div>
+    <div>
+        {% for t in context.plugin_manager.parse_entry(context.entry) %}
+            <!--  -->
+            {% if t[1] %}
+                <h3>
+                {% if t[0].name is defined %}
+                    {{t[0].name}}
+                {% else %}
+                    undefined
+                {% endif %}
+                </h3>
+                <ul>
+                    {% for word in t[1] %}
+                        <li>
+                            {{word|safe}}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %} {% endfor %}
+        </div>
+        <!--  -->
+    {% endblock %}

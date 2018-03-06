@@ -22,12 +22,12 @@ def link_for_entry(entry: models.JournalEntry):
         day=entry.create_date.day)
 
 
-def get_latest_entry():
+def get_latest_entry() -> models.JournalEntry:
     return db.session.query(models.JournalEntry).order_by(
         models.JournalEntry.create_date.desc()).first()
 
 
-def get_all_years():
+def get_all_years() -> 'iterable[models.JournalEntry]':
     start_year = db.session.query(models.JournalEntry).order_by(
         models.JournalEntry.create_date).first()
     end_year = db.session.query(models.JournalEntry).order_by(
@@ -38,12 +38,12 @@ def get_all_years():
             yield datetime.datetime(y, 1, 1, 0, 0)
 
 
-def next_entry(e: models.JournalEntry):
+def next_entry(e: models.JournalEntry) -> models.JournalEntry:
     return db.session.query(models.JournalEntry).filter(
         models.JournalEntry.create_date > e.create_date).first()
 
 
-def previous_entry(e: models.JournalEntry):
+def previous_entry(e: models.JournalEntry) -> models.JournalEntry:
     return db.session.query(models.JournalEntry).filter(
         models.JournalEntry.create_date < e.create_date).order_by(
             models.JournalEntry.create_date.desc()).first()
@@ -64,7 +64,6 @@ def index():
         if form.validate():
             print('Validated!')
         file = flask.request.files[form.file.name]
-        # print('file', vars(file))
         session = db.session()
         db.session.query(models.JournalEntry).delete()
         for e in parsing.identify_entries(file.read().decode().split('\n')):
@@ -79,7 +78,6 @@ def index():
             session.add(found)
         session.flush()
         session.commit()
-        # print('file', file.read())
         return flask.redirect(flask.url_for('index'))
     all_entries = list(
         db.session.query(models.JournalEntry).order_by(
@@ -125,16 +123,14 @@ class EntrySearchView(MethodView):
             for k in ['year', 'month', 'day'] if k in kwargs
         }
         found = self.get_objects(**my_kwargs)
-        print('my_kwargs', my_kwargs, len(my_kwargs))
         breadcrumbs = [(link_for_date(**dict(list(my_kwargs.items())[:i + 1])),
                         list(my_kwargs.values())[i])
                        for i in range(len(my_kwargs))]
-        print('breadcrumbs', breadcrumbs)
         try:
             e = found[0]
         except IndexError:
             flask.abort(404)
-        # handle incompleteley specified date
+        # handle incompletely specified date
         # take the user to a search
         if e.create_date != self.args_to_date(
                 **my_kwargs) or len(breadcrumbs) < 3:
