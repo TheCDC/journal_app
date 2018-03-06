@@ -9,13 +9,19 @@ from flask import request
 from flask.views import View, MethodView
 
 parsing.PluginManager.init()
+
+
 def link_for_date(**kwargs):
+    """Return the app's link for the given date.
+    The date is given as keyuword arguments (year, month,day)."""
     expected = ['year', 'month', 'day']
     d = {k: kwargs[k] for k in expected if k in kwargs}
     return flask.url_for('entry', **d)
 
 
 def link_for_entry(entry: models.JournalEntry):
+    """Return the app's link for the given journal entry.
+    This function is a shortcut for link_for_date."""
     return link_for_date(
         year=entry.create_date.year,
         month=entry.create_date.month,
@@ -23,11 +29,14 @@ def link_for_entry(entry: models.JournalEntry):
 
 
 def get_latest_entry() -> models.JournalEntry:
+    """Return the chronologically latest JournalEntry."""
     return db.session.query(models.JournalEntry).order_by(
         models.JournalEntry.create_date.desc()).first()
 
 
-def get_all_years() -> 'iterable[models.JournalEntry]':
+def get_all_years() -> 'iterable[datetime.datetime]':
+    """Return a list of dates corresponding to the range of
+    years encompassed by all journal entries."""
     start_year = db.session.query(models.JournalEntry).order_by(
         models.JournalEntry.create_date).first()
     end_year = db.session.query(models.JournalEntry).order_by(
@@ -39,11 +48,15 @@ def get_all_years() -> 'iterable[models.JournalEntry]':
 
 
 def next_entry(e: models.JournalEntry) -> models.JournalEntry:
+    """Return the first JournalEntry that falls chronologically after
+    the given entry."""
     return db.session.query(models.JournalEntry).filter(
         models.JournalEntry.create_date > e.create_date).first()
 
 
 def previous_entry(e: models.JournalEntry) -> models.JournalEntry:
+    """Return the first JournalEntry that falls chronologically before
+    the given entry."""
     return db.session.query(models.JournalEntry).filter(
         models.JournalEntry.create_date < e.create_date).order_by(
             models.JournalEntry.create_date.desc()).first()
