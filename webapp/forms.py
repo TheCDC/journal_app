@@ -1,7 +1,7 @@
 import wtforms
 from wtforms import validators
 import flask_wtf
-from flask_wtf.file import FileField
+# from flask_wtf.file import FileField
 
 
 class UploadForm(flask_wtf.FlaskForm):

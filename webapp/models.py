@@ -18,7 +18,7 @@ class JournalEntry(db.Model):
     def __str__(self):
         return str(self.id)
 
-    def to_html(self):
+    def to_html(self) -> str:
         """Return HTML necesary to render the entry the same as plain text."""
         return self.contents.replace('\n', '<br>')
 
@@ -29,12 +29,12 @@ class JournalEntry(db.Model):
             'TODO: tokenize entry contents to allow for wiki-style linking.')
 
     @property
-    def date_string(self):
+    def date_string(self) -> str:
         """Date as YYYY-MM-DD."""
         return self.create_date.strftime('%Y-%m-%d')
 
     @property
-    def date_human(self):
+    def date_human(self) -> str:
         """A pretty and human readable date."""
         return self.create_date.strftime('%B %d, %Y')
 
