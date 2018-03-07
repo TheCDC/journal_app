@@ -62,8 +62,11 @@ class JournalEntryView(ModelView):
     }
 
 
-admin.add_view(JournalEntryView(JournalEntry, db.session))
-admin.add_view(ModelView(PluginConfig, db.session))
+admin.add_view(
+    JournalEntryView(
+        JournalEntry, db.session, endpoint='model_view_journalentry'))
+admin.add_view(
+    ModelView(PluginConfig, db.session, endpoint='model_view_pluginconfig'))
 
 
 def instantiate_db(app):
