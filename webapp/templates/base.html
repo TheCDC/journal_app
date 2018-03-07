@@ -1,38 +1,43 @@
-{% macro render_field(field) %}
+{% extends "bootstrap/base.html" %} {% macro render_field(field) %}
 <p>
     {{ field.label }} {{ field(**kwargs)|safe }} {% if field.errors %}
-    <ul class=errors>
-        {% for error in field.errors %}
-        <li>{{ error }}</li>
-        {% endfor %}
-    </ul>
+        <ul class=errors>
+            {% for error in field.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
     {% endif %}
 </p>
-{% endmacro %}
-
-{% macro render_breadcrumbs(breadcrumbs) %}
+{% endmacro %} {% macro render_breadcrumbs(breadcrumbs) %}
 <!--  -->
 {% for br,num in breadcrumbs %}
 <!--  -->
 {% if num %}
-<a href="{{br}}">{{num}}</a>{% if not loop.last %} / {% endif %}
-<!--  -->
+    <a href="{{br}}">{{num}}</a>{% if not loop.last %} / {% endif %}
+    <!--  -->
 {% endif %}
 <!--  -->
-{% endfor %}
-
-{% endmacro %}
+{% endfor %} {% endmacro %}
 <head>
-    <title>Journal App</title>
-    <link rel="stylesheet" type="text/css" href="/static/stylesheets/default.css">
+<title>Journal App</title>
+<link rel="stylesheet" type="text/css" href="/static/stylesheets/default.css">
 </head>
-
 <body>
-    <div>
-        <a href="{{url_for('index')}}">Home</a>
-        {% if get_latest_entry() %}
-        <a href="{{link_for_entry(get_latest_entry())}}">Latest Entry</a>
-        {% endif %}
-    </div>
-    {% block body %} {% endblock %}
+{% block navbar %}
+    <nav class="navbar navbar-default navbar-inverse">
+        <div class="container">
+            <ul class="nav navbar-nav">
+                <li {% if request.path == url_for('index') %} class="active" {% endif %}>
+                <a class="btn" href="{{url_for('index')}}">Home</a>
+            </li>
+            <li>
+                <a class="btn" href="{{url_for('admin.index')}}">Admin</a> {% if get_latest_entry() %}
+            </li>
+            <li {% if request.path == link_for_entry(get_latest_entry()) %} class="active" {% endif %}>
+            <a class="btn" href="{{link_for_entry(get_latest_entry())}}">Latest Entry</a> {% endif %}
+        </li>
+    </ul>
+</div>
+</nav>
+{% endblock %} {% block content %} {% endblock %}
 </body>

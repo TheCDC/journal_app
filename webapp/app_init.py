@@ -1,6 +1,7 @@
 import flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+import flask_bootstrap
 # for editing DB entries
 from flask_admin import Admin
 import random
@@ -34,3 +35,5 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 # admin interface
 admin = Admin(app, name='Journal Wiki App', template_mode='bootstrap3')
+
+bootstrap = flask_bootstrap.Bootstrap(app)
