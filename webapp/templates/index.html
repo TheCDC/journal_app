@@ -1,41 +1,44 @@
-{% extends 'base.html' %} {% block body %} {{super()}}
-<!--  -->
-<div id="upload_div">
-    <h2>Upload Journal File</h2>
-    <form class="upload_form" method="POST" action="{{url_for('index')}}" enctype="multipart/form-data">
-        {{context.form.hidden_tag()}}
-        <!--  -->
-        {{render_field(context.form.file)}}
-        <input type="submit" value="submit">
-    </form>
-    {{context.file_contents}}
-</div>
-<div>
-    <h2> Installed plugins </h2>
-    <ul>
-        {% for p in context.plugin_manager.registered_plugins %}
-        <li>
-            {{p.name}}
-        </li>
-        {% endfor %}
-    </ul>
-</div>
-<div>
-    <h2>Years</h2>
-    <ul>
-        {% for t in context.years %}
-        <li>
-            <a href="{{t[0]}}">{{t[1]}}</a>
-        </li>
-        {% endfor %}
-    </ul>
-</div>
-<div>
-    {% for entry in context.entries %}
-    <p>
-        <a href="{{link_for_entry(entry)}}">{{entry.date_string}}</a>
-    </p>
-    {% endfor %}
-</div>
-<!--  -->
+{% extends 'base.html' %} {% block content %} {{super()}}
+    <!--  -->
+    <div class="container">
+        <div id="upload_div">
+            <h2>Upload Journal File</h2>
+            <form class="upload_form" method="POST" action="{{url_for('index')}}" enctype="multipart/form-data">
+                {{context.form.hidden_tag()}}
+                <!--  -->
+                {{render_field(context.form.file)}}
+                <input type="submit" value="submit">
+            </form>
+            {{context.file_contents}}
+        </div>
+        <div>
+            <h2> Installed plugins </h2>
+            <ul>
+                {% for p in context.plugin_manager.registered_plugins %}
+                    <li>
+                        <a class="btn btn-default" href="{{url_for('model_view_pluginconfig.edit_view',id=p.model.id)}}"> {{p.name}}  </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div>
+            <h2>Search by year</h2>
+            <ul>
+                {% for t in context.years %}
+                    <li>
+                        <a href="{{t[0]}}">{{t[1]}}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div>
+            <h2>Entries</h2>
+            {% for entry in context.entries %}
+                <p>
+                    <a href="{{link_for_entry(entry)}}">{{entry.date_string}}</a>
+                </p>
+            {% endfor %}
+        </div>
+    </div>
+    <!--  -->
 {% endblock %}

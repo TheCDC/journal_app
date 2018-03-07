@@ -1,17 +1,19 @@
-{% extends 'base.html' %} {% block body %} {{super()}}
-	<h1>
-	Search
-	</h1>
-	<h2>
-	{{render_breadcrumbs(context.breadcrumbs)}}
-	<!--  -->
-	</h2> {% for entry,link in context.search_results %}
-		<li>
-			<!--  -->
-			<a href="{{link}}">{{entry.date_string}} ({{entry.date_human}})</a>
-		</li>
+{% extends 'base.html' %} {% block content %} {{super()}}
+	<div class="container">
+		<h1>
+		Search
+		</h1>
+		<h2>
+		{{render_breadcrumbs(context.breadcrumbs)}}
 		<!--  -->
-	{% endfor %}
-</ul>
+		</h2> {% for entry,link in context.search_results %}
+			<li>
+				<!--  -->
+				<a href="{{link}}">{{entry.date_string}} ({{entry.date_human}})</a>
+			</li>
+			<!--  -->
+		{% endfor %}
+	</ul>
+</div>
 <!--  -->
 {% endblock %}
