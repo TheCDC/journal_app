@@ -17,6 +17,9 @@ The first entry of this journal occurred on 2000-1-1.
 Yesterday and tomorrow are also dates.
 ```
 
+[index page](screenshots/Screenshot-2018-3-6 Journal App(1).png)
+[viewing journal entry](screenshots/Screenshot-2018-3-6 Journal App(2).png)
+
 # Getting Started
 
 This project requires Python 3. 
