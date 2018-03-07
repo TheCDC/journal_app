@@ -16,7 +16,7 @@
             <ul>
                 {% for p in context.plugin_manager.registered_plugins %}
                     <li>
-                        {{p.name}}
+                        <a class="btn btn-default" href="{{url_for('model_view_pluginconfig.edit_view',id=p.model.id)}}"> {{p.name}}  </a>
                     </li>
                 {% endfor %}
             </ul>

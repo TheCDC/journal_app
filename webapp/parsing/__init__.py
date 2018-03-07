@@ -120,6 +120,7 @@ class PluginManager:
                 found = models.PluginConfig(class_name=str(p))
             # human name
             found.name = p.name
+            p.model = found
             db.session.add(found)
             db.session.flush()
             db.session.commit()
