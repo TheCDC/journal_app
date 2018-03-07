@@ -1,7 +1,12 @@
-from webapp.app_init import db, admin
+from webapp.app_init import app, db, admin
+import webapp.app_init
 from flask_admin.contrib.sqla import ModelView
 import datetime
 from webapp import parsing
+import logging
+import flask_migrate
+import alembic
+logger = logging.getLogger(__name__)
 
 
 class JournalEntry(db.Model):
@@ -59,3 +64,24 @@ class JournalEntryView(ModelView):
 
 admin.add_view(JournalEntryView(JournalEntry, db.session))
 admin.add_view(ModelView(PluginConfig, db.session))
+
+
+def instantiate_db(app):
+
+    # initialize db with flask_migrate
+    with app.app_context():
+        try:
+            flask_migrate.init(webapp.app_init.ALEMBIC_PATH)
+        except alembic.util.exc.CommandError as e:
+            logger.debug('flask db init failed: %s', e)
+            if 'already exists' in str(e):
+                pass
+            else:
+                raise e
+        flask_migrate.migrate(webapp.app_init.ALEMBIC_PATH)
+        try:
+            logger.debug('flask db upgrade')
+            flask_migrate.upgrade(webapp.app_init.ALEMBIC_PATH)
+        except Exception as e:
+            logger.debug('flask db upgrade failed: %s', e)
+            raise e

@@ -9,5 +9,11 @@ sys.path.append(to_append)
 import webapp
 
 from webapp import parsing
-parsing.PluginManager.init()
-webapp.app.run(debug=False)
+
+
+def main():
+    webapp.app.run(debug=False)
+
+
+if __name__ == '__main__':
+    main()

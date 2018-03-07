@@ -1,15 +1,17 @@
 import flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+# for editing DB entries
 from flask_admin import Admin
 import random
-# for editing DB entries
-# hack to get a reference to the templates directory within the package
 import os
 print('importing plugins')
 
+# hack to get a reference to the templates directory within the package
 tmpl_dir = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), 'templates')
+CONFIG_PATH = os.path.expanduser(os.path.join('~/', 'cdc_journal'))
+ALEMBIC_PATH = os.path.join(CONFIG_PATH, 'migrations')
 
 #  ========== Flask App ==========
 app = flask.Flask(
@@ -18,9 +20,9 @@ app = flask.Flask(
 app.jinja_env.auto_reload = True
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['SECRET_KEY'] = str(int(random.random() * 100000000000))
+
 # set the database location and protocol
-sqlite_db_path = os.path.expanduser(
-    os.path.join('~/', 'cdc_journal', 'database.db'))
+sqlite_db_path = os.path.join(CONFIG_PATH, 'database.db')
 try:
     os.makedirs(os.path.dirname(sqlite_db_path))
 except FileExistsError:

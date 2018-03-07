@@ -9,6 +9,11 @@ from flask import request
 from flask.views import View, MethodView
 
 
+@app.before_first_request
+def setup_app():
+    models.instantiate_db(app)
+    parsing.PluginManager.init()
+
 
 def link_for_date(**kwargs):
     """Return the app's link for the given date.
