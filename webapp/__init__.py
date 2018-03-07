@@ -8,7 +8,11 @@ import datetime
 from flask import request
 from flask.views import View, MethodView
 
-parsing.PluginManager.init()
+
+@app.before_first_request
+def setup_app():
+    models.instantiate_db(app)
+    parsing.PluginManager.init()
 
 
 def link_for_date(**kwargs):
