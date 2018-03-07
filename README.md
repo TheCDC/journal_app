@@ -21,6 +21,7 @@ Yesterday and tomorrow are also dates.
 
 ![viewing journal entry](screenshots/Screenshot-2018-3-6_Journal_App(2).png)
 
+
 # Getting Started
 
 This project requires Python 3. 
