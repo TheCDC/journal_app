@@ -18,10 +18,10 @@ Yesterday and tomorrow are also dates.
 ```
 
 
-![image](screenshots/Screenshot-2018-3-6 Journal App(1).png)
+![image](/screenshots/Screenshot-2018-3-6 Journal App(1).png)
 
 
-![image](screenshots/Screenshot-2018-3-6 Journal App(2).png)
+![image](/screenshots/Screenshot-2018-3-6 Journal App(2).png)
 
 # Getting Started
 
