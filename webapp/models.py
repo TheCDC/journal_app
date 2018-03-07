@@ -34,6 +34,14 @@ class JournalEntry(db.Model):
         return self.create_date.strftime('%B %d, %Y')
 
 
+class PluginConfig(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    create_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    class_name = db.Column(db.String)
+    enabled = db.Column(db.Boolean, default=True)
+    name = db.Column(db.String)
+
+
 class JournalEntryView(ModelView):
     column_list = (
         'create_date',
@@ -50,3 +58,4 @@ class JournalEntryView(ModelView):
 
 
 admin.add_view(JournalEntryView(JournalEntry, db.session))
+admin.add_view(ModelView(PluginConfig, db.session))

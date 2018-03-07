@@ -1,5 +1,8 @@
 import re
 import datetime
+from webapp import models
+from webapp.app_init import db
+import sqlalchemy
 DATE_HEADER_PATTERN = re.compile(r"^[0-9]+-[0-9]+-[0-9]*\w*")
 
 
@@ -17,7 +20,6 @@ def leftpad(s: str, l: int, c=' ') -> str:
 
 
 class Entry:
-
     def __init__(self, date: datetime.date, body: str):
         self._date = date
         self._body = body
@@ -109,6 +111,18 @@ class PluginManager:
 
     @classmethod
     def init(cls):
+        # track plugin configurations in db
+        for p in cls.registered_plugins:
+            found = db.session.query(models.PluginConfig).filter(
+                models.PluginConfig.class_name == str(p)).first()
+            if found is None:
+                # unique name based on filename
+                found = models.PluginConfig(class_name=str(p))
+            # human name
+            found.name = p.name
+            db.session.add(found)
+            db.session.flush()
+            db.session.commit()
         for p in cls.registered_plugins:
             try:
                 p.init()
@@ -120,4 +134,7 @@ class PluginManager:
         """Return a dictionary mapping each registered
         plugin to the results of it parsing the target Entry."""
         for p in cls.registered_plugins:
-            yield (p, list(p.parse_entry(e)))
+            found = db.session.query(models.PluginConfig).filter(
+                models.PluginConfig.class_name == str(p)).first()
+            if found.enabled:
+                yield (p, list(p.parse_entry(e)))
