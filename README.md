@@ -17,6 +17,9 @@ The first entry of this journal occurred on 2000-1-1.
 Yesterday and tomorrow are also dates.
 ```
 
+
+# Screenshots
+
 ![index page](screenshots/Screenshot-2018-3-7_http_127_0_0_1(2).png)
 
 ![viewing journal entry](screenshots/Screenshot-2018-3-7_http_127_0_0_1(3).png)
