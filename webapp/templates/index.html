@@ -18,9 +18,9 @@
                     <li>
                         <a class="btn btn-default" href="{{url_for('model_view_pluginconfig.edit_view',id=p.get_model().id)}}"> {{p.name}}  </a>
                         {% if p.get_model().enabled %}
-                            <span class="success">Enabled</span>
+                            <span class="text-success">Enabled</span>
                         {% else %}
-                            <span class="warning">Disabled</span>
+                            <span class="text-warning">Disabled</span>
                         {% endif %}
                     </li>
                 {% endfor %}
@@ -50,14 +50,6 @@
                         {% endfor %}
                     </ul>
                 {% endfor %}
-            {% endfor %}
-        </div>
-        <div>
-            <h2>Entries</h2>
-            {% for entry in context.entries %}
-                <p>
-                    <a href="{{link_for_entry(entry)}}">{{entry.date_string}}</a>
-                </p>
             {% endfor %}
         </div>
     </div>
