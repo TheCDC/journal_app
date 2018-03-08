@@ -16,7 +16,12 @@
             <ul>
                 {% for p in context.plugin_manager.registered_plugins %}
                     <li>
-                        <a class="btn btn-default" href="{{url_for('model_view_pluginconfig.edit_view',id=p.model.id)}}"> {{p.name}}  </a>
+                        <a class="btn btn-default" href="{{url_for('model_view_pluginconfig.edit_view',id=p.get_model().id)}}"> {{p.name}}  </a>
+                        {% if p.get_model().enabled %}
+                            <span class="success">Enabled</span>
+                        {% else %}
+                            <span class="warning">Disabled</span>
+                        {% endif %}
                     </li>
                 {% endfor %}
             </ul>
@@ -30,6 +35,22 @@
                     </li>
                 {% endfor %}
             </ul>
+        </div>
+        <div>
+            <!-- {{context.entries_by_year}} -->
+            {% for year in context.entries_tree %}
+                <h2 class="text-center">{{year}}</h2>
+                {% for month in context.entries_tree[year] %}
+                    <h3>{{month}}</h3>
+                    <ul>
+                        {% for entry in context.entries_tree[year][month] %}
+                            <li class="btn btn-default">
+                                <a href="{{link_for_entry(entry)}}">{{entry.create_date.day}}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endfor %}
+            {% endfor %}
         </div>
         <div>
             <h2>Entries</h2>
