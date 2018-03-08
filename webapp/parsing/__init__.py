@@ -57,7 +57,7 @@ def identify_entries(lines) -> "list[Entry]":
                 d = datetime.datetime(a, b, c, 0, 0)
             except (ValueError, AttributeError):
                 d = None
-            if cur_body_lines and d:
+            if len(cur_body_lines) > 0 and d is not None:
                 results.append(Entry(d, '\n'.join(cur_body_lines)))
             if not old_date:
                 print('start date', each_line)
@@ -74,7 +74,8 @@ def identify_entries(lines) -> "list[Entry]":
     else:
         d = each_line
     b = '\n'.join(cur_body_lines)
-    results.append(Entry(d, b))
+    if d is not None and len(b) > 0:
+        results.append(Entry(d, b))
     return results
 
 

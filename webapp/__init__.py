@@ -102,6 +102,7 @@ def index():
                 found = models.JournalEntry(
                     create_date=e.date, contents=body_text)
             session.add(found)
+
         session.flush()
         session.commit()
         return flask.redirect(flask.url_for('index'))
