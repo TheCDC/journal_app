@@ -99,12 +99,22 @@ def index():
     all_entries = list(
         db.session.query(models.JournalEntry).order_by(
             models.JournalEntry.create_date))
+    entries_tree = dict()
+    for e in all_entries:
+        y = e.create_date.year
+        m = e.create_date.month
+        if y not in entries_tree:
+            entries_tree[y] = dict()
+        if m not in entries_tree[y]:
+            entries_tree[y][m] = list()
+        entries_tree[y][m].append(e)
 
     return flask.render_template(
         'index.html',
         context=dict(
             form=form,
             entries=all_entries,
+            entries_tree=entries_tree,
             plugin_manager=parsing.PluginManager,
             years=[(link_for_date(year=y.year), y.year)
                    for y in get_all_years()]))

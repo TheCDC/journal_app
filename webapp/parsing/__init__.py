@@ -85,6 +85,12 @@ class Plugin:
     initialized = False
 
     @classmethod
+    def get_model(cls):
+        found = db.session.query(models.PluginConfig).filter(
+            models.PluginConfig.class_name == str(cls)).first()
+        return found
+
+    @classmethod
     def init(cls):
         cls.initialized = True
         """The responsibility of this method is to perform long-running
@@ -99,6 +105,20 @@ class Plugin:
         if cls.requires_initialization and not cls.initialized:
             raise RuntimeError("This classes resources must be initialized!")
         raise NotImplementedError("parse_entry() not implemented/")
+
+    @property
+    @classmethod
+    def enabled(cls):
+        return cls.get_model().enabled
+
+    @enabled.setter
+    @classmethod
+    def enabled(cls, val):
+        m = cls.get_model()
+        m.enabled = val
+        db.session.add(m)
+        db.session.flush()
+        db.session.commit()
 
 
 class PluginManager:
@@ -120,7 +140,6 @@ class PluginManager:
                 found = models.PluginConfig(class_name=str(p))
             # human name
             found.name = p.name
-            p.model = found
             db.session.add(found)
             db.session.flush()
             db.session.commit()
