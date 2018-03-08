@@ -44,7 +44,7 @@
                     <h3>{{month}}</h3>
                     <ul>
                         {% for entry in context.entries_tree[year][month] %}
-                            <li class="btn">
+                            <li class="btn btn-default">
                                 <a href="{{link_for_entry(entry)}}">{{entry.create_date.day}}</a>
                             </li>
                         {% endfor %}
