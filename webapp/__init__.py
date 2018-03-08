@@ -41,6 +41,7 @@ def get_latest_entry() -> models.JournalEntry:
 def get_all_years() -> 'iterable[datetime.datetime]':
     """Return a list of dates corresponding to the range of
     years encompassed by all journal entries."""
+    # define earliest and latest years of entries
     start_year = db.session.query(models.JournalEntry).order_by(
         models.JournalEntry.create_date).first()
     end_year = db.session.query(models.JournalEntry).order_by(
@@ -48,11 +49,13 @@ def get_all_years() -> 'iterable[datetime.datetime]':
     if start_year and end_year:
         for y in range(start_year.create_date.year,
                        end_year.create_date.year + 1):
+            # find any entry within this year but before next year
             found = db.session.query(models.JournalEntry).filter(
                 models.JournalEntry.create_date >= datetime.datetime(
                     y, 1, 1, 0, 0)).filter(
                         models.JournalEntry.create_date < datetime.datetime(
                             y + 1, 1, 1, 0, 0)).first()
+            # only yield this year if has an entry
             if found:
                 yield datetime.datetime(y, 1, 1, 0, 0)
 
