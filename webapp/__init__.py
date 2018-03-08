@@ -113,7 +113,6 @@ def index():
         'index.html',
         context=dict(
             form=form,
-            entries=all_entries,
             entries_tree=entries_tree,
             plugin_manager=parsing.PluginManager,
             years=[(link_for_date(year=y.year), y.year)

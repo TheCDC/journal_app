@@ -52,14 +52,6 @@
                 {% endfor %}
             {% endfor %}
         </div>
-        <div>
-            <h2>Entries</h2>
-            {% for entry in context.entries %}
-                <p>
-                    <a href="{{link_for_entry(entry)}}">{{entry.date_string}}</a>
-                </p>
-            {% endfor %}
-        </div>
     </div>
     <!--  -->
 {% endblock %}
