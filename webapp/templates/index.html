@@ -1,6 +1,6 @@
 {% extends 'base.html' %} {% block content %} {{super()}}
     <!--  -->
-    <div class="container">
+    <div class="container container-fluid">
         <div id="upload_div">
             <h2>Upload Journal File</h2>
             <form class="upload_form" method="POST" action="{{url_for('index')}}" enctype="multipart/form-data">
@@ -41,16 +41,11 @@
             {% for year in context.entries_tree %}
                 <h2 class="text-center">{{year}}</h2>
                 {% for month in context.entries_tree[year] %}
-                    <h3>{{month}}</h3>
-                    <ul>
-                        {% for entry in context.entries_tree[year][month] %}
-                            <a href="{{link_for_entry(entry)}}">
-                                <li class="btn btn-default">
-                                    {{entry.create_date.day}}
-                                </li>
-                            </a>
-                        {% endfor %}
-                    </ul>
+                    <h3>{{month}} <span class="pull-right"> ({{context.entries_tree[year][month]|length}})</span></h3>
+                    {% for entry in context.entries_tree[year][month] %}
+                        <a class="btn btn-default" href="{{link_for_entry(entry)}}">{{entry.create_date.day}}</a>
+                    {% endfor %}
+
                 {% endfor %}
             {% endfor %}
         </div>
