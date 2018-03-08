@@ -23,21 +23,7 @@
 <link rel="stylesheet" type="text/css" href="/static/stylesheets/default.css">
 </head>
 <body>
-{% block navbar %}
-    <nav class="navbar navbar-default navbar-inverse">
-        <div class="container">
-            <ul class="nav navbar-nav">
-                <li {% if request.path == url_for('index') %} class="active" {% endif %}>
-                <a class="btn" href="{{url_for('index')}}">Home</a>
-            </li>
-            <li>
-                <a class="btn" href="{{url_for('admin.index')}}">Admin</a> {% if get_latest_entry() %}
-            </li>
-            <li {% if request.path == link_for_entry(get_latest_entry()) %} class="active" {% endif %}>
-            <a class="btn" href="{{link_for_entry(get_latest_entry())}}">Latest Entry</a> {% endif %}
-        </li>
-    </ul>
-</div>
-</nav>
-{% endblock %} {% block content %} {% endblock %}
+{% include "navbar.html" %}
+ {% block content %} {% endblock %}
+
 </body>
