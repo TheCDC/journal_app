@@ -48,7 +48,13 @@ def get_all_years() -> 'iterable[datetime.datetime]':
     if start_year and end_year:
         for y in range(start_year.create_date.year,
                        end_year.create_date.year + 1):
-            yield datetime.datetime(y, 1, 1, 0, 0)
+            found = db.session.query(models.JournalEntry).filter(
+                models.JournalEntry.create_date >= datetime.datetime(
+                    y, 1, 1, 0, 0)).filter(
+                        models.JournalEntry.create_date < datetime.datetime(
+                            y + 1, 1, 1, 0, 0)).first()
+            if found:
+                yield datetime.datetime(y, 1, 1, 0, 0)
 
 
 def next_entry(e: models.JournalEntry) -> models.JournalEntry:
@@ -120,6 +126,7 @@ def index():
 
 
 class EntrySearchView(MethodView):
+
     def get_objects(self, **kwargs):
         start_date = self.args_to_date(**kwargs)
         found = list(
