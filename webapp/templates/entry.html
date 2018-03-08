@@ -7,13 +7,13 @@
         <div>
             {% if context.prev_entry %}
                 <!--  -->
-                <a href="{{link_for_entry(context.prev_entry)}}">Previous ({{context.prev_entry.date_string}})</a>
+                <a class="btn btn-default" href="{{link_for_entry(context.prev_entry)}}">Previous ({{context.prev_entry.date_string}})</a>
                 <!--  -->
             {% endif %}
             <!--  -->
             {% if context.next_entry %}
                 <!--  -->
-                <a href="{{link_for_entry(context.next_entry)}}">Next ({{context.next_entry.date_string}})</a>
+                <a class="btn btn-default" href="{{link_for_entry(context.next_entry)}}">Next ({{context.next_entry.date_string}})</a>
                 <!--  -->
             {% endif %}
         </div>
