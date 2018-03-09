@@ -1,3 +1,4 @@
 {
-  "webapp/custom_plugins/installed/test_plugin.py": true
+  "webapp/custom_plugins/installed/test_plugin.py": true,
+  "webapp/parsing_plugins/default/test_date_recognizer.py": true
 }

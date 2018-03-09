@@ -4,33 +4,37 @@
         <div class="jumbotron">
             <h2> Remember this from {{(context.now - context.latest_entry.create_date).days}} day(s) ago?</h2>
             <p>
-                {{context.latest_entry.contents}}
+                {{context.latest_entry.to_html()|safe}}
             </p>
         </div>
-        <div id="upload_div">
-            <h2>Upload Journal File</h2>
-            <form  class="upload_form" method="POST" action="{{url_for('index')}}" enctype="multipart/form-data">
-                {{context.form.hidden_tag()}}
-                <!--  -->
-                {{render_field(context.form.file)}}
-                <input class="btn btn-success" type="submit" value="submit">
-            </form>
-            {{context.file_contents}}
-        </div>
-        <div>
-            <h2> Installed plugins </h2>
-            <ul>
-                {% for p in context.plugin_manager.registered_plugins %}
-                    <li>
-                        <a class="btn btn-default" href="{{url_for('model_view_pluginconfig.edit_view',id=p.get_model().id)}}"> {{p.name}}  </a>
-                        {% if p.get_model().enabled %}
-                            <span class="text-success">Enabled</span>
-                        {% else %}
-                            <span class="text-warning">Disabled</span>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
+        <div class="container">
+            <div class="row">
+                <div class="col col-md-6" id="upload_div">
+                    <h2>Upload Journal File</h2>
+                    <form  class="upload_form" method="POST" action="{{url_for('index')}}" enctype="multipart/form-data">
+                        {{context.form.hidden_tag()}}
+                        <!--  -->
+                        {{render_field(context.form.file)}}
+                        <input class="btn btn-success" type="submit" value="submit">
+                    </form>
+                    {{context.file_contents}}
+                </div>
+                <div class="col col-md-6" id="plugins_div">
+                    <h2> Installed plugins </h2>
+                    <ul>
+                        {% for p in context.plugin_manager.registered_plugins %}
+                            <li>
+                                <a class="btn btn-default" href="{{url_for('model_view_pluginconfig.edit_view',id=p.get_model().id)}}"> {{p.name}}  </a>
+                                {% if p.get_model().enabled %}
+                                    <span class="text-success">Enabled</span>
+                                {% else %}
+                                    <span class="text-warning">Disabled</span>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
         </div>
         <div>
             <h2>Search by year</h2>

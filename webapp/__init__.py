@@ -1,10 +1,10 @@
 import flask
 from webapp.app_init import app, db
 from webapp import forms
-import webapp.models as models
 from webapp import parsing
 import datetime
 from flask import request
+from . import models
 from . import views
 from . import api
 
