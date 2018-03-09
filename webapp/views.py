@@ -112,12 +112,14 @@ class IndexView(MethodView):
             if m not in entries_tree[y]:
                 entries_tree[y][m] = list()
             entries_tree[y][m].append(e)
-
+        latest_entry = api.get_latest_entry()
         return flask.render_template(
             'index.html',
             context=dict(
                 form=form,
                 entries_tree=entries_tree,
                 plugin_manager=parsing.PluginManager,
+                latest_entry=latest_entry,
+                now=datetime.datetime.now(),
                 years=[(api.link_for_date(year=y.year), y.year)
                        for y in api.get_all_years()]))

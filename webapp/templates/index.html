@@ -1,6 +1,12 @@
 {% extends 'base.html' %} {% block content %} {{super()}}
     <!--  -->
     <div class="container container-fluid">
+        <div class="jumbotron">
+            <h2> Remember this from {{(context.now - context.latest_entry.create_date).days}} day(s) ago?</h2>
+            <p>
+                {{context.latest_entry.contents}}
+            </p>
+        </div>
         <div id="upload_div">
             <h2>Upload Journal File</h2>
             <form  class="upload_form" method="POST" action="{{url_for('index')}}" enctype="multipart/form-data">
@@ -45,7 +51,6 @@
                     {% for entry in context.entries_tree[year][month] %}
                         <a class="btn btn-default" href="{{link_for_entry(entry)}}">{{entry.create_date.day}}</a>
                     {% endfor %}
-
                 {% endfor %}
             {% endfor %}
         </div>
