@@ -3,7 +3,7 @@
     {{ field.label }} {{ field(**kwargs)|safe }} {% if field.errors %}
         <ul class=errors>
             {% for error in field.errors %}
-                <li>{{ error }}</li>
+                <li class="text-danger">{{ error }}</li>
             {% endfor %}
         </ul>
     {% endif %}
@@ -13,7 +13,7 @@
 {% for br,num in breadcrumbs %}
 <!--  -->
 {% if num %}
-    <a href="{{br}}">{{num}}</a>{% if not loop.last %} / {% endif %}
+    {% if not loop.last %} <a class="btn btn-default" href="{{br}}">{{num}}</a>/ {% else %} <span class="">{{num}}</span> {% endif %}
     <!--  -->
 {% endif %}
 <!--  -->
@@ -24,6 +24,5 @@
 </head>
 <body>
 {% include "navbar.html" %}
- {% block content %} {% endblock %}
-
+{% block content %} {% endblock %}
 </body>

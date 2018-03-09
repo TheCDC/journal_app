@@ -86,26 +86,26 @@ def index():
     form = forms.UploadForm(flask.request.form)
 
     if flask.request.method == 'POST':
-        form = forms.UploadForm(flask.request.form)
-        if form.validate():
+        form = forms.UploadForm()
+        if form.validate_on_submit():
             print('Validated!')
-        file = flask.request.files[form.file.name]
-        session = db.session()
-        db.session.query(models.JournalEntry).delete()
-        for e in parsing.identify_entries(file.read().decode().split('\n')):
-            body_text = e.body.replace('\r', '')
-            found = db.session.query(
-                models.JournalEntry).filter_by(create_date=e.date).first()
-            if found:
-                found.contents = body_text
-            else:
-                found = models.JournalEntry(
-                    create_date=e.date, contents=body_text)
-            session.add(found)
+            file = flask.request.files[form.file.name]
+            session = db.session()
+            db.session.query(models.JournalEntry).delete()
+            for e in parsing.identify_entries(file.read().decode().split('\n')):
+                body_text = e.body.replace('\r', '')
+                found = db.session.query(
+                    models.JournalEntry).filter_by(create_date=e.date).first()
+                if found:
+                    found.contents = body_text
+                else:
+                    found = models.JournalEntry(
+                        create_date=e.date, contents=body_text)
+                session.add(found)
 
-        session.flush()
-        session.commit()
-        return flask.redirect(flask.url_for('index'))
+            session.flush()
+            session.commit()
+            return flask.redirect(flask.url_for('index'))
     all_entries = list(
         db.session.query(models.JournalEntry).order_by(
             models.JournalEntry.create_date))

@@ -3,11 +3,11 @@
     <div class="container container-fluid">
         <div id="upload_div">
             <h2>Upload Journal File</h2>
-            <form class="upload_form" method="POST" action="{{url_for('index')}}" enctype="multipart/form-data">
+            <form  class="upload_form" method="POST" action="{{url_for('index')}}" enctype="multipart/form-data">
                 {{context.form.hidden_tag()}}
                 <!--  -->
                 {{render_field(context.form.file)}}
-                <input type="submit" value="submit">
+                <input class="btn btn-success" type="submit" value="submit">
             </form>
             {{context.file_contents}}
         </div>
