@@ -62,7 +62,7 @@ class Plugin(parsing.Plugin):
                     found_date = c[1](original_date, match)
                     break
             # get a link to the entry referred to by the found date
-            url = webapp.link_for_date(
+            url = webapp.api.link_for_date(
                 year=found_date.year,
                 month=found_date.month,
                 day=found_date.day)
