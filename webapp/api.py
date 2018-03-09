@@ -9,7 +9,8 @@ def link_for_date(**kwargs):
     The date is given as keyuword arguments (year, month,day)."""
     expected = ['year', 'month', 'day']
     d = {k: kwargs[k] for k in expected if k in kwargs}
-    return flask.url_for('entry', **d)
+    with app.app_context():
+        return flask.url_for('entry', **d)
 
 
 def link_for_entry(entry: models.JournalEntry):

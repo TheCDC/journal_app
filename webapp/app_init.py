@@ -21,6 +21,7 @@ app = flask.Flask(
 app.jinja_env.auto_reload = True
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['SECRET_KEY'] = str(int(random.random() * 100000000000))
+app.config['SERVER_NAME'] = 'localhost'
 
 # set the database location and protocol
 sqlite_db_path = os.path.join(CONFIG_PATH, 'database.db')
