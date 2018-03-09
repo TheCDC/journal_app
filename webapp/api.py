@@ -1,17 +1,7 @@
-import flask
+from webapp import models
 from webapp.app_init import app, db
-from webapp import forms
-import webapp.models as models
-from webapp import parsing
 import datetime
-from flask import request
-from . import views
-
-
-@app.before_first_request
-def setup_app():
-    models.instantiate_db(app)
-    parsing.PluginManager.init()
+import flask
 
 
 def link_for_date(**kwargs):
@@ -72,27 +62,3 @@ def previous_entry(e: models.JournalEntry) -> models.JournalEntry:
     return db.session.query(models.JournalEntry).filter(
         models.JournalEntry.create_date < e.create_date).order_by(
             models.JournalEntry.create_date.desc()).first()
-
-
-app.jinja_env.globals.update(
-    link_for_entry=link_for_entry,
-    get_latest_entry=get_latest_entry,
-    get_all_years=get_all_years)
-
-app.add_url_rule('/', view_func=views.IndexView.as_view('index'))
-
-# generate endpoints for search view
-search_view = views.EntrySearchView.as_view('entry')
-url_args = '<int:year>/<int:month>/<int:day>'.split('/')
-# construct url endpoints for searching dates with increasing precision
-for i in range(1, len(url_args) + 1):
-    endpoint = '/entry/' + '/'.join(url_args[:i])
-    app.add_url_rule(endpoint, view_func=search_view)
-
-
-def main():
-    app.run(debug=True)
-
-
-if __name__ == '__main__':
-    main()

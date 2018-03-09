@@ -3,38 +3,11 @@ from flask.views import View, MethodView
 import datetime
 from webapp.app_init import app, db
 from webapp import models
+from webapp import forms
 from webapp import parsing
+from webapp import parsing_plugins
+from webapp import api
 
-
-def link_for_date(**kwargs):
-    """Return the app's link for the given date.
-    The date is given as keyuword arguments (year, month,day)."""
-    expected = ['year', 'month', 'day']
-    d = {k: kwargs[k] for k in expected if k in kwargs}
-    return flask.url_for('entry', **d)
-
-
-def link_for_entry(entry: models.JournalEntry):
-    """Return the app's link for the given journal entry.
-    This function is a shortcut for link_for_date."""
-    return link_for_date(
-        year=entry.create_date.year,
-        month=entry.create_date.month,
-        day=entry.create_date.day)
-
-def next_entry(e: models.JournalEntry) -> models.JournalEntry:
-    """Return the first JournalEntry that falls chronologically after
-    the given entry."""
-    return db.session.query(models.JournalEntry).filter(
-        models.JournalEntry.create_date > e.create_date).first()
-
-
-def previous_entry(e: models.JournalEntry) -> models.JournalEntry:
-    """Return the first JournalEntry that falls chronologically before
-    the given entry."""
-    return db.session.query(models.JournalEntry).filter(
-        models.JournalEntry.create_date < e.create_date).order_by(
-            models.JournalEntry.create_date.desc()).first()
 
 class EntrySearchView(MethodView):
     def get_objects(self, **kwargs):
@@ -66,9 +39,10 @@ class EntrySearchView(MethodView):
             for k in ['year', 'month', 'day'] if k in kwargs
         }
         found = self.get_objects(**my_kwargs)
-        breadcrumbs = [(link_for_date(**dict(list(my_kwargs.items())[:i + 1])),
-                        list(my_kwargs.values())[i])
-                       for i in range(len(my_kwargs))]
+        breadcrumbs = [
+            (api.link_for_date(**dict(list(my_kwargs.items())[:i + 1])),
+             list(my_kwargs.values())[i]) for i in range(len(my_kwargs))
+        ]
         if len(found) == 0:
             flask.abort(404)
 
@@ -80,11 +54,11 @@ class EntrySearchView(MethodView):
             return flask.render_template(
                 'search_entry.html',
                 context=dict(
-                    search_results=[(e, link_for_entry(e)) for e in found],
+                    search_results=[(e, api.link_for_entry(e)) for e in found],
                     breadcrumbs=breadcrumbs,
                 ))
-        forward = next_entry(e)
-        backward = previous_entry(e)
+        forward = api.next_entry(e)
+        backward = api.previous_entry(e)
         return flask.render_template(
             'entry.html',
             context=dict(
@@ -94,7 +68,56 @@ class EntrySearchView(MethodView):
                 plugin_manager=parsing.PluginManager,
                 breadcrumbs=breadcrumbs,
             ))
-class IndexView(MethodView):
 
+
+class IndexView(MethodView):
     def get_template_name(self):
-        return 'entry.html'
+        return 'index.html'
+
+    def post(self):
+        form = forms.UploadForm()
+        if form.validate_on_submit():
+            print('Validated!')
+            file = flask.request.files[form.file.name]
+            session = db.session()
+            db.session.query(models.JournalEntry).delete()
+            for e in parsing.identify_entries(
+                    file.read().decode().split('\n')):
+                body_text = e.body.replace('\r', '')
+                found = db.session.query(
+                    models.JournalEntry).filter_by(create_date=e.date).first()
+                if found:
+                    found.contents = body_text
+                else:
+                    found = models.JournalEntry(
+                        create_date=e.date, contents=body_text)
+                session.add(found)
+
+            session.flush()
+            session.commit()
+            return flask.redirect(flask.url_for('index'))
+
+    def get(self, **kwargs):
+        form = forms.UploadForm()
+
+        all_entries = list(
+            db.session.query(models.JournalEntry).order_by(
+                models.JournalEntry.create_date))
+        entries_tree = dict()
+        for e in all_entries:
+            y = e.create_date.year
+            m = e.create_date.month
+            if y not in entries_tree:
+                entries_tree[y] = dict()
+            if m not in entries_tree[y]:
+                entries_tree[y][m] = list()
+            entries_tree[y][m].append(e)
+
+        return flask.render_template(
+            'index.html',
+            context=dict(
+                form=form,
+                entries_tree=entries_tree,
+                plugin_manager=parsing.PluginManager,
+                years=[(api.link_for_date(year=y.year), y.year)
+                       for y in api.get_all_years()]))
