@@ -3,6 +3,8 @@ from webapp.models import JournalEntry
 import datetime
 from webapp.app_init import app
 
+app.config['SERVER_NAME'] = 'localhost'
+
 
 def test_parse():
     dates = ['2001-1-1', '2001-1-2', '2012-11-7']
