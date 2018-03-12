@@ -50,7 +50,7 @@ def identify_entries(lines) -> "list[Entry]":
     results = []
     d = None
     each_line = None
-    for index, each_line in enumerate(lines):
+    for each_line in lines:
         if DATE_HEADER_PATTERN.search(each_line):
             try:
                 a, b, c = map(int, old_date.split("-"))
@@ -60,9 +60,7 @@ def identify_entries(lines) -> "list[Entry]":
             if len(cur_body_lines) > 0 and d is not None:
                 results.append(Entry(d, '\n'.join(cur_body_lines)))
             if not old_date:
-                print('start date', each_line)
                 old_date = each_line
-            # print(tuple(int(i) for i in cur_date.split("-") if len(i) > 0))
 
             cur_body_lines = []
             old_date = each_line

@@ -77,7 +77,6 @@ class IndexView(MethodView):
     def post(self):
         form = forms.UploadForm()
         if form.validate_on_submit():
-            print('Validated!')
             file = flask.request.files[form.file.name]
             session = db.session()
             db.session.query(models.JournalEntry).delete()
