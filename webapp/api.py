@@ -2,7 +2,8 @@ from webapp import models
 from webapp.app_init import app, db
 import datetime
 import flask
-
+import logging
+logger = logging.getLogger(__name__)
 
 def link_for_date(**kwargs):
     """Return the app's link for the given date.

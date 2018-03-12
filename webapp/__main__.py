@@ -1,5 +1,8 @@
 import sys
 import os
+import logging
+logger = logging.getLogger(__name__)
+logger.debug('Hello this is %s', __name__)
 
 # add the modiule location to PATH
 # this is necessary to execute the package as a script without installing it
@@ -12,7 +15,7 @@ from webapp import parsing
 
 
 def main():
-    webapp.app.run(debug=False)
+    webapp.app.run(debug=True)
 
 
 if __name__ == '__main__':

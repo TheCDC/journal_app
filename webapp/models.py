@@ -75,17 +75,17 @@ def instantiate_db(app):
     # initialize db with flask_migrate
     with app.app_context():
         try:
-            flask_migrate.init(webapp.app_init.ALEMBIC_PATH)
+            flask_migrate.init(webapp.config.ALEMBIC_PATH)
         except alembic.util.exc.CommandError as e:
             if 'already exists' in str(e):
                 pass
             else:
                 logger.debug('flask db init failed: %s', e)
                 raise e
-        flask_migrate.migrate(webapp.app_init.ALEMBIC_PATH)
+        flask_migrate.migrate(webapp.config.ALEMBIC_PATH)
         try:
             logger.debug('flask db upgrade')
-            flask_migrate.upgrade(webapp.app_init.ALEMBIC_PATH)
+            flask_migrate.upgrade(webapp.config.ALEMBIC_PATH)
         except Exception as e:
             logger.debug('flask db upgrade failed: %s', e)
             raise e

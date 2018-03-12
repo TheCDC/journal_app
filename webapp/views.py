@@ -1,16 +1,35 @@
+import logging
 import flask
-from flask.views import View, MethodView
+from flask.views import MethodView
 import datetime
-from webapp.app_init import app, db
+from webapp.app_init import db
 from webapp import models
 from webapp import forms
 from webapp import parsing
 from webapp import parsing_plugins
 from webapp import api
-import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
+
+if logger.disabled:
+    raise RuntimeError('Logger is mistakenly disabled at top level')
+
 logger.debug('Hello this is %s', __name__)
+
+
+class EnableLoggingMixin:
+    def __init__(self, *args, **kwargs):
+        classname = type(self).__name__
+        print('Enabling logging for %s', classname)
+        super().__init__(*args, **kwargs)
+        # self.logger = logging.getLogger(__name__ + '.IndexView')
+        self._logger = logging.getLogger(__name__ + '.' + classname)
+
+    @property
+    def logger(self):
+        if self._logger.disabled:
+            self._logger.disabled = False
+        return self._logger
 
 
 class EntrySearchView(MethodView):
@@ -74,13 +93,13 @@ class EntrySearchView(MethodView):
             ))
 
 
-class IndexView(MethodView):
+class IndexView(MethodView, EnableLoggingMixin):
     def get_template_name(self):
         return 'index.html'
 
     def post(self, **kwargs):
         form = forms.UploadForm()
-        logging.warn('Try upload')
+        self.logger.debug('Try upload')
         if form.validate_on_submit():
             logger.debug('Invalid form')
             file = flask.request.files[form.file.name]
@@ -90,6 +109,7 @@ class IndexView(MethodView):
                     file.read().decode().split('\n'))
             except ValueError as e:
                 # form.file.errors
+                self.logger.debug('parse failed')
                 return self.get(form=form, error=e)
 
             db.session.query(models.JournalEntry).delete()
@@ -106,16 +126,17 @@ class IndexView(MethodView):
 
             session.flush()
             session.commit()
-            logger.debug('parse succeeded')
-        else:
-            logger.debug('parse failed')
-        return self.get(form=form)
+            self.logger.debug('parse succeeded')
+        return self.get(
+            form=form, success='Your journal was successfully parsed!')
         # return flask.redirect(flask.url_for('index'))
 
     def get(self, **kwargs):
-        # logger = logging.getLogger(__name__)
-        print('logger should fire:', vars(logger))
-        logger.warn('IndexView.get() in %s', (__name__, ))
+        if self.logger.disabled:
+            # self.logger.disabled = False
+            raise RuntimeError('Logger is mistakenly disabled')
+        print('logger should fire:', vars(self.logger))
+        self.logger.debug('IndexView.get() in %s', __name__)
 
         form = forms.UploadForm()
 
@@ -141,6 +162,8 @@ class IndexView(MethodView):
             now=datetime.datetime.now(),
             years=[(api.link_for_date(year=y.year), y.year)
                    for y in api.get_all_years()],
+            error=None,
+            success=None,
         )
         # allow its values to be overridden by kwargs
         context.update(kwargs)

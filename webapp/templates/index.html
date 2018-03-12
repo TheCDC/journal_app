@@ -4,9 +4,17 @@
         {% if context.error %}
             <div class="alert alert-danger  ">
                 <h1 class="">
-                Error:
+                Error
                 </h1>
                 <p class="">{{ context.error }}</p>
+            </div>
+        {% endif %}
+        {% if context.success %}
+            <div class="alert alert-success  ">
+                <h1 class="">
+                Success
+                </h1>
+                <p class="">{{ context.success }}</p>
             </div>
         {% endif %}
         <div class="jumbotron">

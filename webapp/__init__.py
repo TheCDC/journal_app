@@ -1,11 +1,17 @@
-from webapp import app_init
+from webapp import config
 import logging
+import logging.config
+# logging.config.fileConfig(config.LOG_PATH)
 
-logging.basicConfig(
-    filename=app_init.LOG_PATH,
-    level=logging.DEBUG,
-    format='[journal_app] %(asctime)s %(name)s %(levelname)s %(message)s')
 logger = logging.getLogger(__name__)
+stream_handler = logging.StreamHandler()
+file_handler = logging.FileHandler(config.LOG_PATH)
+formatter = logging.Formatter(
+      '%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+stream_handler.setFormatter(formatter)
+file_handler.setFormatter(formatter)
+logger.addHandler(stream_handler)
+logger.addHandler(file_handler)
 logger.setLevel(logging.DEBUG)
 logger.debug('Hello this is %s', __name__)
 
@@ -13,7 +19,3 @@ from . import flask_app
 
 # alias to enable execution of this file from flask cli
 app = flask_app.app
-
-if __name__ == '__main__':
-    logger.debug('%s is main', (__file__, ))
-    app.main()
