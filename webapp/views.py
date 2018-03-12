@@ -158,6 +158,6 @@ class IndexView(MethodView, EnableLoggingMixin):
             error=None,
             success=None,
         )
-        # allow its values to be overridden by kwargs
+        # allow context values to be overridden by kwargs
         context.update(kwargs)
         return flask.render_template(self.get_template_name(), context=context)

@@ -1,17 +1,17 @@
 {% block navbar %}
-    <nav class="navbar navbar-default navbar-inverse">
-        <div class="container">
-            <ul class="nav navbar-nav">
-                <li {% if request.path == url_for('index') %} class="active" {% endif %}>
+<nav class="navbar navbar-default navbar-inverse">
+    <div class="container">
+        <ul class="nav navbar-nav">
+            <li {% if request.path==u rl_for( 'index') %} class="active" {% endif %}>
                 <a class="btn" href="{{url_for('index')}}">Home</a>
             </li>
-            <li {% if request.path == url_for('admin.index') %} class="active" {% endif %}>
+            <li {% if request.path==u rl_for( 'admin.index') %} class="active" {% endif %}>
                 <a class="btn" href="{{url_for('admin.index')}}">Admin</a> {% if get_latest_entry() %}
             </li>
-            <li {% if request.path == link_for_entry(get_latest_entry()) %} class="active" {% endif %}>
-            <a class="btn" href="{{link_for_entry(get_latest_entry())}}">Latest Entry</a> {% endif %}
-        </li>
-    </ul>
-</div>
+            <li {% if request.path==l ink_for_entry(get_latest_entry()) %} class="active" {% endif %}>
+                <a class="btn" href="{{link_for_entry(get_latest_entry())}}">Latest Entry</a> {% endif %}
+            </li>
+        </ul>
+    </div>
 </nav>
 {% endblock %}
