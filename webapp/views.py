@@ -14,7 +14,6 @@ logger = logging.getLogger()
 if logger.disabled:
     raise RuntimeError('Logger is mistakenly disabled at top level')
 
-logger.debug('Hello this is %s', __name__)
 
 
 class EnableLoggingMixin:
@@ -132,12 +131,6 @@ class IndexView(MethodView, EnableLoggingMixin):
         # return flask.redirect(flask.url_for('index'))
 
     def get(self, **kwargs):
-        if self.logger.disabled:
-            # self.logger.disabled = False
-            raise RuntimeError('Logger is mistakenly disabled')
-        print('logger should fire:', vars(self.logger))
-        self.logger.debug('IndexView.get() in %s', __name__)
-
         form = forms.UploadForm()
 
         all_entries = list(
