@@ -67,10 +67,14 @@ def identify_entries(lines) -> "list[Entry]":
         else:
             cur_body_lines.append(each_line)
     if old_date is not None:
-        d = (
-            datetime.datetime(*(list(map(int, old_date.split("-"))) + [0, 0])))
+        d = old_date
     else:
         d = each_line
+    try:
+        d = (
+            datetime.datetime(*(list(map(int, old_date.split("-"))) + [0, 0])))
+    except AttributeError:
+        raise ValueError(f"Error parsing journal. Invalid date: '{d}'")
     b = '\n'.join(cur_body_lines)
     if d is not None and len(b) > 0:
         results.append(Entry(d, b))

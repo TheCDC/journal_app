@@ -74,14 +74,22 @@ class IndexView(MethodView):
     def get_template_name(self):
         return 'index.html'
 
-    def post(self):
+    def post(self, **kwargs):
         form = forms.UploadForm()
         if form.validate_on_submit():
             file = flask.request.files[form.file.name]
             session = db.session()
+            try:
+                parsed = parsing.identify_entries(
+                    file.read().decode().split('\n'))
+            except ValueError as e:
+                # form.file.errors
+                print('invalid upload')
+                flask.flash('error')
+                return self.get(form=form, error=e)
+
             db.session.query(models.JournalEntry).delete()
-            for e in parsing.identify_entries(
-                    file.read().decode().split('\n')):
+            for e in parsed:
                 body_text = e.body.replace('\r', '')
                 found = db.session.query(
                     models.JournalEntry).filter_by(create_date=e.date).first()
@@ -94,9 +102,11 @@ class IndexView(MethodView):
 
             session.flush()
             session.commit()
-            return flask.redirect(flask.url_for('index'))
+        return self.get(_form=form)
+        return flask.redirect(flask.url_for('index'))
 
     def get(self, **kwargs):
+
         form = forms.UploadForm()
 
         all_entries = list(
@@ -112,13 +122,15 @@ class IndexView(MethodView):
                 entries_tree[y][m] = list()
             entries_tree[y][m].append(e)
         latest_entry = api.get_latest_entry()
-        return flask.render_template(
-            'index.html',
-            context=dict(
-                form=form,
-                entries_tree=entries_tree,
-                plugin_manager=parsing.PluginManager,
-                latest_entry=latest_entry,
-                now=datetime.datetime.now(),
-                years=[(api.link_for_date(year=y.year), y.year)
-                       for y in api.get_all_years()]))
+        context = dict(
+            form=form,
+            entries_tree=entries_tree,
+            plugin_manager=parsing.PluginManager,
+            latest_entry=latest_entry,
+            now=datetime.datetime.now(),
+            years=[(api.link_for_date(year=y.year), y.year)
+                   for y in api.get_all_years()],
+        )
+        context.update(kwargs)
+        print(context.get('error', 'no error'))
+        return flask.render_template(self.get_template_name(), context=context)

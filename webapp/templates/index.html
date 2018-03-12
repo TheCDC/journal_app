@@ -1,6 +1,14 @@
 {% extends 'base.html' %} {% block content %} {{super()}}
     <!--  -->
     <div class="container container-fluid">
+        {% if context.error %}
+            <div class="alert alert-danger  ">
+                <h1 class="">
+                Error:
+                </h1>
+                <p class="">{{ context.error }}</p>
+            </div>
+        {% endif %}
         <div class="jumbotron">
             <h2> Remember this from {{(context.now - context.latest_entry.create_date).days}} day(s) ago?</h2>
             <p>
