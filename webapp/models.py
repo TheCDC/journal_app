@@ -71,15 +71,16 @@ admin.add_view(
 
 def instantiate_db(app):
 
+    logger.debug('Attempt to instantiate db')
     # initialize db with flask_migrate
     with app.app_context():
         try:
             flask_migrate.init(webapp.app_init.ALEMBIC_PATH)
         except alembic.util.exc.CommandError as e:
-            logger.debug('flask db init failed: %s', e)
             if 'already exists' in str(e):
                 pass
             else:
+                logger.debug('flask db init failed: %s', e)
                 raise e
         flask_migrate.migrate(webapp.app_init.ALEMBIC_PATH)
         try:

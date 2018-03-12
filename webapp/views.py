@@ -7,6 +7,10 @@ from webapp import forms
 from webapp import parsing
 from webapp import parsing_plugins
 from webapp import api
+import logging
+
+logger = logging.getLogger(__name__)
+logger.debug('Hello this is %s', __name__)
 
 
 class EntrySearchView(MethodView):
@@ -76,7 +80,9 @@ class IndexView(MethodView):
 
     def post(self, **kwargs):
         form = forms.UploadForm()
+        logging.warn('Try upload')
         if form.validate_on_submit():
+            logger.debug('Invalid form')
             file = flask.request.files[form.file.name]
             session = db.session()
             try:
@@ -84,8 +90,6 @@ class IndexView(MethodView):
                     file.read().decode().split('\n'))
             except ValueError as e:
                 # form.file.errors
-                print('invalid upload')
-                flask.flash('error')
                 return self.get(form=form, error=e)
 
             db.session.query(models.JournalEntry).delete()
@@ -102,10 +106,16 @@ class IndexView(MethodView):
 
             session.flush()
             session.commit()
-        return self.get(_form=form)
-        return flask.redirect(flask.url_for('index'))
+            logger.debug('parse succeeded')
+        else:
+            logger.debug('parse failed')
+        return self.get(form=form)
+        # return flask.redirect(flask.url_for('index'))
 
     def get(self, **kwargs):
+        # logger = logging.getLogger(__name__)
+        print('logger should fire:', vars(logger))
+        logger.warn('IndexView.get() in %s', (__name__, ))
 
         form = forms.UploadForm()
 
@@ -122,6 +132,7 @@ class IndexView(MethodView):
                 entries_tree[y][m] = list()
             entries_tree[y][m].append(e)
         latest_entry = api.get_latest_entry()
+        # form the context with default values
         context = dict(
             form=form,
             entries_tree=entries_tree,
@@ -131,6 +142,6 @@ class IndexView(MethodView):
             years=[(api.link_for_date(year=y.year), y.year)
                    for y in api.get_all_years()],
         )
+        # allow its values to be overridden by kwargs
         context.update(kwargs)
-        print(context.get('error', 'no error'))
         return flask.render_template(self.get_template_name(), context=context)
