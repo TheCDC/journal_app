@@ -19,7 +19,6 @@ if logger.disabled:
 class EnableLoggingMixin:
     def __init__(self, *args, **kwargs):
         classname = type(self).__name__
-        print('Enabling logging for %s', classname)
         super().__init__(*args, **kwargs)
         # self.logger = logging.getLogger(__name__ + '.IndexView')
         self._logger = logging.getLogger(__name__ + '.' + classname)
