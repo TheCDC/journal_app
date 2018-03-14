@@ -1,28 +1,59 @@
-{% extends "bootstrap/base.html" %} {% macro render_field(field) %}
+{% extends "bootstrap/base.html" %}
+<!--  -->
+{% macro render_field(field) %}
 <p>
     {{ field.label }} {{ field(**kwargs)|safe }} {% if field.errors %}
-        <ul class=errors>
-            {% for error in field.errors %}
-                <li class="text-danger">{{ error }}</li>
-            {% endfor %}
-        </ul>
+    <ul class=errors>
+        {% for error in field.errors %}
+        <li class="text-danger">{{ error }}</li>
+        {% endfor %}
+    </ul>
     {% endif %}
 </p>
-{% endmacro %} {% macro render_breadcrumbs(breadcrumbs) %}
+{% endmacro %}
+<!--  -->
+{% macro render_breadcrumbs(breadcrumbs) %}
 <!--  -->
 {% for br,num in breadcrumbs %}
 <!--  -->
-{% if num %}
-    {% if not loop.last %} <a class="btn btn-default" href="{{br}}">{{num}}</a>/ {% else %} <span class="">{{num}}</span> {% endif %}
-    <!--  -->
+{% if num %} {% if not loop.last %} <a class="btn btn-default" href="{{br}}">{{num}}</a>/ {% else %} <span class="">{{num}}</span> {% endif %}
+<!--  -->
 {% endif %}
 <!--  -->
-{% endfor %} {% endmacro %}
+{% endfor %}
+<!--  -->
+{% endmacro %}
+<!--  -->
+{% macro render_month(month, entries) %}
+<div class="month_div">
+    <h3>
+    	{{month}} <span class="pull-right">({{entries|length}})</span>
+	</h3>
+    <div class="day_buttons text-center">
+        <!--  -->
+        {% for entry in entries %}
+        <a href="{{link_for_entry(entry)}}">
+            <button class="btn btn-default">{{entry.create_date.day}}</button>
+        </a>
+        <!--  -->
+        {% endfor %}
+    </div>
+</div>
+<!--  -->
+{% endmacro %}
+<!--  -->
+{% macro render_year(year, months) %}
+<div>
+    <h2 class="year_div text-center">{{year}}</h2> {% for month in months %} {{render_month(month, months[month])}} {% endfor %}
+    <hr>
+</div>
+{% endmacro %}
+
 <head>
-<title>Journal App</title>
-<link rel="stylesheet" type="text/css" href="/static/stylesheets/default.css">
+    <title>Journal App</title>
+    <link rel="stylesheet" type="text/css" href="/static/stylesheets/default.css">
 </head>
+
 <body>
-{% include "navbar.html" %}
-{% block content %} {% endblock %}
+    {% include "navbar.html" %} {% block content %} {% endblock %}
 </body>

@@ -67,16 +67,8 @@
             </ul>
         </div>
         <div>
-            <!-- {{context.entries_by_year}} -->
             {% for year in context.entries_tree %}
-                <h2 class="text-center">{{year}}</h2>
-                {% for month in context.entries_tree[year] %}
-                    <h3>{{month}}
-                    <span class="pull-right"> ({{context.entries_tree[year][month]|length}})</span>
-                    </h3>
-                    {% for entry in context.entries_tree[year][month] %}<a class="btn btn-default" href="{{link_for_entry(entry)}}">{{entry.create_date.day}}</a>{% endfor %}
-                {% endfor %}
-                <hr>
+            {{render_year(year, context.entries_tree[year])}}
             {% endfor %}
         </div>
     </div>
