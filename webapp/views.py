@@ -94,19 +94,20 @@ class IndexView(MethodView, EnableLoggingMixin):
         return 'index.html'
 
     def post(self, **kwargs):
-        form = forms.UploadForm()
+        upload_form = forms.UploadForm()
         self.logger.debug('Try upload')
-        if form.validate_on_submit():
+        good_parse = False
+        if upload_form.validate_on_submit():
             logger.debug('Invalid form')
-            file = flask.request.files[form.file.name]
+            file = flask.request.files[upload_form.file.name]
             session = db.session()
             try:
                 parsed = parsing.identify_entries(
                     file.read().decode().split('\n'))
             except ValueError as e:
-                # form.file.errors
+                # upload_form.file.errors
                 self.logger.debug('parse failed')
-                return self.get(form=form, error=e)
+                return self.get(upload_form=upload_form, error=e)
 
             db.session.query(models.JournalEntry).delete()
             for e in parsed:
@@ -123,17 +124,22 @@ class IndexView(MethodView, EnableLoggingMixin):
             session.flush()
             session.commit()
             self.logger.debug('parse succeeded')
-        return self.get(
-            form=form, success='Your journal was successfully parsed!')
+            good_parse = True
+        if good_parse:
+            return self.get(
+                upload_form=upload_form, success='Your journal was successfully parsed!')
+        else:
+            return self.get(
+                upload_form=upload_form, error='Invalid submission!')
         # return flask.redirect(flask.url_for('index'))
 
     def get(self, **kwargs):
-        form = forms.UploadForm()
+        upload_form = forms.UploadForm()
 
         latest_entry = api.get_latest_entry()
         # form the context with default values
         context = dict(
-            form=form,
+            upload_form=upload_form,
             entries_tree=api.get_entries_tree(),
             plugin_manager=parsing.PluginManager,
             latest_entry=latest_entry,

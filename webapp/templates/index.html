@@ -29,17 +29,31 @@
         </div>
         <div class="container">
             <div class="row">
-                <div class="col col-md-6" id="upload_div">
+                <div class="col col-md-3" id="upload_div">
                     <h2>Upload Journal File</h2>
                     <form  class="upload_form" method="POST" action="{{url_for('index')}}" enctype="multipart/form-data">
-                        {{context.form.hidden_tag()}}
+                        {{context.upload_form.hidden_tag()}}
                         <!--  -->
-                        {{render_field(context.form.file)}}
+                        {{render_field(context.upload_form.file)}}
                         <input class="btn btn-success" type="submit" value="submit">
                     </form>
                     {{context.file_contents}}
                 </div>
-                <div class="col col-md-6" id="plugins_div">
+                <div class="col col-md-3">
+                    <h2>Search by year</h2>
+                    <ul>
+                        {% for t in context.years %}
+                            <li>
+                                <a href="{{t[0]}}">{{t[1]}}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col col-md-3">
+                    <h2>Search contents</h2>
+                </div>
+
+                <div class="col col-md-3" id="plugins_div">
                     <h2> Installed plugins </h2>
                     <ul>
                         {% for p in context.plugin_manager.registered_plugins %}
@@ -55,20 +69,12 @@
                     </ul>
                 </div>
             </div>
-        </div>
-        <div>
-            <h2>Search by year</h2>
-            <ul>
-                {% for t in context.years %}
-                    <li>
-                        <a href="{{t[0]}}">{{t[1]}}</a>
-                    </li>
-                {% endfor %}
-            </ul>
+            <div class="row">
+            </div>
         </div>
         <div>
             {% for year in context.entries_tree %}
-            {{render_year(year, context.entries_tree[year])}}
+                {{render_year(year, context.entries_tree[year])}}
             {% endfor %}
         </div>
     </div>
