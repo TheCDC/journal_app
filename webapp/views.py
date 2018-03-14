@@ -6,30 +6,12 @@ from webapp.app_init import db
 from webapp import models
 from webapp import forms
 from webapp import parsing
-from webapp import parsing_plugins
 from webapp import api
 
 logger = logging.getLogger()
 
 if logger.disabled:
     raise RuntimeError('Logger is mistakenly disabled at top level')
-
-
-def get_entries_tree():
-    all_entries = list(
-        db.session.query(models.JournalEntry).order_by(
-            models.JournalEntry.create_date))
-
-    entries_tree = dict()
-    for e in all_entries:
-        y = e.create_date.year
-        m = e.create_date.month
-        if y not in entries_tree:
-            entries_tree[y] = dict()
-        if m not in entries_tree[y]:
-            entries_tree[y][m] = list()
-        entries_tree[y][m].append(e)
-    return entries_tree
 
 
 class EnableLoggingMixin:
@@ -152,7 +134,7 @@ class IndexView(MethodView, EnableLoggingMixin):
         # form the context with default values
         context = dict(
             form=form,
-            entries_tree=get_entries_tree(),
+            entries_tree=api.get_entries_tree(),
             plugin_manager=parsing.PluginManager,
             latest_entry=latest_entry,
             now=datetime.datetime.now(),

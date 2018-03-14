@@ -5,6 +5,7 @@ import flask
 import logging
 logger = logging.getLogger(__name__)
 
+
 def link_for_date(**kwargs):
     """Return the app's link for the given date.
     The date is given as keyuword arguments (year, month,day)."""
@@ -64,3 +65,29 @@ def previous_entry(e: models.JournalEntry) -> models.JournalEntry:
     return db.session.query(models.JournalEntry).filter(
         models.JournalEntry.create_date < e.create_date).order_by(
             models.JournalEntry.create_date.desc()).first()
+
+
+def get_entries_tree(target_date=None) -> dict:
+    if target_date is not None:
+        all_entries = list(
+            db.session.query(models.JournalEntry).order_by(
+                models.JournalEntry.create_date).filter(
+                    models.JournalEntry.create_date >= target_date))
+    else:
+        all_entries = list(
+            db.session.query(models.JournalEntry).order_by(
+                models.JournalEntry.create_date))
+
+    entries_tree = dict()
+    for e in all_entries:
+        if target_date is not None:
+            if e.create_date.year > target_date.year:
+                break
+        y = e.create_date.year
+        m = e.create_date.month
+        if y not in entries_tree:
+            entries_tree[y] = dict()
+        if m not in entries_tree[y]:
+            entries_tree[y][m] = list()
+        entries_tree[y][m].append(e)
+    return entries_tree

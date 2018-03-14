@@ -2,7 +2,6 @@ import re
 import datetime
 from webapp import models
 from webapp.app_init import db
-import sqlalchemy
 DATE_HEADER_PATTERN = re.compile(r"^[0-9]+-[0-9]+-[0-9]*\w*")
 
 
@@ -161,3 +160,8 @@ class PluginManager:
                 models.PluginConfig.class_name == str(p)).first()
             if found.enabled:
                 yield (p, list(p.parse_entry(e)))
+
+
+from webapp import parsing_plugins
+
+parsing_plugins.init()

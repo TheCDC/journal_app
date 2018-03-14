@@ -23,13 +23,15 @@ for t in files:
 ALL_PLUGINS = glob.glob(os.path.join(mydir, 'installed', '*.py')) + \
     glob.glob(os.path.join(mydir, 'default', '*.py'))
 
-# dynamically import all installed plugins
-for p in ALL_PLUGINS:
-    name = os.path.basename(p)
-    # skip the file that anchors the package
-    if name != '__init__.py':
-        spec = importlib.util.spec_from_file_location(f'{name}', p)
-        foo = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(foo)
-        # tell the manager to handle each plugin
-        PluginManager.register(foo.Plugin)
+
+def init():
+    # dynamically import all installed plugins
+    for p in ALL_PLUGINS:
+        name = os.path.basename(p)
+        # skip the file that anchors the package
+        if name != '__init__.py':
+            spec = importlib.util.spec_from_file_location(f'{name}', p)
+            foo = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(foo)
+            # tell the manager to handle each plugin
+            PluginManager.register(foo.Plugin)
