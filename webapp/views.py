@@ -15,6 +15,22 @@ if logger.disabled:
     raise RuntimeError('Logger is mistakenly disabled at top level')
 
 
+def get_entries_tree():
+    all_entries = list(
+        db.session.query(models.JournalEntry).order_by(
+            models.JournalEntry.create_date))
+
+    entries_tree = dict()
+    for e in all_entries:
+        y = e.create_date.year
+        m = e.create_date.month
+        if y not in entries_tree:
+            entries_tree[y] = dict()
+        if m not in entries_tree[y]:
+            entries_tree[y][m] = list()
+        entries_tree[y][m].append(e)
+    return entries_tree
+
 
 class EnableLoggingMixin:
     def __init__(self, *args, **kwargs):
@@ -132,23 +148,11 @@ class IndexView(MethodView, EnableLoggingMixin):
     def get(self, **kwargs):
         form = forms.UploadForm()
 
-        all_entries = list(
-            db.session.query(models.JournalEntry).order_by(
-                models.JournalEntry.create_date))
-        entries_tree = dict()
-        for e in all_entries:
-            y = e.create_date.year
-            m = e.create_date.month
-            if y not in entries_tree:
-                entries_tree[y] = dict()
-            if m not in entries_tree[y]:
-                entries_tree[y][m] = list()
-            entries_tree[y][m].append(e)
         latest_entry = api.get_latest_entry()
         # form the context with default values
         context = dict(
             form=form,
-            entries_tree=entries_tree,
+            entries_tree=get_entries_tree(),
             plugin_manager=parsing.PluginManager,
             latest_entry=latest_entry,
             now=datetime.datetime.now(),
