@@ -5,6 +5,7 @@ from webapp import models
 from webapp import api
 import parsedatetime as pdt
 print(__name__)
+
 # ========== Plugin Class  ==========
 
 
@@ -18,6 +19,8 @@ class Plugin(parsing.Plugin):
     @classmethod
     def parse_entry(cls, e: models.JournalEntry) -> 'iterable[str]':
         """Find all dates mentioned in the entry body."""
+        # TODO: group together and display all mentioned dates/times that are
+        # the same day
         seen = set()
         # find all dates mentioned in the entry
         cls.logger.debug(e)
