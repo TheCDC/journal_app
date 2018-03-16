@@ -2,11 +2,11 @@
 Import all plugin modules found in  the subpackage `installed`
 and register them with `webapp.parsing.PluginManager`."""
 
-from webapp.parsing import PluginManager
 import os
 import glob
 import importlib.util
-
+import logging
+logger = logging.getLogger(__name__)
 mydir = os.path.dirname(__file__)
 # tuples of (config file, original copy)
 files = [(os.path.join(mydir, 'settings.py'),
@@ -24,7 +24,7 @@ ALL_PLUGINS = glob.glob(os.path.join(mydir, 'installed', '*.py')) + \
     glob.glob(os.path.join(mydir, 'default', '*.py'))
 
 
-def init():
+def init(manager):
     # dynamically import all installed plugins
     for p in ALL_PLUGINS:
         name = os.path.basename(p)
@@ -33,5 +33,6 @@ def init():
             spec = importlib.util.spec_from_file_location(f'{name}', p)
             foo = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(foo)
+            logger.debug('Registered plugin: %s', name)
             # tell the manager to handle each plugin
-            PluginManager.register(foo.Plugin)
+            manager.register(foo.Plugin)

@@ -4,7 +4,6 @@ from webapp import parsing
 from webapp import models
 from webapp import api
 import parsedatetime as pdt
-print(__name__)
 
 # ========== Plugin Class  ==========
 
@@ -15,6 +14,9 @@ class Plugin(parsing.Plugin):
 
     Finds dates mentioned in entries."""
     name = 'Date Recognizer'
+    def __init__(self):
+        super().__init__()
+        self.logger.debug(f'{Plugin.name} initialized!')
 
     def parse_entry(self, e: models.JournalEntry) -> 'iterable[str]':
         """Find all dates mentioned in the entry body."""
@@ -22,9 +24,11 @@ class Plugin(parsing.Plugin):
         # the same day
         seen = set()
         # find all dates mentioned in the entry
-        self.logger.debug(e)
         cal = pdt.Calendar()
-        for t in cal.nlp(e.contents, e.create_date.timetuple()):
+        parsed_dates = cal.nlp(e.contents, e.create_date.timetuple())
+        if parsed_dates is None:
+            return
+        for t in parsed_dates:
             found_date = api.strip_datetime(t[0])
             if found_date not in seen and api.entry_exists(found_date):
                 original_case = t[-1]

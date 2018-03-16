@@ -3,6 +3,9 @@ import datetime
 from webapp import models
 from webapp.app_init import db
 import logging
+from webapp import parsing_plugins
+logger = logging.getLogger(__name__)
+# print('__name__', __name__)
 DATE_HEADER_PATTERN = re.compile(r"^[0-9]+-[0-9]+-[0-9]*\w*")
 
 
@@ -87,14 +90,15 @@ class Plugin:
     requires_initialization = True
     initialized = False
 
+    def __init__(self):
+        self.logger = logger.getChild(self.name.replace(' ', '_'))
+
     def get_model(self):
         found = db.session.query(models.PluginConfig).filter(
             models.PluginConfig.class_name == str(self)).first()
         return found
 
     def init(self):
-        self.logger = logging.getLogger(
-            __name__ + '.' + self.name.replace(' ', '_'))
         self.initialized = True
         """The responsibility of this method is to perform long-running
         initialization tasks such as downloading resources,
@@ -127,6 +131,8 @@ class PluginManager:
 
     @classmethod
     def register(cls, plugin_class: Plugin):
+        assert not logger.disabled
+        logger.debug('Register plugin "%s"', plugin_class.name)
         cls.registered_plugins.append(plugin_class())
 
     @classmethod
@@ -157,9 +163,9 @@ class PluginManager:
             found = db.session.query(models.PluginConfig).filter(
                 models.PluginConfig.class_name == str(p)).first()
             if found.enabled:
-                yield (p, list(p.parse_entry(e)))
+                items = list(p.parse_entry(e))
+                if items:
+                    yield (p, items)
 
 
-from webapp import parsing_plugins
-
-parsing_plugins.init()
+parsing_plugins.init(PluginManager)
