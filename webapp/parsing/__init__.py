@@ -91,7 +91,7 @@ class Plugin:
     initialized = False
 
     def __init__(self):
-        self.logger = logger.getChild(self.name.replace(' ', '_'))
+        self.logger = logger.getChild(self.name.replace(' ', '_').lower())
 
     def get_model(self):
         found = db.session.query(models.PluginConfig).filter(

@@ -11,8 +11,8 @@ handlers = [file_handler, stream_handler]
 formatter = logging.Formatter(
     '%(levelname)-8s [%(name)-12s] %(asctime)s %(message)s')
 for h in handlers:
-    h.setFormatter(formatter)
     h.setLevel(logging.DEBUG)
+    h.setFormatter(formatter)
     logger.addHandler(h)
 
 logger.setLevel(logging.DEBUG)
