@@ -2,6 +2,7 @@ import re
 import datetime
 from webapp import models
 from webapp.app_init import db
+import logging
 DATE_HEADER_PATTERN = re.compile(r"^[0-9]+-[0-9]+-[0-9]*\w*")
 
 
@@ -94,6 +95,8 @@ class Plugin:
 
     @classmethod
     def init(cls):
+        cls.logger = logging.getLogger(
+            __name__ + '.' + cls.name.replace(' ', '_'))
         cls.initialized = True
         """The responsibility of this method is to perform long-running
         initialization tasks such as downloading resources,

@@ -3,6 +3,7 @@ from webapp.app_init import app, db
 import datetime
 import flask
 import logging
+import datetime
 logger = logging.getLogger(__name__)
 
 
@@ -91,3 +92,12 @@ def get_entries_tree(target_date=None) -> dict:
             entries_tree[y][m] = list()
         entries_tree[y][m].append(e)
     return entries_tree
+
+
+def strip_datetime(d: datetime.datetime):
+    return datetime.datetime(d.year, d.month, d.day)
+
+
+def entry_exists(target_date: datetime.datetime):
+    return models.JournalEntry.query.filter_by(
+        create_date=strip_datetime(target_date)).first()
