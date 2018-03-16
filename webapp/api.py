@@ -69,18 +69,17 @@ def previous_entry(e: models.JournalEntry) -> models.JournalEntry:
 
 
 def get_entries_tree(target_date=None) -> dict:
+    query = db.session.query(models.JournalEntry).order_by(
+        models.JournalEntry.create_date)
     if target_date is not None:
-        all_entries = list(
-            db.session.query(models.JournalEntry).order_by(
-                models.JournalEntry.create_date).filter(
-                    models.JournalEntry.create_date >= target_date))
-    else:
-        all_entries = list(
-            db.session.query(models.JournalEntry).order_by(
-                models.JournalEntry.create_date))
+        query = db.session.query(models.JournalEntry).order_by(
+            models.JournalEntry.create_date).filter(
+                models.JournalEntry.create_date >= target_date)
+
+    query = query.order_by(models.JournalEntry.create_date.desc())
 
     entries_tree = dict()
-    for e in all_entries:
+    for e in query:
         if target_date is not None:
             if e.create_date.year > target_date.year:
                 break
