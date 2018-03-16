@@ -87,39 +87,34 @@ class Plugin:
     requires_initialization = True
     initialized = False
 
-    @classmethod
-    def get_model(cls):
+    def get_model(self):
         found = db.session.query(models.PluginConfig).filter(
-            models.PluginConfig.class_name == str(cls)).first()
+            models.PluginConfig.class_name == str(self)).first()
         return found
 
-    @classmethod
-    def init(cls):
-        cls.logger = logging.getLogger(
-            __name__ + '.' + cls.name.replace(' ', '_'))
-        cls.initialized = True
+    def init(self):
+        self.logger = logging.getLogger(
+            __name__ + '.' + self.name.replace(' ', '_'))
+        self.initialized = True
         """The responsibility of this method is to perform long-running
         initialization tasks such as downloading resources,
         building large data structures to be read later, etc.
         It is distinct from __init__ in this respect."""
         raise NotImplementedError("init() not implemented.")
 
-    @classmethod
-    def parse_entry(cls, e: Entry) -> list:
+    def parse_entry(self, e: Entry) -> list:
         """Return a list of objects found in the Entry."""
-        if cls.requires_initialization and not cls.initialized:
+        if self.requires_initialization and not self.initialized:
             raise RuntimeError("This classes resources must be initialized!")
         raise NotImplementedError("parse_entry() not implemented/")
 
     @property
-    @classmethod
-    def enabled(cls):
-        return cls.get_model().enabled
+    def enabled(self):
+        return self.get_model().enabled
 
     @enabled.setter
-    @classmethod
-    def enabled(cls, val):
-        m = cls.get_model()
+    def enabled(self, val):
+        m = self.get_model()
         m.enabled = val
         db.session.add(m)
         db.session.flush()
@@ -131,8 +126,8 @@ class PluginManager:
     name = 'Plugin'
 
     @classmethod
-    def register(cls, p: Plugin):
-        cls.registered_plugins.append(p)
+    def register(cls, plugin_class: Plugin):
+        cls.registered_plugins.append(plugin_class())
 
     @classmethod
     def init(cls):

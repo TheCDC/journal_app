@@ -16,14 +16,13 @@ class Plugin(parsing.Plugin):
     Finds dates mentioned in entries."""
     name = 'Date Recognizer'
 
-    @classmethod
-    def parse_entry(cls, e: models.JournalEntry) -> 'iterable[str]':
+    def parse_entry(self, e: models.JournalEntry) -> 'iterable[str]':
         """Find all dates mentioned in the entry body."""
         # TODO: group together and display all mentioned dates/times that are
         # the same day
         seen = set()
         # find all dates mentioned in the entry
-        cls.logger.debug(e)
+        self.logger.debug(e)
         cal = pdt.Calendar()
         for t in cal.nlp(e.contents, e.create_date.timetuple()):
             found_date = api.strip_datetime(t[0])
