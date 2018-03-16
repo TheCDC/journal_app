@@ -2,6 +2,10 @@ import re
 import datetime
 from webapp import models
 from webapp.app_init import db
+import logging
+from webapp import parsing_plugins
+logger = logging.getLogger(__name__)
+# print('__name__', __name__)
 DATE_HEADER_PATTERN = re.compile(r"^[0-9]+-[0-9]+-[0-9]*\w*")
 
 
@@ -86,37 +90,35 @@ class Plugin:
     requires_initialization = True
     initialized = False
 
-    @classmethod
-    def get_model(cls):
+    def __init__(self):
+        self.logger = logger.getChild(self.name.replace(' ', '_'))
+
+    def get_model(self):
         found = db.session.query(models.PluginConfig).filter(
-            models.PluginConfig.class_name == str(cls)).first()
+            models.PluginConfig.class_name == str(self)).first()
         return found
 
-    @classmethod
-    def init(cls):
-        cls.initialized = True
+    def init(self):
+        self.initialized = True
         """The responsibility of this method is to perform long-running
         initialization tasks such as downloading resources,
         building large data structures to be read later, etc.
         It is distinct from __init__ in this respect."""
         raise NotImplementedError("init() not implemented.")
 
-    @classmethod
-    def parse_entry(cls, e: Entry) -> list:
+    def parse_entry(self, e: Entry) -> list:
         """Return a list of objects found in the Entry."""
-        if cls.requires_initialization and not cls.initialized:
+        if self.requires_initialization and not self.initialized:
             raise RuntimeError("This classes resources must be initialized!")
         raise NotImplementedError("parse_entry() not implemented/")
 
     @property
-    @classmethod
-    def enabled(cls):
-        return cls.get_model().enabled
+    def enabled(self):
+        return self.get_model().enabled
 
     @enabled.setter
-    @classmethod
-    def enabled(cls, val):
-        m = cls.get_model()
+    def enabled(self, val):
+        m = self.get_model()
         m.enabled = val
         db.session.add(m)
         db.session.flush()
@@ -128,8 +130,10 @@ class PluginManager:
     name = 'Plugin'
 
     @classmethod
-    def register(cls, p: Plugin):
-        cls.registered_plugins.append(p)
+    def register(cls, plugin_class: Plugin):
+        assert not logger.disabled
+        logger.debug('Register plugin "%s"', plugin_class.name)
+        cls.registered_plugins.append(plugin_class())
 
     @classmethod
     def init(cls):
@@ -159,9 +163,9 @@ class PluginManager:
             found = db.session.query(models.PluginConfig).filter(
                 models.PluginConfig.class_name == str(p)).first()
             if found.enabled:
-                yield (p, list(p.parse_entry(e)))
+                items = list(p.parse_entry(e))
+                if items:
+                    yield (p, items)
 
 
-from webapp import parsing_plugins
-
-parsing_plugins.init()
+parsing_plugins.init(PluginManager)

@@ -8,7 +8,7 @@ from webapp import forms
 from webapp import parsing
 from webapp import api
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 if logger.disabled:
     raise RuntimeError('Logger is mistakenly disabled at top level')

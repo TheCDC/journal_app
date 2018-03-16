@@ -1,20 +1,24 @@
-from webapp import config
 import logging
 import logging.config
-# logging.config.fileConfig(config.LOG_PATH)
+from webapp import config
 
 logger = logging.getLogger(__name__)
 stream_handler = logging.StreamHandler()
 file_handler = logging.FileHandler(config.LOG_PATH)
+
+handlers = [file_handler, stream_handler]
+
 formatter = logging.Formatter(
-    '%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
-stream_handler.setFormatter(formatter)
-file_handler.setFormatter(formatter)
-logger.addHandler(stream_handler)
-logger.addHandler(file_handler)
+    '%(levelname)-8s [%(name)-12s] %(asctime)s %(message)s')
+for h in handlers:
+    h.setFormatter(formatter)
+    h.setLevel(logging.DEBUG)
+    logger.addHandler(h)
+
 logger.setLevel(logging.DEBUG)
 
 from . import flask_app
+# logging.config.fileConfig(config.LOG_PATH)
 
 # alias to enable execution of this file from flask cli
 app = flask_app.app

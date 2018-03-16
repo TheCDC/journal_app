@@ -15,6 +15,7 @@ wtforms = "*"
 pytest = "*"
 flask-wtf = "*"
 flask-bootstrap = "*"
+parsedatetime = "*"
 
 
 [dev-packages]

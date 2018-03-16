@@ -1,5 +1,6 @@
 {% extends 'base.html' %} {% block content %} {{super()}}
     <!--  -->
+    
     <div class="container container-fluid">
         {% if context.error %}
             <div class="alert alert-danger  ">
@@ -31,7 +32,7 @@
             <div class="row">
                 <div class="col col-md-3" id="upload_div">
                     <h2>Upload Journal File</h2>
-                    <form  class="upload_form" method="POST" action="{{url_for('index')}}" enctype="multipart/form-data">
+                    <form  class="upload_form {% if context.error %}alert alert-danger{% endif %}" method="POST" action="{{url_for('index')}}" enctype="multipart/form-data">
                         {{context.upload_form.hidden_tag()}}
                         <!--  -->
                         {{render_field(context.upload_form.file)}}
@@ -72,11 +73,9 @@
                     </ul>
                 </div>
             </div>
-            <div class="row">
-            </div>
         </div>
         <div>
-            {% for year in context.entries_tree %}
+            {% for year in context.entries_tree|reverse %}
                 {{render_year(year, context.entries_tree[year])}}
             {% endfor %}
         </div>

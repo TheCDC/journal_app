@@ -70,8 +70,7 @@ admin.add_view(
 
 
 def instantiate_db(app):
-
-    logger.debug('Attempt to instantiate db')
+    """Make sure the db is initialized."""
     # initialize db with flask_migrate
     with app.app_context():
         try:
