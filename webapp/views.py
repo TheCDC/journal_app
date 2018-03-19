@@ -92,10 +92,9 @@ class RegisterView(MethodView):
 class EntrySearchView(MethodView):
     def get_objects(self, **kwargs):
         start_date = self.args_to_date(**kwargs)
-        found = list(
-            db.session.query(models.JournalEntry).filter(
-                models.JournalEntry.create_date >= start_date).order_by(
-                    models.JournalEntry.create_date))
+        found = list(login.current_user.query_all_entries().filter(
+            models.JournalEntry.create_date >= start_date).order_by(
+                models.JournalEntry.create_date))
         return found
 
     def args_to_date(self,
@@ -180,7 +179,7 @@ class HomeView(MethodView, EnableLoggingMixin):
                 self.logger.debug('parse failed')
                 return self.get(upload_form=upload_form, error=e)
 
-            db.session.query(models.JournalEntry).delete()
+            login.current_user.query_all_entries().delete()
             for e in parsed:
                 body_text = e.body.replace('\r', '')
                 found = db.session.query(
@@ -226,3 +225,11 @@ class HomeView(MethodView, EnableLoggingMixin):
         # allow context values to be overridden by kwargs
         context.update(kwargs)
         return flask.render_template(self.get_template_name(), context=context)
+
+
+class SettingsView(MethodView):
+    def get_template_name(self):
+        return 'settings.html'
+
+    def get(self):
+        return flask.render_template(self.get_template_name())

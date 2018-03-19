@@ -29,6 +29,7 @@ app.add_url_rule('/login', view_func=views.LoginView.as_view('login'))
 app.add_url_rule('/logout', view_func=views.LogoutView.as_view('logout'))
 app.add_url_rule('/register', view_func=views.RegisterView.as_view('register'))
 app.add_url_rule('/home', view_func=views.HomeView.as_view('home'))
+app.add_url_rule('/settings', view_func=views.SettingsView.as_view('settings'))
 
 app.add_url_rule('/', view_func=views.IndexView.as_view('index'))
 

@@ -1,8 +1,20 @@
 {% extends 'base.html' %} {% block content %} {{super()}}
-<div class="container">
-	Welcome to the journal app!
-	<a href="{{url_for('login')}}">Log in</a>
-	<a href="{{url_for('register')}}">Register</a>
-</div>
-
+	<div class="container">
+		<h1> LOGO HERE</h1>
+		Welcome to the journal app!
+		<div class="container container-fluid">
+			<div class="row text-center">
+				<div class="col col-sm-3">
+				</div>
+				<div class="col col-sm-3">
+					<a href="{{url_for('login')}}">Log in</a>
+				</div>
+				<div class="col col-sm-3">
+					<a href="{{url_for('register')}}">Register</a>
+				</div>
+				<div class="col col-sm-3">
+				</div>
+			</div>
+		</div>
+	</div>
 {% endblock %}

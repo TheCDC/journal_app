@@ -39,7 +39,7 @@ class User(db.Model):
             JournalEntry.create_date.desc()).first()
 
     def query_all_entries(self):
-        return JournalEntry.query.filter(JournalEntry.owner == self)
+        return JournalEntry.query.filter(JournalEntry.owner_id == self.id)
 
     def get_all_years(self, ) -> 'iterable[datetime.datetime]':
         """Return a list of dates corresponding to the range of
