@@ -14,16 +14,18 @@ app.jinja_env.globals.update(
     get_all_years=api.get_all_years)
 
 
-@app.before_first_request
-def setup_app():
-    models.instantiate_db(app)
-    parsing.PluginManager.init()
-app.add_url_rule('/login',view_func=views.LoginView.as_view('login'))
-
 @login_manager.user_loader
 def load_user(target_id: int) -> models.User:
     return models.User.query.filter_by(id=int(target_id)).first()
 
+
+@app.before_first_request
+def setup_app():
+    models.instantiate_db(app)
+    parsing.PluginManager.init()
+
+
+app.add_url_rule('/register', view_func=views.RegisterView.as_view('register'))
 
 app.add_url_rule('/', view_func=views.IndexView.as_view('index'))
 

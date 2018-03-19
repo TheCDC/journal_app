@@ -7,7 +7,8 @@ from webapp import models
 from webapp import forms
 from webapp import parsing
 from webapp import api
-
+import sqlalchemy
+import flask.ext.login as login
 logger = logging.getLogger(__name__)
 
 if logger.disabled:
@@ -28,12 +29,12 @@ class EnableLoggingMixin:
         return self._logger
 
 
-class LoginView(MethodView):
-    def get_template_name(self,):
-        return 'login.html'
+class RegisterView(MethodView):
+    def get_template_name(self, ):
+        return 'register.html'
 
     def get(self, **kwargs):
-        context = dict(register_form=forms.RegisterForm(),)
+        context = dict(register_form=forms.RegisterForm(), )
         context.update(**kwargs)
         return flask.render_template(self.get_template_name(), context=context)
 
@@ -46,9 +47,16 @@ class LoginView(MethodView):
                 password=register_form.password.data,
                 email=register_form.email.data)
             db.session.add(new_user)
-            db.session.commit()
+            try:
+                db.session.commit()
+                login.login_user(new_user)
+            except sqlalchemy.exc.IntegrityError:
+                db.session.rollback()
+                return self.get(
+                    register_form=register_form, error="User already exists!")
+
             flask.flash('User successfully registered')
-            return flask.redirect(flask.url_for('index'))
+            return flask.redirect(flask.url_for('register'))
         else:
             return self.get(register_form=register_form)
 

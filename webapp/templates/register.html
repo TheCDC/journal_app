@@ -1,5 +1,11 @@
 {% extends 'base.html' %} {% block content %} {{super()}}
-	<form  class="register_form " method="POST" action="{{url_for('login')}}" enctype="multipart/form-data">
+	<div class='container container-fluid'>
+		{% if context.error %}
+			<div class='alert alert-danger'>
+				{{context.error}}
+			</div>
+		{% endif %}
+	<form  class="register_form " method="POST" action="{{url_for('register')}}" enctype="multipart/form-data">
 		{{context.register_form.hidden_tag()}}
 		<!--  -->
 		{{render_field(context.register_form.username)}}
@@ -7,4 +13,5 @@
 		{{render_field(context.register_form.email)}}
 		<input class="btn btn-success" type="submit" value="submit">
 	</form>
+	</div>
 {% endblock %}
