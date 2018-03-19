@@ -9,6 +9,14 @@ import alembic
 logger = logging.getLogger(__name__)
 
 
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String, unique=True, index=True)
+    password = db.Column(db.String)
+    email = db.Column(db.String, unique=True, index=True)
+    registered_on = db.Column(db.DateTime)
+
+
 class JournalEntry(db.Model):
     """Model for journal entries."""
     id = db.Column(db.Integer, primary_key=True)

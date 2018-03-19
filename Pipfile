@@ -16,6 +16,7 @@ pytest = "*"
 flask-wtf = "*"
 flask-bootstrap = "*"
 parsedatetime = "*"
+pyinstaller = "*"
 
 
 [dev-packages]
