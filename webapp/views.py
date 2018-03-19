@@ -182,8 +182,8 @@ class HomeView(MethodView, EnableLoggingMixin):
             login.current_user.query_all_entries().delete()
             for e in parsed:
                 body_text = e.body.replace('\r', '')
-                found = db.session.query(
-                    models.JournalEntry).filter_by(create_date=e.date).first()
+                found = login.current_user.query_all_entries().filter_by(
+                    create_date=e.date).first()
                 if found:
                     found.contents = body_text
                 else:
