@@ -2,6 +2,7 @@ import flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import flask_bootstrap
+import flask_login
 # for editing DB entries
 from flask_admin import Admin
 import random
@@ -21,8 +22,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{config.SQLITE_DB_PATH}'
 # initialize SQLAlchemy engine
 db = SQLAlchemy(app)
 # initialize migration engine
-migrate = Migrate(app, db)
+migrate = Migrate(app, db, directory=config.ALEMBIC_PATH)
 # admin interface
 admin = Admin(app, name='Journal Wiki App', template_mode='bootstrap3')
-
+# bootstrap
 bootstrap = flask_bootstrap.Bootstrap(app)
+# logins
+login_manager = flask_login.LoginManager()
+login_manager.init_app(app)
+login_manager.logiin_view = 'login'

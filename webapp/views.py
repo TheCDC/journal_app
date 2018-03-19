@@ -28,6 +28,31 @@ class EnableLoggingMixin:
         return self._logger
 
 
+class LoginView(MethodView):
+    def get_template_name(self,):
+        return 'login.html'
+
+    def get(self, **kwargs):
+        context = dict(register_form=forms.RegisterForm(),)
+        context.update(**kwargs)
+        return flask.render_template(self.get_template_name(), context=context)
+
+    def post(self):
+        register_form = forms.RegisterForm()
+        context = dict(register_form=register_form)
+        if register_form.validate_on_submit():
+            new_user = models.User(
+                username=register_form.username.data,
+                password=register_form.password.data,
+                email=register_form.email.data)
+            db.session.add(new_user)
+            db.session.commit()
+            flask.flash('User successfully registered')
+            return flask.redirect(flask.url_for('index'))
+        else:
+            return self.get(register_form=register_form)
+
+
 class EntrySearchView(MethodView):
     def get_objects(self, **kwargs):
         start_date = self.args_to_date(**kwargs)
@@ -127,7 +152,8 @@ class IndexView(MethodView, EnableLoggingMixin):
             good_parse = True
         if good_parse:
             return self.get(
-                upload_form=upload_form, success='Your journal was successfully parsed!')
+                upload_form=upload_form,
+                success='Your journal was successfully parsed!')
         else:
             return self.get(
                 upload_form=upload_form, error='Invalid submission!')

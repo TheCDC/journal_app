@@ -11,16 +11,30 @@ logger = logging.getLogger(__name__)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String, unique=True, index=True)
-    password = db.Column(db.String)
-    email = db.Column(db.String, unique=True, index=True)
-    registered_on = db.Column(db.DateTime)
+    username = db.Column(db.String(100), unique=True, index=True)
+    password = db.Column(db.String(200))
+    email = db.Column(db.String(200), unique=True, index=True)
+    registered_on = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    # ========== flask-login methods ==========
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return self.id
 
 
 class JournalEntry(db.Model):
     """Model for journal entries."""
     id = db.Column(db.Integer, primary_key=True)
-    create_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    create_date = db.Column(
+        db.DateTime, default=datetime.datetime.utcnow, index=True)
     contents = db.Column(db.String)
 
     def __str__(self):
@@ -75,6 +89,7 @@ admin.add_view(
         JournalEntry, db.session, endpoint='model_view_journalentry'))
 admin.add_view(
     ModelView(PluginConfig, db.session, endpoint='model_view_pluginconfig'))
+admin.add_view(ModelView(User, db.session, endpoint='model_view_user'))
 
 
 def instantiate_db(app):

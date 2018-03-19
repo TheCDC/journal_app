@@ -10,3 +10,14 @@ class UploadForm(flask_wtf.FlaskForm):
 
 class ContentsSearchForm(flask_wtf.FlaskForm):
     query = wtforms.StringField(validators=[wtforms.validators.DataRequired()])
+
+
+class LoginForm(flask_wtf.FlaskForm):
+    username = wtforms.StringField(
+        validators=[wtforms.validators.DataRequired()])
+    password = wtforms.StringField(
+        validators=[wtforms.validators.DataRequired()])
+
+
+class RegisterForm(LoginForm):
+    email = wtforms.StringField(validators=[wtforms.validators.DataRequired()])
