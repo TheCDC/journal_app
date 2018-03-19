@@ -21,3 +21,7 @@ class LoginForm(flask_wtf.FlaskForm):
 
 class RegisterForm(LoginForm):
     email = wtforms.StringField(validators=[wtforms.validators.DataRequired()])
+    first_name = wtforms.StringField(
+        validators=[wtforms.validators.DataRequired()])
+    last_name = wtforms.StringField(
+        validators=[wtforms.validators.DataRequired()])

@@ -2,31 +2,30 @@
     <nav class="navbar navbar-default navbar-inverse">
         <div class="container">
             <ul class="nav navbar-nav">
-                <li {% if request.path==url_for( 'index') %} class="active" {% endif %}>
+                <li {% if request.path==url_for('home') %} class="active" {% endif %}>
                 <a class="btn" href="{{url_for('index')}}">Home</a>
             </li>
-            <li {% if request.path==url_for( 'admin.index') %} class="active" {% endif %}>
-            <a class="btn" href="{{url_for('admin.index')}}">Admin</a> {% if get_latest_entry() %}
         </li>
-        <li {% if request.path==link_for_entry(get_latest_entry()) %} class="active" {% endif %}>
-        <a class="btn" href="{{link_for_entry(get_latest_entry())}}">Latest Entry</a> {% endif %}
-    </li>
-    {% if current_user.is_authenticated %}
-        <li>
-            <a class="btn" href="">{{current_user.username}}</a>
-            
+        {% if get_latest_entry() %}
+            <li {% if request.path==link_for_entry(get_latest_entry()) %} class="active" {% endif %}>
+            <a class="btn" href="{{link_for_entry(get_latest_entry())}}">Latest Entry</a> {% endif %}
         </li>
-        <li>
-            <a class="btn" href="{{url_for('logout')}}">Log out</a>
-            
-        </li>
-    {% else %}
-        <li>
-            <a class="btn" href="{{url_for('login')}}">Log in</a>
-            
-        </li>
-    {% endif %}
-</ul>
+        {% if current_user.is_authenticated %}
+            <li>
+                <a class="btn" href="">{{current_user.username}}</a>
+                
+            </li>
+            <li>
+                <a class="btn" href="{{url_for('logout')}}">Log out</a>
+                
+            </li>
+        {% else %}
+            <li>
+                <a class="btn" href="{{url_for('login')}}">Log in</a>
+                
+            </li>
+        {% endif %}
+    </ul>
 </div>
 </nav>
 {% endblock %}

@@ -68,7 +68,7 @@ def previous_entry(e: models.JournalEntry) -> models.JournalEntry:
             models.JournalEntry.create_date.desc()).first()
 
 
-def get_entries_tree(target_date=None) -> dict:
+def get_entries_tree(user,target_date=None) -> dict:
     query = db.session.query(models.JournalEntry).order_by(
         models.JournalEntry.create_date)
     if target_date is not None:

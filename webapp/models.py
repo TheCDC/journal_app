@@ -1,5 +1,6 @@
 from webapp.app_init import app, db, admin
 import webapp.app_init
+from webapp import config
 from flask_admin.contrib.sqla import ModelView
 import datetime
 from webapp import parsing
@@ -32,6 +33,71 @@ class User(db.Model):
     def get_id(self):
         return self.id
 
+    def get_latest_entry(self, ) -> "JournalEntry":
+        """Return the chronologically latest JournalEntry."""
+        return self.query_all_entries().order_by(
+            JournalEntry.create_date.desc()).first()
+
+    def query_all_entries(self):
+        return JournalEntry.query.filter(JournalEntry.owner == self)
+
+    def get_all_years(self, ) -> 'iterable[datetime.datetime]':
+        """Return a list of dates corresponding to the range of
+        years encompassed by all journal entries."""
+        # define earliest and latest years of entries
+        start_year = self.query_all_entries().order_by(
+            JournalEntry.create_date).first()
+        end_year = self.query_all_entries().order_by(
+            JournalEntry.create_date.desc()).first()
+        if start_year and end_year:
+            for y in range(start_year.create_date.year,
+                           end_year.create_date.year + 1):
+                # find any entry within this year but before next year
+                found = self.query_all_entries().filter(
+                    JournalEntry.create_date >= datetime.datetime(
+                        y, 1, 1, 0, 0)).filter(
+                            JournalEntry.create_date < datetime.datetime(
+                                y + 1, 1, 1, 0, 0)).first()
+                # only yield this year if has an entry
+                if found:
+                    yield datetime.datetime(y, 1, 1, 0, 0)
+
+    def next_entry(self, e: "JournalEntry") -> "JournalEntry":
+        """Return the first JournalEntry that falls chronologically after
+        the given entry."""
+        return self.query_all_entries().filter(
+            JournalEntry.create_date > e.create_date).first()
+
+    def previous_entry(self, e: "JournalEntry") -> "JournalEntry":
+        """Return the first JournalEntry that falls chronologically before
+        the given entry."""
+        return self.query_all_entries().filter(
+            JournalEntry.create_date < e.create_date).order_by(
+                JournalEntry.create_date.desc()).first()
+
+    def get_entries_tree(self, target_date=None) -> dict:
+        query = self.query_all_entries().order_by(JournalEntry.create_date)
+        if target_date is not None:
+            query = self.query_all_entries().order_by(
+                JournalEntry.create_date).filter(
+                    JournalEntry.create_date >= target_date)
+
+        query = query.order_by(JournalEntry.create_date.desc())
+
+        entries_tree = dict()
+        for e in query:
+            if target_date is not None:
+                if e.create_date.year > target_date.year:
+                    break
+            y = e.create_date.year
+            m = e.create_date.month
+            if y not in entries_tree:
+                entries_tree[y] = dict()
+            if m not in entries_tree[y]:
+                entries_tree[y][m] = list()
+            entries_tree[y][m].append(e)
+        return entries_tree
+
 
 class JournalEntry(db.Model):
     """Model for journal entries."""
@@ -39,6 +105,8 @@ class JournalEntry(db.Model):
     create_date = db.Column(
         db.DateTime, default=datetime.datetime.utcnow, index=True)
     contents = db.Column(db.String)
+    owner_id = db.Column(db.Integer, db.ForeignKey(User.id))
+    owner = db.relationship(User, backref='users')
 
     def __str__(self):
         return str(self.id)
@@ -74,6 +142,7 @@ class PluginConfig(db.Model):
 
 class JournalEntryView(ModelView):
     column_list = (
+        'owner',
         'create_date',
         'contents',
     )
@@ -87,12 +156,14 @@ class JournalEntryView(ModelView):
     }
 
 
-admin.add_view(
-    JournalEntryView(
-        JournalEntry, db.session, endpoint='model_view_journalentry'))
-admin.add_view(
-    ModelView(PluginConfig, db.session, endpoint='model_view_pluginconfig'))
-admin.add_view(ModelView(User, db.session, endpoint='model_view_user'))
+if config.DEBUG_ENABLED:
+    admin.add_view(
+        JournalEntryView(
+            JournalEntry, db.session, endpoint='model_view_journalentry'))
+    admin.add_view(
+        ModelView(
+            PluginConfig, db.session, endpoint='model_view_pluginconfig'))
+    admin.add_view(ModelView(User, db.session, endpoint='model_view_user'))
 
 
 def instantiate_db(app):

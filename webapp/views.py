@@ -84,7 +84,7 @@ class RegisterView(MethodView):
                     register_form=register_form, error="User already exists!")
 
             flask.flash('User successfully registered')
-            return flask.redirect(flask.url_for('register'))
+            return flask.redirect(flask.url_for('home'))
         else:
             return self.get(register_form=register_form)
 
@@ -150,9 +150,19 @@ class EntrySearchView(MethodView):
             ))
 
 
-class IndexView(MethodView, EnableLoggingMixin):
+class IndexView(MethodView):
     def get_template_name(self):
         return 'index.html'
+
+    def get(self):
+        if login.current_user.is_authenticated:
+            return flask.redirect(flask.url_for('home'))
+        return flask.render_template(self.get_template_name())
+
+
+class HomeView(MethodView, EnableLoggingMixin):
+    def get_template_name(self):
+        return 'home.html'
 
     def post(self, **kwargs):
         upload_form = forms.UploadForm()
@@ -179,7 +189,9 @@ class IndexView(MethodView, EnableLoggingMixin):
                     found.contents = body_text
                 else:
                     found = models.JournalEntry(
-                        create_date=e.date, contents=body_text)
+                        owner=login.current_user,
+                        create_date=e.date,
+                        contents=body_text)
                 session.add(found)
 
             session.flush()
@@ -198,16 +210,16 @@ class IndexView(MethodView, EnableLoggingMixin):
     def get(self, **kwargs):
         upload_form = forms.UploadForm()
 
-        latest_entry = api.get_latest_entry()
+        latest_entry = login.current_user.get_latest_entry()
         # form the context with default values
         context = dict(
             upload_form=upload_form,
-            entries_tree=api.get_entries_tree(),
+            entries_tree=login.current_user.get_entries_tree(),
             plugin_manager=parsing.PluginManager,
             latest_entry=latest_entry,
             now=datetime.datetime.now(),
             years=[(api.link_for_date(year=y.year), y.year)
-                   for y in api.get_all_years()],
+                   for y in login.current_user.get_all_years()],
             error=None,
             success=None,
         )
