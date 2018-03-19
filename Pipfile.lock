@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "f0e544630cafa7a5f050f70ed94d31e93875df97435ed3106c186f5698a77946"
+            "sha256": "05aed1fcfb0a550a04c4470c26008cdccb042d2e1864efee727e7a7718709b24"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -32,13 +32,6 @@
                 "sha256:13b8611788acf0d7b617775db5c2ae26554a6d4263c590ef628d448fd05aef56"
             ],
             "version": "==0.9.8"
-        },
-        "altgraph": {
-            "hashes": [
-                "sha256:49dc134049903cc73fb76ca3cc9bef5b2b8c01c28732dd29594f99af2b449fc5",
-                "sha256:fc28b986a68fde8d3ff0e6d6ba3fbdd2cd562d11d45ef7c7735fbd826c9eec2e"
-            ],
-            "version": "==0.15"
         },
         "attrs": {
             "hashes": [
@@ -78,6 +71,12 @@
                 "sha256:cb08ed940183f6343a64e465e83b3a3f13c53e1baabb8d72b5da4545ef123ac8"
             ],
             "version": "==3.3.7.1"
+        },
+        "flask-login": {
+            "hashes": [
+                "sha256:c815c1ac7b3e35e2081685e389a665f2c74d7e077cb93cecabaea352da4752ec"
+            ],
+            "version": "==0.4.1"
         },
         "flask-migrate": {
             "hashes": [
@@ -119,13 +118,6 @@
             ],
             "version": "==2.10"
         },
-        "macholib": {
-            "hashes": [
-                "sha256:7f76a7ef4f58f85889dec25fb532bad5acfd461c444738dfeb2e7bf855d5906b",
-                "sha256:9aeec52d7da59912b15445d08b08d95cee48414f01dd035be06f04a825973c08"
-            ],
-            "version": "==1.9"
-        },
         "mako": {
             "hashes": [
                 "sha256:4e02fde57bd4abb5ec400181e4c314f56ac3e49ba4fb8b0d50bba18cb27d25ae"
@@ -145,12 +137,6 @@
             ],
             "version": "==2.4"
         },
-        "pefile": {
-            "hashes": [
-                "sha256:675c35ee0e1677db9e80d2f48d8a7ff2cf38e6207e8cd5e2a2c6d126db025854"
-            ],
-            "version": "==2017.11.5"
-        },
         "pluggy": {
             "hashes": [
                 "sha256:7f8ae7f5bdf75671a718d2daf0a64b7885f74510bcd98b1a0bb420eb9a9d0cff"
@@ -163,12 +149,6 @@
                 "sha256:ca18943e28235417756316bfada6cd96b23ce60dd532642690dcfdaba988a76d"
             ],
             "version": "==1.5.2"
-        },
-        "pyinstaller": {
-            "hashes": [
-                "sha256:715f81f24b1ef0e5fe3b3c71e7540551838e46e9de30882aa7c0a521147fd1ce"
-            ],
-            "version": "==3.3.1"
         },
         "pytest": {
             "hashes": [
