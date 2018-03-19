@@ -8,6 +8,7 @@ from flask_admin import Admin
 import random
 import logging
 from . import config
+import os
 
 logger = logging.getLogger(__name__)
 #  ========== Flask App ==========
@@ -16,7 +17,11 @@ app = flask.Flask(
 # auto reload template engine when template files change
 app.jinja_env.auto_reload = True
 app.config['TEMPLATES_AUTO_RELOAD'] = True
-app.config['SECRET_KEY'] = str(int(random.random() * 100000000000))
+key = os.environ.get('SECRET_KEY',None)
+if key is None:
+	raise RuntimeError('App SECRET_KEY must be provided in env vars!')
+app.config['SECRET_KEY'] = key
+
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{config.SQLITE_DB_PATH}'
 # initialize SQLAlchemy engine

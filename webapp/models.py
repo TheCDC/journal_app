@@ -17,12 +17,15 @@ class User(db.Model):
     registered_on = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     # ========== flask-login methods ==========
+    @property
     def is_authenticated(self):
         return True
 
+    @property
     def is_active(self):
         return True
 
+    @property
     def is_anonymous(self):
         return False
 
