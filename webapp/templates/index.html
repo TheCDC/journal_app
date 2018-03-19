@@ -1,6 +1,5 @@
 {% extends 'base.html' %} {% block content %} {{super()}}
     <!--  -->
-    
     <div class="container container-fluid">
         {% if context.error %}
             <div class="alert alert-danger  ">
@@ -25,7 +24,7 @@
                     {{context.latest_entry.to_html()|safe}}
                 </p>
             {% else %}
-                <h2> It looks pretty empty in here. Upload a journal? </h2>
+                <h2> Hi {{current_user.username}}. It looks pretty empty in here. Upload a journal? </h2>
             {% endif %}
         </div>
         <div class="container">

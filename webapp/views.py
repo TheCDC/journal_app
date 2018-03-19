@@ -7,7 +7,8 @@ from webapp import models
 from webapp import forms
 from webapp import parsing
 from webapp import api
-
+import sqlalchemy
+import flask.ext.login as login
 logger = logging.getLogger(__name__)
 
 if logger.disabled:
@@ -26,6 +27,66 @@ class EnableLoggingMixin:
         if self._logger.disabled:
             self._logger.disabled = False
         return self._logger
+
+
+class LoginView(MethodView):
+    def get_template_name(self, ):
+        return 'login.html'
+
+    def get(self, **kwargs):
+        context = dict(login_form=forms.LoginForm())
+        context.update(kwargs)
+        return flask.render_template(self.get_template_name(), context=context)
+
+    def post(self, **kwargs):
+        login_form = forms.LoginForm()
+        context = dict(login_form=login_form)
+        context.update(kwargs)
+        found_user = models.User.query.filter_by(
+            username=login_form.username.data,
+            password=login_form.password.data).first()
+        if found_user is not None:
+            login.login_user(found_user)
+            return flask.redirect(flask.url_for('index'))
+        return self.get(error="User not found")
+
+
+class LogoutView(MethodView):
+    def get(self):
+        login.logout_user()
+        return flask.redirect(flask.url_for('index'))
+
+
+class RegisterView(MethodView):
+    def get_template_name(self, ):
+        return 'register.html'
+
+    def get(self, **kwargs):
+        context = dict(register_form=forms.RegisterForm(), )
+        context.update(kwargs)
+        return flask.render_template(self.get_template_name(), context=context)
+
+    def post(self):
+        register_form = forms.RegisterForm()
+        context = dict(register_form=register_form)
+        if register_form.validate_on_submit():
+            new_user = models.User(
+                username=register_form.username.data,
+                password=register_form.password.data,
+                email=register_form.email.data)
+            db.session.add(new_user)
+            try:
+                db.session.commit()
+                login.login_user(new_user)
+            except sqlalchemy.exc.IntegrityError:
+                db.session.rollback()
+                return self.get(
+                    register_form=register_form, error="User already exists!")
+
+            flask.flash('User successfully registered')
+            return flask.redirect(flask.url_for('register'))
+        else:
+            return self.get(register_form=register_form)
 
 
 class EntrySearchView(MethodView):
@@ -127,7 +188,8 @@ class IndexView(MethodView, EnableLoggingMixin):
             good_parse = True
         if good_parse:
             return self.get(
-                upload_form=upload_form, success='Your journal was successfully parsed!')
+                upload_form=upload_form,
+                success='Your journal was successfully parsed!')
         else:
             return self.get(
                 upload_form=upload_form, error='Invalid submission!')

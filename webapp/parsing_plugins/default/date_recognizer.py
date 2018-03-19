@@ -31,7 +31,6 @@ class Plugin(parsing.Plugin):
         cal = pdt.Calendar()
         parsed_dates = cal.nlp(
             e.contents, e.create_date.timetuple())
-        self.logger.debug(parsed_dates)
 
         if parsed_dates is None:
             return
@@ -44,7 +43,6 @@ class Plugin(parsing.Plugin):
             human_strs.append(original_case)
 
             grouped_dates.update({found_date: human_strs})
-        self.logger.debug(grouped_dates)
         for date in grouped_dates:
             dates_group = ', '.join(grouped_dates[date])
             pretty = f'''{dates_group}:

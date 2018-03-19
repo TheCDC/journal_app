@@ -8,10 +8,10 @@ file_handler = logging.FileHandler(config.LOG_PATH)
 
 handlers = [file_handler, stream_handler]
 
-formatter = logging.Formatter(
-    '%(levelname)-8s [%(name)-12s] %(asctime)s %(message)s')
 for h in handlers:
     h.setLevel(logging.DEBUG)
+    formatter = logging.Formatter(
+        '%(levelname)-8s [%(name)-12s] %(asctime)s %(message)s')
     h.setFormatter(formatter)
     logger.addHandler(h)
 
