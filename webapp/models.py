@@ -79,6 +79,8 @@ class User(db.Model):
                 JournalEntry.create_date.desc()).first()
 
     def get_entries_tree(self, target_date=None) -> dict:
+        """Return a tree structure of all entries belonging to this user.
+        tree[year][month] = [day,day,day]"""
         query = self.query_all_entries().order_by(JournalEntry.create_date)
         if target_date is not None:
             query = self.query_all_entries().order_by(
@@ -101,7 +103,8 @@ class User(db.Model):
             entries_tree[y][m].append(e)
         return entries_tree
 
-    def get_settings_form(self):
+    def get_settings_form(self) -> forms.AccountSetingsForm:
+        """return a pre-filled form for changing user data"""
         form = forms.AccountSetingsForm()
         form.email.data = self.email
         form.first_name.data = self.first_name
@@ -109,6 +112,7 @@ class User(db.Model):
         return form
 
     def update_settings(self, settings_form: forms.AccountSetingsForm):
+        """Takes a form and updates values from it."""
         form = settings_form
         if form.validate_on_submit():
             self.first_name = form.first_name.data
