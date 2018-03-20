@@ -27,5 +27,10 @@ class RegisterForm(LoginForm):
         validators=[wtforms.validators.DataRequired()])
 
 
-class AccountSetingsForm(RegisterForm):
-    pass
+class AccountSetingsForm(flask_wtf.FlaskForm):
+    password = wtforms.StringField(validators=[])
+    first_name = wtforms.StringField(validators=[])
+    last_name = wtforms.StringField(validators=[])
+    email = wtforms.StringField(validators=[])
+    new_password = wtforms.StringField(validators=[])
+    new_password_confirm = wtforms.StringField(validators=[])

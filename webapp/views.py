@@ -232,7 +232,7 @@ class SettingsView(MethodView):
         return 'settings.html'
 
     def get(self, **kwargs):
-        form = forms.AccountSetingsForm()
+        form = login.current_user.get_settings_form()
         context = dict(settings_form=form)
 
         context.update(kwargs)
@@ -240,5 +240,9 @@ class SettingsView(MethodView):
 
     def post(self):
         form = forms.AccountSetingsForm()
+        cu = login.current_user
         if form.validate_on_submit():
-            login.current_user.password = form.password
+            cu.update_settings(form)
+        else:
+            return self.get(settings_form=form)
+        return flask.redirect(flask.url_for('settings'))

@@ -1,6 +1,7 @@
 from webapp.app_init import app, db, admin
 import webapp.app_init
 from webapp import config
+from webapp import forms
 from flask_admin.contrib.sqla import ModelView
 import datetime
 from webapp import parsing
@@ -16,6 +17,8 @@ class User(db.Model):
     password = db.Column(db.String(200))
     email = db.Column(db.String(200), unique=True, index=True)
     registered_on = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    first_name = db.Column(db.String(200))
+    last_name = db.Column(db.String(200))
 
     # ========== flask-login methods ==========
     @property
@@ -97,6 +100,24 @@ class User(db.Model):
                 entries_tree[y][m] = list()
             entries_tree[y][m].append(e)
         return entries_tree
+
+    def get_settings_form(self):
+        form = forms.AccountSetingsForm()
+        form.email.data = self.email
+        form.first_name.data = self.first_name
+        form.last_name.data = self.last_name
+        return form
+
+    def update_settings(self, settings_form: forms.AccountSetingsForm):
+        form = settings_form
+        if form.validate_on_submit():
+            self.first_name = form.first_name.data
+            self.last_name = form.last_name.data
+            self.email = form.email.data
+            if form.new_password == form.new_password_confirm and form.password == self.password:
+                self.password = form.new_password
+            db.session.add(self)
+            db.session.commit()
 
 
 class JournalEntry(db.Model):
