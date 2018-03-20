@@ -1,6 +1,7 @@
 import flask_wtf
 from flask_wtf.file import FileField, FileRequired
 import wtforms
+import wtforms.fields.html5
 import wtforms.validators
 
 
@@ -15,12 +16,19 @@ class ContentsSearchForm(flask_wtf.FlaskForm):
 class LoginForm(flask_wtf.FlaskForm):
     username = wtforms.StringField(
         validators=[wtforms.validators.DataRequired()])
-    password = wtforms.StringField(
+    # https://wtforms.readthedocs.io/en/latest/validators.html
+    password = wtforms.PasswordField(
         validators=[wtforms.validators.DataRequired()])
 
 
 class RegisterForm(LoginForm):
-    email = wtforms.StringField(validators=[wtforms.validators.DataRequired()])
+    password_confirm = wtforms.PasswordField(validators=[
+        wtforms.validators.DataRequired(),
+        wtforms.validators.EqualTo(
+            'password', message='Passwords must match!')
+    ])
+    email = wtforms.fields.html5.EmailField(
+        'New email address', validators=[wtforms.validators.DataRequired()])
     first_name = wtforms.StringField(
         validators=[wtforms.validators.DataRequired()])
     last_name = wtforms.StringField(
@@ -28,9 +36,9 @@ class RegisterForm(LoginForm):
 
 
 class AccountSetingsForm(flask_wtf.FlaskForm):
-    password = wtforms.StringField(validators=[])
-    first_name = wtforms.StringField(validators=[])
-    last_name = wtforms.StringField(validators=[])
-    email = wtforms.StringField(validators=[])
-    new_password = wtforms.StringField(validators=[])
-    new_password_confirm = wtforms.StringField(validators=[])
+    password = wtforms.PasswordField('Old password', validators=[])
+    new_password = wtforms.PasswordField(validators=[])
+    new_password_confirm = wtforms.PasswordField(validators=[])
+    first_name = wtforms.StringField('New password', validators=[])
+    last_name = wtforms.StringField('New password confirmation', validators=[])
+    email = wtforms.fields.html5.EmailField('New email address', validators=[])

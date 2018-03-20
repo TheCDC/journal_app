@@ -114,8 +114,9 @@ class User(db.Model):
             self.first_name = form.first_name.data
             self.last_name = form.last_name.data
             self.email = form.email.data
-            if form.new_password == form.new_password_confirm and form.password == self.password:
-                self.password = form.new_password
+            if form.new_password.data == form.new_password_confirm.data:
+                if form.password.data == self.password:
+                    self.password = form.new_password.data
             db.session.add(self)
             db.session.commit()
 
