@@ -8,10 +8,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 # make functions available in templates
-app.jinja_env.globals.update(
-    link_for_entry=api.link_for_entry,
-    get_latest_entry=api.get_latest_entry,
-    get_all_years=api.get_all_years)
+app.jinja_env.globals.update(link_for_entry=api.link_for_entry, )
 
 
 @login_manager.user_loader

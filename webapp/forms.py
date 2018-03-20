@@ -25,3 +25,7 @@ class RegisterForm(LoginForm):
         validators=[wtforms.validators.DataRequired()])
     last_name = wtforms.StringField(
         validators=[wtforms.validators.DataRequired()])
+
+
+class AccountSetingsForm(RegisterForm):
+    pass

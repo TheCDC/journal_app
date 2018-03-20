@@ -136,8 +136,8 @@ class EntrySearchView(MethodView):
                     search_results=[(e, api.link_for_entry(e)) for e in found],
                     breadcrumbs=breadcrumbs,
                 ))
-        forward = api.next_entry(e)
-        backward = api.previous_entry(e)
+        forward = login.current_user.next_entry(e)
+        backward = login.current_user.previous_entry(e)
         return flask.render_template(
             'entry.html',
             context=dict(
@@ -231,5 +231,14 @@ class SettingsView(MethodView):
     def get_template_name(self):
         return 'settings.html'
 
-    def get(self):
-        return flask.render_template(self.get_template_name())
+    def get(self, **kwargs):
+        form = forms.AccountSetingsForm()
+        context = dict(settings_form=form)
+
+        context.update(kwargs)
+        return flask.render_template(self.get_template_name(), context=context)
+
+    def post(self):
+        form = forms.AccountSetingsForm()
+        if form.validate_on_submit():
+            login.current_user.password = form.password
