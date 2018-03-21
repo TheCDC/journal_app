@@ -39,6 +39,6 @@ class AccountSetingsForm(flask_wtf.FlaskForm):
     password = wtforms.PasswordField('Old password', validators=[])
     new_password = wtforms.PasswordField(validators=[])
     new_password_confirm = wtforms.PasswordField(validators=[])
-    first_name = wtforms.StringField('New password', validators=[])
-    last_name = wtforms.StringField('New password confirmation', validators=[])
+    first_name = wtforms.StringField('First name', validators=[])
+    last_name = wtforms.StringField('Last name', validators=[])
     email = wtforms.fields.html5.EmailField('New email address', validators=[])
