@@ -25,26 +25,31 @@
                 {{context.entry.to_html()|safe}}
             </p>
         </div>
-        <div>
+        <div class="plugins_output" style="display:flex;flex-direction: row;justify-content: center;flex-wrap: wrap;">
             {% for t in context.plugin_manager.parse_entry(context.entry) %}
-                <!--  -->
-                {% if t[1] %}
-                    <h3>
-                    {% if t[0].name is defined %}
-                        {{t[0].name}}
-                    {% else %}
-                        undefined
+                <div style="">
+                    <!--  -->
+                    {% if t[1] %}
+                        <h3>
+                        {% if t[0].name is defined %}
+                            {{t[0].name}}
+                        {% else %}
+                            undefined
+                        {% endif %}
+                        </h3>
+                        <ul>
+                            {% for word in t[1] %}
+                                <li>
+                                    {{word|safe}}
+                                </li>
+                            {% endfor %}
+                        </ul>
                     {% endif %}
-                    </h3>
-                    <ul>
-                        {% for word in t[1] %}
-                            <li>
-                                {{word|safe}}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% endif %} {% endfor %}
-            </div>
-            <!--  -->
+                    <!--  -->
+                </div>
+            {% endfor %}
         </div>
-    {% endblock %}
+    </div>
+    <!--  -->
+</div>
+{% endblock %}

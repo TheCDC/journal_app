@@ -50,10 +50,14 @@
 {% endmacro %}
 
 <head>
+    {% block head %}
     <title>Journal App</title>
+    {{super()}}
+    <!-- custom -->
     <link rel="stylesheet" type="text/css" href="/static/stylesheets/default.css">
+    {% endblock %}
 </head>
 
 <body>
-    {% include "navbar.html" %} {% block content %} {% endblock %}
+    {% block content %}{{super()}}{% include "navbar.html" %}  {% endblock %}
 </body>
