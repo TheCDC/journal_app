@@ -16,11 +16,15 @@ class Plugin(parsing.Plugin):
     @classmethod
     def parse_entry(cls, e: models.JournalEntry) -> 'iterable[str]':
         seen = set()
-        for w in pattern.findall(e.contents):
+        words = list(pattern.findall(e.contents))
+        out = []
+        for w in words:
             try:
                 if w[0].isalpha() and w[0] == w[0].upper():
                     if w not in seen:
-                        yield w
+                        out.append(w)
                     seen.add(w)
             except IndexError:
                 pass
+        yield 'Names found: {}'.format(len(out))
+        yield from out
