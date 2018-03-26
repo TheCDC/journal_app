@@ -26,9 +26,9 @@
             </p>
         </div>
         <h2 class="text-center">Plugins Output</h2>
-        <div class="plugins_output" style="display:flex;flex-direction: row;justify-content: center;flex-wrap: wrap;">
+        <div class="plugins_output" style="">
             {% for t in context.plugin_manager.parse_entry(context.entry) %}
-                <div style="">
+                <div class="plugin_output jumbotron">
                     <!--  -->
                     {% if t[1] %}
                         <h3>
