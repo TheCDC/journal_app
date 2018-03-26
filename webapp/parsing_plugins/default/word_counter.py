@@ -18,9 +18,9 @@ class Plugin(parsing.Plugin):
     @classmethod
     def parse_entry(cls, e: models.JournalEntry) -> 'iterable[str]':
         words = list(pattern.findall(e.contents.lower()))
-        yield 'Word count: <span class="pull-right">{}</span>'.format(
+        yield 'Word count: <span class="pull-right"> {} </span>'.format(
             len(words))
-        yield 'Unique words: <span class="pull-right">{}</span>'.format(
+        yield 'Unique words: <span class="pull-right"> {} </span>'.format(
             len(set(words)))
         for t in Counter(words).most_common():
             yield '{}: <span class="pull-right">{}</span>'.format(*t)
