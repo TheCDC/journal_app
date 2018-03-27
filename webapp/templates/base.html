@@ -27,8 +27,8 @@
 {% macro render_month(month, entries) %}
 <div class="month_div">
     <h3>
-    	{{month}} <span class="pull-right">({{entries|length}})</span>
-	</h3>
+        <span class="pull-left">{{month}}</span> <span class="pull-right">({{entries|length}})</span>
+    </h3>
     <div class="day_buttons text-center">
         <!--  -->
         {% for entry in entries %}
@@ -42,9 +42,9 @@
 <!--  -->
 {% endmacro %}
 <!--  -->
-{% macro render_year(year, months) %}
+{% macro render_year(year, year_obj) %}
 <div>
-    <h2 class="year_div text-center">{{year}}</h2> {% for month in months|reverse %} {{render_month(month, months[month])}} {% endfor %}
+    <h2 class="year_div text-center">{{year}}</h2> {% for month in year_obj.months|reverse %} {{render_month(month, year_obj.months[month])}} {% endfor %}
     <hr>
 </div>
 {% endmacro %}
@@ -54,10 +54,9 @@
     <title>Journal App</title>
     {{super()}}
     <!-- custom -->
-    <link rel="stylesheet" type="text/css" href="/static/stylesheets/default.css">
-    {% endblock %}
+    <link rel="stylesheet" type="text/css" href="/static/stylesheets/default.css"> {% endblock %}
 </head>
 
 <body>
-    {% block content %}{{super()}}{% include "navbar.html" %}  {% endblock %}
+    {% block content %}{{super()}}{% include "navbar.html" %} {% endblock %}
 </body>

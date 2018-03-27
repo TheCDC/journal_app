@@ -97,10 +97,10 @@ class User(db.Model):
             y = e.create_date.year
             m = e.create_date.month
             if y not in entries_tree:
-                entries_tree[y] = dict()
-            if m not in entries_tree[y]:
-                entries_tree[y][m] = list()
-            entries_tree[y][m].append(e)
+                entries_tree[y] = dict(months=dict(), num_entries=[])
+            if m not in entries_tree[y]['months']:
+                entries_tree[y]['months'][m] = list()
+            entries_tree[y]['months'][m].append(e)
         return entries_tree
 
     def get_settings_form(self) -> forms.AccountSetingsForm:
