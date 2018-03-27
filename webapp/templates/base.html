@@ -44,7 +44,7 @@
 <!--  -->
 {% macro render_year(year, year_obj) %}
 <div>
-    <h2 class="year_div text-center">{{year}}</h2> {% for month in year_obj.months|reverse %} {{render_month(month, year_obj.months[month])}} {% endfor %}
+    <h2 class="year_div text-center">{{year}} ({{year_obj.num_entries}})</h2> {% for month in year_obj.months|reverse %} {{render_month(month, year_obj.months[month])}} {% endfor %}
     <hr>
 </div>
 {% endmacro %}
