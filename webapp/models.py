@@ -78,32 +78,6 @@ class User(db.Model):
             JournalEntry.create_date < e.create_date).order_by(
                 JournalEntry.create_date.desc()).first()
 
-    def get_entries_tree(self, target_date=None) -> dict:
-        """Return a tree structure of all entries belonging to this user.
-        tree[year][month] = [day,day,day]"""
-        query = self.query_all_entries().order_by(JournalEntry.create_date)
-        if target_date is not None:
-            query = self.query_all_entries().order_by(
-                JournalEntry.create_date).filter(
-                    JournalEntry.create_date >= target_date)
-
-        query = query.order_by(JournalEntry.create_date.desc())
-
-        entries_tree = dict()
-        for e in query:
-            if target_date is not None:
-                if e.create_date.year > target_date.year:
-                    break
-            y = e.create_date.year
-            m = e.create_date.month
-            if y not in entries_tree:
-                entries_tree[y] = dict(months=dict(), num_entries=0)
-            if m not in entries_tree[y]['months']:
-                entries_tree[y]['months'][m] = list()
-            entries_tree[y]['months'][m].append(e)
-            entries_tree[y]['num_entries'] += 1
-        return entries_tree
-
     def get_settings_form(self) -> forms.AccountSetingsForm:
         """return a pre-filled form for changing user data"""
         form = forms.AccountSetingsForm()

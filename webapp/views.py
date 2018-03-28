@@ -213,7 +213,7 @@ class HomeView(MethodView, EnableLoggingMixin):
         # form the context with default values
         context = dict(
             upload_form=upload_form,
-            entries_tree=flask_login.current_user.get_entries_tree(),
+            entries_tree=api.get_entries_tree(flask_login.current_user),
             plugin_manager=parsing.PluginManager,
             latest_entry=latest_entry,
             now=datetime.datetime.now(),
