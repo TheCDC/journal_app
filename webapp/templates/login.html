@@ -1,0 +1,16 @@
+{% extends 'base.html' %} {% block content %} {{super()}}
+	<div class='container container-fluid'>
+		{% if context.error %}
+			<div class='alert alert-danger'>
+				{{context.error}}
+			</div>
+		{% endif %}
+		<form  class="login_form " method="POST" action="{{url_for('login')}}" enctype="multipart/form-data">
+			{{context.login_form.hidden_tag()}}
+			<!--  -->
+			{{render_field(context.login_form.username)}}
+			{{render_field(context.login_form.password)}}
+			<input class="btn btn-success" type="submit" value="submit">
+		</form>
+	</div>
+{% endblock %}

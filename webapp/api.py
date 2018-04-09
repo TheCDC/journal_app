@@ -25,54 +25,21 @@ def link_for_entry(entry: models.JournalEntry):
         day=entry.create_date.day)
 
 
-def get_latest_entry() -> models.JournalEntry:
-    """Return the chronologically latest JournalEntry."""
-    return db.session.query(models.JournalEntry).order_by(
-        models.JournalEntry.create_date.desc()).first()
+def strip_datetime(d: datetime.datetime):
+    return datetime.datetime(d.year, d.month, d.day)
 
 
-def get_all_years() -> 'iterable[datetime.datetime]':
-    """Return a list of dates corresponding to the range of
-    years encompassed by all journal entries."""
-    # define earliest and latest years of entries
-    start_year = db.session.query(models.JournalEntry).order_by(
-        models.JournalEntry.create_date).first()
-    end_year = db.session.query(models.JournalEntry).order_by(
-        models.JournalEntry.create_date.desc()).first()
-    if start_year and end_year:
-        for y in range(start_year.create_date.year,
-                       end_year.create_date.year + 1):
-            # find any entry within this year but before next year
-            found = db.session.query(models.JournalEntry).filter(
-                models.JournalEntry.create_date >= datetime.datetime(
-                    y, 1, 1, 0, 0)).filter(
-                        models.JournalEntry.create_date < datetime.datetime(
-                            y + 1, 1, 1, 0, 0)).first()
-            # only yield this year if has an entry
-            if found:
-                yield datetime.datetime(y, 1, 1, 0, 0)
+def entry_exists(target_date: datetime.datetime):
+    return models.JournalEntry.query.filter_by(
+        create_date=strip_datetime(target_date)).first()
 
 
-def next_entry(e: models.JournalEntry) -> models.JournalEntry:
-    """Return the first JournalEntry that falls chronologically after
-    the given entry."""
-    return db.session.query(models.JournalEntry).filter(
-        models.JournalEntry.create_date > e.create_date).first()
-
-
-def previous_entry(e: models.JournalEntry) -> models.JournalEntry:
-    """Return the first JournalEntry that falls chronologically before
-    the given entry."""
-    return db.session.query(models.JournalEntry).filter(
-        models.JournalEntry.create_date < e.create_date).order_by(
-            models.JournalEntry.create_date.desc()).first()
-
-
-def get_entries_tree(target_date=None) -> dict:
-    query = db.session.query(models.JournalEntry).order_by(
-        models.JournalEntry.create_date)
+def get_entries_tree(target_user, target_date=None) -> dict:
+    """Return a tree structure of all entries belonging to this user.
+    tree[year][month] = [day,day,day]"""
+    query = target_user.query_all_entries().order_by(models.JournalEntry.create_date)
     if target_date is not None:
-        query = db.session.query(models.JournalEntry).order_by(
+        query = target_user.query_all_entries().order_by(
             models.JournalEntry.create_date).filter(
                 models.JournalEntry.create_date >= target_date)
 
@@ -86,17 +53,9 @@ def get_entries_tree(target_date=None) -> dict:
         y = e.create_date.year
         m = e.create_date.month
         if y not in entries_tree:
-            entries_tree[y] = dict()
-        if m not in entries_tree[y]:
-            entries_tree[y][m] = list()
-        entries_tree[y][m].append(e)
+            entries_tree[y] = dict(months=dict(), num_entries=0)
+        if m not in entries_tree[y]['months']:
+            entries_tree[y]['months'][m] = list()
+        entries_tree[y]['months'][m].append(e)
+        entries_tree[y]['num_entries'] += 1
     return entries_tree
-
-
-def strip_datetime(d: datetime.datetime):
-    return datetime.datetime(d.year, d.month, d.day)
-
-
-def entry_exists(target_date: datetime.datetime):
-    return models.JournalEntry.query.filter_by(
-        create_date=strip_datetime(target_date)).first()

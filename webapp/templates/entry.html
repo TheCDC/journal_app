@@ -1,50 +1,56 @@
 {% extends 'base.html' %} {% block content %} {{super()}}
-    <div class="container">
-        <!--  -->
-        <h2>
+<div class="container">
+    <!--  -->
+    <h2 class="page-header text-center">
         {{render_breadcrumbs(context.breadcrumbs)}}
         </h2>
-        <div>
-            {% if context.prev_entry %}
-                <!--  -->
-                <a class="btn btn-default" href="{{link_for_entry(context.prev_entry)}}">Previous ({{context.prev_entry.date_string}})</a>
-                <!--  -->
-            {% endif %}
-            <!--  -->
-            {% if context.next_entry %}
-                <!--  -->
-                <a class="btn btn-default" href="{{link_for_entry(context.next_entry)}}">Next ({{context.next_entry.date_string}})</a>
-                <!--  -->
-            {% endif %}
-        </div>
-        <div class="jumbotron">
-            <h2>
+    <ul class="pager">
+        {% if context.prev_entry %}
+        <!--  -->
+        <li>
+            <a class="btn btn-default" href="{{link_for_entry(context.prev_entry)}}">Previous ({{context.prev_entry.date_string}})</a>
+        </li>
+        <!--  -->
+        {% endif %}
+        <!--  -->
+        {% if context.next_entry %}
+        <!--  -->
+        <li>
+            <a class="btn btn-default" href="{{link_for_entry(context.next_entry)}}">Next ({{context.next_entry.date_string}})</a>
+        </li>
+        <!--  -->
+        {% endif %}
+    </ul>
+    <div class="jumbotron">
+        <h2>
             {{context.entry.date_string}}, a {{context.entry.create_date.strftime('%A')}}
             </h2>
-            <p>
-                {{context.entry.to_html()|safe}}
-            </p>
-        </div>
-        <div>
-            {% for t in context.plugin_manager.parse_entry(context.entry) %}
-                <!--  -->
-                {% if t[1] %}
-                    <h3>
-                    {% if t[0].name is defined %}
-                        {{t[0].name}}
-                    {% else %}
-                        undefined
-                    {% endif %}
-                    </h3>
-                    <ul>
-                        {% for word in t[1] %}
-                            <li>
-                                {{word|safe}}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% endif %} {% endfor %}
+        <p>
+            {{context.entry.to_html()|safe}}
+        </p>
+    </div>
+    <h2 class="text-center">Plugins Output</h2>
+    <div class="plugins_output" style="">
+        {% for t in context.plugin_manager.parse_entry(context.entry) %}
+        <div class="plugin_output panel panel-default">
+            <!--  -->
+            {% if t[1] %}
+            <div class="panel-heading">
+                {% if t[0].name is defined %} {{t[0].name}} {% else %} undefined {% endif %}
             </div>
+            <ul class="panel-body list-group">
+                {% for word in t[1] %}
+                <li class="list-group-item">
+                    {{word|safe}}
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
             <!--  -->
         </div>
-    {% endblock %}
+        {% endfor %}
+    </div>
+</div>
+<!--  -->
+</div>
+{% endblock %}

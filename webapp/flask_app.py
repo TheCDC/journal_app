@@ -1,4 +1,4 @@
-from webapp.app_init import app
+from webapp.app_init import app, login_manager
 from webapp import parsing
 from . import views
 from . import models
@@ -7,6 +7,14 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# make functions available in templates
+app.jinja_env.globals.update(link_for_entry=api.link_for_entry, )
+
+
+@login_manager.user_loader
+def load_user(target_id: int) -> models.User:
+    return models.User.query.filter_by(id=int(target_id)).first()
+
 
 @app.before_first_request
 def setup_app():
@@ -14,10 +22,11 @@ def setup_app():
     parsing.PluginManager.init()
 
 
-app.jinja_env.globals.update(
-    link_for_entry=api.link_for_entry,
-    get_latest_entry=api.get_latest_entry,
-    get_all_years=api.get_all_years)
+app.add_url_rule('/login', view_func=views.LoginView.as_view('login'))
+app.add_url_rule('/logout', view_func=views.LogoutView.as_view('logout'))
+app.add_url_rule('/register', view_func=views.RegisterView.as_view('register'))
+app.add_url_rule('/home', view_func=views.HomeView.as_view('home'))
+app.add_url_rule('/settings', view_func=views.SettingsView.as_view('settings'))
 
 app.add_url_rule('/', view_func=views.IndexView.as_view('index'))
 

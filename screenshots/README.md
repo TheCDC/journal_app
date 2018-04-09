@@ -1,0 +1,1 @@
+Screenshots of the current state of the application.

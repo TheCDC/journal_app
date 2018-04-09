@@ -1,0 +1,12 @@
+.plugins_output {
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.plugin_output{
+	margin: 1em;
+	height: 100%;
+}

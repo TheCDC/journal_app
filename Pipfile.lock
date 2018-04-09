@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "714ab7e04d37bff05b91239e425b585fca50a740aa460495dec7ec332e3d986e"
+            "sha256": "05aed1fcfb0a550a04c4470c26008cdccb042d2e1864efee727e7a7718709b24"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -9,9 +9,9 @@
             "os_name": "posix",
             "platform_machine": "x86_64",
             "platform_python_implementation": "CPython",
-            "platform_release": "4.13.0-36-generic",
+            "platform_release": "4.13.0-37-generic",
             "platform_system": "Linux",
-            "platform_version": "#40-Ubuntu SMP Fri Feb 16 20:07:48 UTC 2018",
+            "platform_version": "#42-Ubuntu SMP Wed Mar 7 14:13:23 UTC 2018",
             "python_full_version": "3.6.3",
             "python_version": "3.6",
             "sys_platform": "linux"
@@ -71,6 +71,12 @@
                 "sha256:cb08ed940183f6343a64e465e83b3a3f13c53e1baabb8d72b5da4545ef123ac8"
             ],
             "version": "==3.3.7.1"
+        },
+        "flask-login": {
+            "hashes": [
+                "sha256:c815c1ac7b3e35e2081685e389a665f2c74d7e077cb93cecabaea352da4752ec"
+            ],
+            "version": "==0.4.1"
         },
         "flask-migrate": {
             "hashes": [

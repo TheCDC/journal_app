@@ -7,7 +7,8 @@ from webapp import models
 from webapp import forms
 from webapp import parsing
 from webapp import api
-
+import sqlalchemy
+import flask_login
 logger = logging.getLogger(__name__)
 
 if logger.disabled:
@@ -28,13 +29,72 @@ class EnableLoggingMixin:
         return self._logger
 
 
+class LoginView(MethodView):
+    def get_template_name(self, ):
+        return 'login.html'
+
+    def get(self, **kwargs):
+        context = dict(login_form=forms.LoginForm())
+        context.update(kwargs)
+        return flask.render_template(self.get_template_name(), context=context)
+
+    def post(self, **kwargs):
+        login_form = forms.LoginForm()
+        context = dict(login_form=login_form)
+        context.update(kwargs)
+        found_user = models.User.query.filter_by(
+            username=login_form.username.data,
+            password=login_form.password.data).first()
+        if found_user is not None:
+            flask_login.login_user(found_user)
+            return flask.redirect(flask.url_for('index'))
+        return self.get(error="User not found")
+
+
+class LogoutView(MethodView):
+    def get(self):
+        flask_login.logout_user()
+        return flask.redirect(flask.url_for('index'))
+
+
+class RegisterView(MethodView):
+    def get_template_name(self, ):
+        return 'register.html'
+
+    def get(self, **kwargs):
+        context = dict(register_form=forms.RegisterForm(), )
+        context.update(kwargs)
+        return flask.render_template(self.get_template_name(), context=context)
+
+    def post(self):
+        register_form = forms.RegisterForm()
+        context = dict(register_form=register_form)
+        if register_form.validate_on_submit():
+            new_user = models.User(
+                username=register_form.username.data,
+                password=register_form.password.data,
+                email=register_form.email.data)
+            db.session.add(new_user)
+            try:
+                db.session.commit()
+                flask_login.login_user(new_user)
+            except sqlalchemy.exc.IntegrityError:
+                db.session.rollback()
+                return self.get(
+                    register_form=register_form, error="User already exists!")
+
+            flask.flash('User successfully registered')
+            return flask.redirect(flask.url_for('home'))
+        else:
+            return self.get(register_form=register_form)
+
+
 class EntrySearchView(MethodView):
     def get_objects(self, **kwargs):
         start_date = self.args_to_date(**kwargs)
-        found = list(
-            db.session.query(models.JournalEntry).filter(
-                models.JournalEntry.create_date >= start_date).order_by(
-                    models.JournalEntry.create_date))
+        found = list(flask_login.current_user.query_all_entries().filter(
+            models.JournalEntry.create_date >= start_date).order_by(
+                models.JournalEntry.create_date))
         return found
 
     def args_to_date(self,
@@ -76,8 +136,8 @@ class EntrySearchView(MethodView):
                     search_results=[(e, api.link_for_entry(e)) for e in found],
                     breadcrumbs=breadcrumbs,
                 ))
-        forward = api.next_entry(e)
-        backward = api.previous_entry(e)
+        forward = flask_login.current_user.next_entry(e)
+        backward = flask_login.current_user.previous_entry(e)
         return flask.render_template(
             'entry.html',
             context=dict(
@@ -89,9 +149,19 @@ class EntrySearchView(MethodView):
             ))
 
 
-class IndexView(MethodView, EnableLoggingMixin):
+class IndexView(MethodView):
     def get_template_name(self):
         return 'index.html'
+
+    def get(self):
+        if flask_login.current_user.is_authenticated:
+            return flask.redirect(flask.url_for('home'))
+        return flask.render_template(self.get_template_name())
+
+
+class HomeView(MethodView, EnableLoggingMixin):
+    def get_template_name(self):
+        return 'home.html'
 
     def post(self, **kwargs):
         upload_form = forms.UploadForm()
@@ -109,16 +179,18 @@ class IndexView(MethodView, EnableLoggingMixin):
                 self.logger.debug('parse failed')
                 return self.get(upload_form=upload_form, error=e)
 
-            db.session.query(models.JournalEntry).delete()
+            flask_login.current_user.query_all_entries().delete()
             for e in parsed:
                 body_text = e.body.replace('\r', '')
-                found = db.session.query(
-                    models.JournalEntry).filter_by(create_date=e.date).first()
+                found = flask_login.current_user.query_all_entries().filter_by(
+                    create_date=e.date).first()
                 if found:
                     found.contents = body_text
                 else:
                     found = models.JournalEntry(
-                        create_date=e.date, contents=body_text)
+                        owner=flask_login.current_user,
+                        create_date=e.date,
+                        contents=body_text)
                 session.add(found)
 
             session.flush()
@@ -127,7 +199,8 @@ class IndexView(MethodView, EnableLoggingMixin):
             good_parse = True
         if good_parse:
             return self.get(
-                upload_form=upload_form, success='Your journal was successfully parsed!')
+                upload_form=upload_form,
+                success='Your journal was successfully parsed!')
         else:
             return self.get(
                 upload_form=upload_form, error='Invalid submission!')
@@ -136,19 +209,40 @@ class IndexView(MethodView, EnableLoggingMixin):
     def get(self, **kwargs):
         upload_form = forms.UploadForm()
 
-        latest_entry = api.get_latest_entry()
+        latest_entry = flask_login.current_user.get_latest_entry()
         # form the context with default values
         context = dict(
             upload_form=upload_form,
-            entries_tree=api.get_entries_tree(),
+            entries_tree=api.get_entries_tree(flask_login.current_user),
             plugin_manager=parsing.PluginManager,
             latest_entry=latest_entry,
             now=datetime.datetime.now(),
             years=[(api.link_for_date(year=y.year), y.year)
-                   for y in api.get_all_years()],
+                   for y in flask_login.current_user.get_all_years()],
             error=None,
             success=None,
         )
         # allow context values to be overridden by kwargs
         context.update(kwargs)
         return flask.render_template(self.get_template_name(), context=context)
+
+
+class SettingsView(MethodView):
+    def get_template_name(self):
+        return 'settings.html'
+
+    def get(self, **kwargs):
+        form = flask_login.current_user.get_settings_form()
+        context = dict(settings_form=form)
+
+        context.update(kwargs)
+        return flask.render_template(self.get_template_name(), context=context)
+
+    def post(self):
+        form = forms.AccountSetingsForm()
+        cu = flask_login.current_user
+        if form.validate_on_submit():
+            cu.update_settings(form)
+        else:
+            return self.get(settings_form=form)
+        return flask.redirect(flask.url_for('settings'))
