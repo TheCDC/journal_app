@@ -20,9 +20,12 @@ Yesterday and tomorrow are also dates.
 
 # Screenshots
 
-![index page](screenshots/Screenshot-2018-3-15(1).png)
+![index page head](screenshots/Screenshot-2018-4-9_Journal_App(1))
 
-![viewing journal entry](screenshots/Screenshot-2018-3-15(2).png)
+![index page body](screenshots/Screenshot-2018-4-9_Journal_App(2))
+
+![single entry view](screenshots/Screenshot-2018-4-9_Journal_App(3))
+
 
 
 # Getting Started
