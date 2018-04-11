@@ -163,6 +163,7 @@ class HomeView(MethodView, EnableLoggingMixin):
     def get_template_name(self):
         return 'home.html'
 
+    @flask_login.login_required
     def post(self, **kwargs):
         upload_form = forms.UploadForm()
         self.logger.debug('Try upload')
@@ -206,6 +207,7 @@ class HomeView(MethodView, EnableLoggingMixin):
                 upload_form=upload_form, error='Invalid submission!')
         # return flask.redirect(flask.url_for('index'))
 
+    @flask_login.login_required
     def get(self, **kwargs):
         upload_form = forms.UploadForm()
 
@@ -231,6 +233,7 @@ class SettingsView(MethodView):
     def get_template_name(self):
         return 'settings.html'
 
+    @flask_login.login_required
     def get(self, **kwargs):
         form = flask_login.current_user.get_settings_form()
         context = dict(settings_form=form)
@@ -238,6 +241,7 @@ class SettingsView(MethodView):
         context.update(kwargs)
         return flask.render_template(self.get_template_name(), context=context)
 
+    @flask_login.login_required
     def post(self):
         form = forms.AccountSetingsForm()
         cu = flask_login.current_user
