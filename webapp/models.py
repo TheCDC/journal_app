@@ -8,6 +8,7 @@ from webapp import parsing
 import logging
 import flask_migrate
 import alembic
+import markdown
 logger = logging.getLogger(__name__)
 
 
@@ -114,6 +115,7 @@ class JournalEntry(db.Model):
 
     def to_html(self) -> str:
         """Return HTML necesary to render the entry the same as plain text."""
+        return markdown.markdown(self.contents)
         return self.contents.replace('\n', '<br>')
 
     @property

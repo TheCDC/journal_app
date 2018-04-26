@@ -4,7 +4,6 @@ from . import views
 from . import models
 from . import api
 import logging
-
 logger = logging.getLogger(__name__)
 
 # make functions available in templates
@@ -37,6 +36,8 @@ url_args = '<int:year>/<int:month>/<int:day>'.split('/')
 for i in range(1, len(url_args) + 1):
     endpoint = '/entry/' + '/'.join(url_args[:i])
     app.add_url_rule(endpoint, view_func=search_view)
+
+login_manager.login_view = "login"
 
 
 def main():
