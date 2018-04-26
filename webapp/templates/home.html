@@ -23,7 +23,7 @@
             {{context.latest_entry.to_html()|safe}}
         </p>
         {% else %}
-        <h2> Hi {{current_user.username}}. It looks pretty empty in here. Upload a journal? </h2>
+        <h2> Hi {{current_user.first_name}}. It looks pretty empty in here. Upload a journal? </h2>
         <p>
             Make sure it's a text file in this format:
             <pre>
