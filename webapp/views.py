@@ -9,6 +9,7 @@ from webapp import parsing
 from webapp import api
 import sqlalchemy
 import flask_login
+
 logger = logging.getLogger(__name__)
 
 if logger.disabled:
