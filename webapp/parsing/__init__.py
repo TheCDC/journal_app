@@ -6,7 +6,7 @@ import logging
 from webapp import parsing_plugins
 logger = logging.getLogger(__name__)
 # print('__name__', __name__)
-DATE_HEADER_PATTERN = re.compile(r"^[0-9]+-[0-9]+-[0-9]*\w*")
+DATE_HEADER_PATTERN = re.compile(r"^[0-9]+-[0-9]+-[0-9]*\w*$")
 
 
 def datestr(y: str, m: str, d: str) -> str:

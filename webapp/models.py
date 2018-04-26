@@ -116,13 +116,6 @@ class JournalEntry(db.Model):
     def to_html(self) -> str:
         """Return HTML necesary to render the entry the same as plain text."""
         return markdown.markdown(self.contents)
-        return self.contents.replace('\n', '<br>')
-
-    @property
-    def tokens(self):
-        """Return the contents parsed as tokens."""
-        raise NotImplementedError(
-            'TODO: tokenize entry contents to allow for wiki-style linking.')
 
     @property
     def date_string(self) -> str:
