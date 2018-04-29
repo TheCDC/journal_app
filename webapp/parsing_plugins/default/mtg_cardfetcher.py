@@ -22,7 +22,7 @@ class Plugin(parsing.Plugin):
         cards = list(card_pattern.findall(e.contents))
         for card in cards:
             if card not in seen:
+                seen.add(card)
                 card_obj = scrython.cards.Named(fuzzy=card[2:-2])
                 yield link_element_template.format(
                     link=card_obj.scryfall_uri(), body=card_obj.name())
-                seen.add(card)

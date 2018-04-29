@@ -146,7 +146,7 @@ class PluginManager:
         # track plugin configurations in db
         for p in cls.registered_plugins:
             found = db.session.query(models.PluginConfig).filter(
-                models.PluginConfig.class_name == str(p)).first()
+                models.PluginConfig.class_name == p.get_class_name()).first()
             if found is None:
                 # unique name based on filename
                 found = models.PluginConfig(class_name=p.get_class_name())
