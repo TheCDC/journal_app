@@ -18,6 +18,7 @@ flask-bootstrap = "*"
 parsedatetime = "*"
 flask-login = "*"
 markdown = "*"
+scrython = "*"
 
 
 [dev-packages]

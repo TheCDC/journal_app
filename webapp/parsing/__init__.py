@@ -23,6 +23,7 @@ def leftpad(s: str, l: int, c=' ') -> str:
 
 
 class Entry:
+
     def __init__(self, date: datetime.date, body: str):
         self._date = date
         self._body = body
@@ -90,6 +91,11 @@ class Plugin:
     requires_initialization = True
     initialized = False
 
+    @classmethod
+    def get_class_name(cls):
+        s = str(cls).split(' ')[1]
+        return s[1:len(s) - 2]
+
     def __init__(self):
         self.logger = logger.getChild(self.name.replace(' ', '_').lower())
 
@@ -143,7 +149,8 @@ class PluginManager:
                 models.PluginConfig.class_name == str(p)).first()
             if found is None:
                 # unique name based on filename
-                found = models.PluginConfig(class_name=str(p))
+                found = models.PluginConfig(class_name=p.get_class_name())
+                found.enabled = True
             # human name
             found.name = p.name
             db.session.add(found)
@@ -161,7 +168,7 @@ class PluginManager:
         plugin to the results of it parsing the target Entry."""
         for p in cls.registered_plugins:
             found = db.session.query(models.PluginConfig).filter(
-                models.PluginConfig.class_name == str(p)).first()
+                models.PluginConfig.class_name == p.get_class_name()).first()
             if found.enabled:
                 items = list(p.parse_entry(e))
                 if items:

@@ -1,7 +1,12 @@
 import os
 import logging
+IS_PRODUCTION = os.environ.get('IS_PRODUCTION', False)
+if not IS_PRODUCTION:
+    CONFIG_PATH = os.path.expanduser(
+        os.path.join(os.path.dirname(__file__), 'runtime_files'))
+else:
+    CONFIG_PATH = os.path.expanduser(os.path.join('~/', 'cdc_journal'))
 
-CONFIG_PATH = os.path.expanduser(os.path.join('~/', 'cdc_journal'))
 #  ========== Logging ==========
 
 LOG_PATH = os.path.join(CONFIG_PATH, 'journal_app.log')
