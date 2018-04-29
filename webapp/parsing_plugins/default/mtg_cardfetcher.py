@@ -14,7 +14,7 @@ link_element_template = '<a href="{link}">{body}</a>'
 
 class Plugin(parsing.Plugin):
     """An example plugin that simply splits the entry on spaces."""
-    name = 'Magic the Gathering Fetcher'
+    name = 'Magic: the Gathering Fetcher'
 
     @classmethod
     def parse_entry(cls, e: models.JournalEntry) -> 'iterable[str]':
