@@ -3,13 +3,11 @@
 It identifies capitalized words in the text of journal entries."""
 from webapp import parsing
 from webapp import models
-
 import re
 import scrython
-token_open = re.compile(r'\[\[')
-token_close = re.compile(r'\]\]')
+
 card_pattern = re.compile(r'\[\[[^\[^\].]*\]\]')
-link_element_template = '<a href="{link}">{body}</a>'
+link_element_template = '<a target="_blank" href="{link}">{body}</a>'
 
 
 class Plugin(parsing.Plugin):
