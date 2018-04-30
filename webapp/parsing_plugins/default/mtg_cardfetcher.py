@@ -5,7 +5,7 @@ from webapp import parsing
 from webapp import models
 import re
 import scrython
-
+import aiohttp
 card_pattern = re.compile(r'\[\[[^\[^\].]*\]\]')
 link_element_template = '<a target="_blank" href="{link}">{body}</a>'
 
@@ -21,6 +21,9 @@ class Plugin(parsing.Plugin):
         for card in cards:
             if card not in seen:
                 seen.add(card)
-                card_obj = scrython.cards.Named(fuzzy=card[2:-2])
-                yield link_element_template.format(
-                    link=card_obj.scryfall_uri(), body=card_obj.name())
+                try:
+                    card_obj = scrython.cards.Named(fuzzy=card[2:-2])
+                    yield link_element_template.format(
+                        link=card_obj.scryfall_uri(), body=card_obj.name())
+                except aiohttp.client_exceptions.ClientConnectorError:
+                    pass

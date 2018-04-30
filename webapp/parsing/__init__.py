@@ -93,6 +93,7 @@ class Plugin:
 
     @classmethod
     def get_class_name(cls):
+        """Return the name of this class including the file in which it is defined."""
         s = str(cls).split(' ')[1]
         return s[1:len(s) - 2]
 
@@ -100,16 +101,17 @@ class Plugin:
         self.logger = logger.getChild(self.name.replace(' ', '_').lower())
 
     def get_model(self):
+        """Return the databse record associated with this plugin."""
         found = db.session.query(models.PluginConfig).filter(
-            models.PluginConfig.class_name == str(self)).first()
+            models.PluginConfig.class_name == self.get_class_name()).first()
         return found
 
     def init(self):
-        self.initialized = True
         """The responsibility of this method is to perform long-running
         initialization tasks such as downloading resources,
         building large data structures to be read later, etc.
         It is distinct from __init__ in this respect."""
+        self.initialized = True
         raise NotImplementedError("init() not implemented.")
 
     def parse_entry(self, e: Entry) -> list:
