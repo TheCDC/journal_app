@@ -19,6 +19,8 @@ key = os.environ.get('SECRET_KEY', None)
 if key is None:
     raise RuntimeError('App SECRET_KEY must be provided in env vars!')
 app.config['SECRET_KEY'] = key
+app.config['SECURITY_PASSWORD_SALT'] = os.environ.get('SECURITY_PASSWORD_SALT',
+                                                      None)
 
 app.config[
     'SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{config.SQLALCHEMY_DATABASE_URI}'
@@ -37,4 +39,3 @@ bootstrap = flask_bootstrap.Bootstrap(app)
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 login_manager.logiin_view = 'login'
-
