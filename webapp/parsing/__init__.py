@@ -154,7 +154,7 @@ class PluginManager:
                 found = models.PluginConfig(class_name=p.get_class_name())
                 found.enabled = True
             # human name
-            found.name = p.name
+            found.name = p.get_class_name()
             db.session.add(found)
             db.session.flush()
             db.session.commit()
