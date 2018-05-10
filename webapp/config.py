@@ -24,5 +24,5 @@ tmpl_dir = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), 'templates')
 ALEMBIC_PATH = os.path.join(CONFIG_PATH, 'migrations')
 # set the database location and protocol
-SQLITE_DB_PATH = os.path.join(CONFIG_PATH, 'database.db')
+SQLALCHEMY_DATABASE_URI = os.path.join(CONFIG_PATH, 'database.db')
 DEBUG_ENABLED = os.environ.get('DEBUG_ENABLED', False)
