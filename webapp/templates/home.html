@@ -1,40 +1,43 @@
 {% extends 'base.html' %} {% block content %} {{super()}}
-<!--  -->
-<div class="container">
-    {% if context.error %}
-    <div class="alert alert-danger  ">
-        <h1 class="">
+    <!--  -->
+    <div class="container">
+        {% if context.error %}
+            <div class="alert alert-danger  ">
+                <h1 class="">
                 Error
                 </h1>
-        <p class="">{{ context.error }}</p>
-    </div>
-    {% endif %} {% if context.success %}
-    <div class="alert alert-success  ">
-        <h1 class="">
-                Success
-                </h1>
-        <p class="">{{ context.success }}</p>
-    </div>
+                <p class="">{{ context.error }}</p>
+            </div>
+        {% endif %} {% if context.success %}
+        <div class="alert alert-success  ">
+            <h1 class="">
+            Success
+            </h1>
+            <p class="">{{ context.success }}</p>
+        </div>
     {% endif %}
     <div class="jumbotron">
         {% if context.latest_entry %}
-        <h2> Remember this from {{(context.now - context.latest_entry.create_date).days}} day(s) ago?</h2>
-        <p>
-            {{context.latest_entry.to_html()|safe}}
-        </p>
+            {% if (context.now - context.latest_entry.create_date).days > 0 %}
+                <h2> Remember this from {{(context.now - context.latest_entry.create_date).days}} day(s) ago?</h2>
+            {% else %}
+                <h2> Today's entry </h2>
+            {% endif %}
+            <p>
+                {{context.latest_entry.to_html()|safe}}
+            </p>
         {% else %}
-        <h2> Hi {{current_user.first_name}}. It looks pretty empty in here. Upload a journal? </h2>
-        <p>
-            Make sure it's a text file in this format:
-            <pre>
-2018-03-15
-Something about the Ides of March.
-
-2018-11-05
-Remember remember the fifth of November.
-            </pre>
-            It's just that easy.
-        </p>
+            <h2> Hi {{current_user.first_name}}. It looks pretty empty in here. Upload a journal? </h2>
+            <p>
+                Make sure it's a text file in this format:
+                            <pre>
+                    2018-03-15
+                    Something about the Ides of March.
+                    2018-11-05
+                    Remember remember the fifth of November.
+                </pre>
+                It's just that easy.
+            </p>
         {% endif %}
     </div>
     <div class="container">
@@ -42,46 +45,46 @@ Remember remember the fifth of November.
             <div class="col col-md-3" id="upload_div">
                 <h2>Upload Journal File</h2>
                 <form class="upload_form {% if context.error %}alert alert-danger{% endif %}" method="POST" action="{{url_for('home')}}" enctype="multipart/form-data">
-                    {{context.upload_form.hidden_tag()}}
-                    <!--  -->
-                    {{render_field(context.upload_form.file)}}
-                    <input class="btn btn-success" type="submit" value="submit">
-                </form>
-                {{context.file_contents}}
-            </div>
-            <div class="col col-md-3">
-                <h2>Search by year</h2>
-                <ul>
-                    {% for t in context.years %}
+                {{context.upload_form.hidden_tag()}}
+                <!--  -->
+                {{render_field(context.upload_form.file)}}
+                <input class="btn btn-success" type="submit" value="submit">
+            </form>
+            {{context.file_contents}}
+        </div>
+        <div class="col col-md-3">
+            <h2>Search by year</h2>
+            <ul>
+                {% for t in context.years %}
                     <li>
                         <a href="{{t[0]}}">{{t[1]}}</a>
                     </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <div class="col col-md-3">
-                <h2>Search contents</h2>
-                <p>
-                    Coming soon!
-                </p>
-            </div>
-            <div class="col col-md-3" id="plugins_div">
-                <h2> Installed plugins </h2>
-                <ul>
-                    {% for p in context.plugin_manager.registered_plugins %}
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col col-md-3">
+            <h2>Search contents</h2>
+            <p>
+                Coming soon!
+            </p>
+        </div>
+        <div class="col col-md-3" id="plugins_div">
+            <h2> Installed plugins </h2>
+            <ul>
+                {% for p in context.plugin_manager.registered_plugins %}
                     <li>
                         {{p.name}} {% if p.get_model().enabled %}
-                        <span class="text-success">Enabled</span> {% else %}
-                        <span class="text-warning">Disabled</span> {% endif %}
-                    </li>
+                            <span class="text-success">Enabled</span> {% else %}
+                            <span class="text-warning">Disabled</span> {% endif %}
+                        </li>
                     {% endfor %}
                 </ul>
             </div>
         </div>
     </div>
     <div>
-        {% for year in context.entries_tree|reverse %} {{render_year(year, context.entries_tree[year])}} {% endfor %}
-    </div>
+    {% for year in context.entries_tree|reverse %} {{render_year(year, context.entries_tree[year])}} {% endfor %}
+</div>
 </div>
 <!--  -->
 {% endblock %}
