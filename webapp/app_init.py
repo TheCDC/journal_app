@@ -8,7 +8,6 @@ from flask_admin import Admin
 import logging
 from . import config
 import os
-
 logger = logging.getLogger(__name__)
 #  ========== Flask App ==========
 app = flask.Flask(
@@ -20,20 +19,23 @@ key = os.environ.get('SECRET_KEY', None)
 if key is None:
     raise RuntimeError('App SECRET_KEY must be provided in env vars!')
 app.config['SECRET_KEY'] = key
+app.config['SECURITY_PASSWORD_SALT'] = os.environ.get('SECURITY_PASSWORD_SALT',
+                                                      None)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{config.SQLITE_DB_PATH}'
-# initialize SQLAlchemy engine
+app.config[
+    'SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{config.SQLALCHEMY_DATABASE_URI}'
+# ========== Setup sqlalchemy ==========
 db = SQLAlchemy(app)
 # initialize migration engine
 migrate = Migrate(app, db, directory=config.ALEMBIC_PATH)
-# admin interface
+# ========== Setup flask-admin ==========
 if config.DEBUG_ENABLED:
     admin = Admin(app, name='Journal Wiki App', template_mode='bootstrap3')
 else:
     admin = None
-# bootstrap
+# ========== Setup Bootstrap ==========
 bootstrap = flask_bootstrap.Bootstrap(app)
-# logins
+# ========== Setup flask-login ==========
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 login_manager.logiin_view = 'login'

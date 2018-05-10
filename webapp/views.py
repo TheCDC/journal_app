@@ -9,7 +9,7 @@ from webapp import parsing
 from webapp import api
 import sqlalchemy
 import flask_login
-
+from flask_security.utils import encrypt_password
 logger = logging.getLogger(__name__)
 
 if logger.disabled:
@@ -71,20 +71,25 @@ class RegisterView(MethodView):
         register_form = forms.RegisterForm()
         context = dict(register_form=register_form)
         if register_form.validate_on_submit():
-            new_user = models.User(
+            # new_user = models.User(
+            #     username=register_form.username.data,
+            #     password=register_form.password.data,
+            #     email=register_form.email.data)
+            # db.session.add(new_user)
+            models.user_datastore.create_user(
                 username=register_form.username.data,
-                password=register_form.password.data,
+                password=encrypt_password(register_form.password.data),
                 email=register_form.email.data)
-            db.session.add(new_user)
             try:
                 db.session.commit()
-                flask_login.login_user(new_user)
+                flask_login.login_user(
+                    models.user_datastore.get_user(register_form.email.data))
             except sqlalchemy.exc.IntegrityError:
                 db.session.rollback()
                 return self.get(
                     register_form=register_form, error="User already exists!")
 
-            flask.flash('User successfully registered')
+            # flask.flash('User successfully registered')
             return flask.redirect(flask.url_for('home'))
         else:
             return self.get(register_form=register_form)

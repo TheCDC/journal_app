@@ -4,6 +4,7 @@ from . import views
 from . import models
 from . import api
 import logging
+
 logger = logging.getLogger(__name__)
 
 # make functions available in templates
