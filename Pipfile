@@ -19,6 +19,8 @@ parsedatetime = "*"
 flask-login = "*"
 markdown = "*"
 scrython = "*"
+flask-security = "*"
+bcrypt = "*"
 
 
 [dev-packages]
