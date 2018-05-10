@@ -10,6 +10,7 @@ import flask_migrate
 import alembic
 import markdown
 from flask_security import Security, SQLAlchemyUserDatastore, UserMixin, RoleMixin
+from flask_security.utils import encrypt_password
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +28,7 @@ class Role(db.Model, RoleMixin):
     description = db.Column(db.String(255))
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, index=True)
     password = db.Column(db.String(200))
@@ -117,7 +118,7 @@ class User(db.Model):
             self.email = form.email.data
             if form.new_password.data == form.new_password_confirm.data:
                 if form.password.data == self.password:
-                    self.password = form.new_password.data
+                    self.password = encrypt_password(form.new_password.data)
             db.session.add(self)
             db.session.commit()
 

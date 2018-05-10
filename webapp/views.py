@@ -71,11 +71,6 @@ class RegisterView(MethodView):
         register_form = forms.RegisterForm()
         context = dict(register_form=register_form)
         if register_form.validate_on_submit():
-            # new_user = models.User(
-            #     username=register_form.username.data,
-            #     password=register_form.password.data,
-            #     email=register_form.email.data)
-            # db.session.add(new_user)
             models.user_datastore.create_user(
                 username=register_form.username.data,
                 password=encrypt_password(register_form.password.data),
