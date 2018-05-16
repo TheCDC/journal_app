@@ -35,7 +35,7 @@ class RegisterForm(LoginForm):
         validators=[wtforms.validators.DataRequired()])
 
 
-class AccountSetingsForm(flask_wtf.FlaskForm):
+class AccountSettingsForm(flask_wtf.FlaskForm):
     password = wtforms.PasswordField('Old password', validators=[])
     new_password = wtforms.PasswordField(validators=[])
     new_password_confirm = wtforms.PasswordField(validators=[])

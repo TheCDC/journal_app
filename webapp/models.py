@@ -101,15 +101,15 @@ class User(db.Model, UserMixin):
             JournalEntry.create_date < e.create_date).order_by(
                 JournalEntry.create_date.desc()).first()
 
-    def get_settings_form(self) -> forms.AccountSetingsForm:
+    def get_settings_form(self) -> forms.AccountSettingsForm:
         """return a pre-filled form for changing user data"""
-        form = forms.AccountSetingsForm()
+        form = forms.AccountSettingsForm()
         form.email.data = self.email
         form.first_name.data = self.first_name
         form.last_name.data = self.last_name
         return form
 
-    def update_settings(self, settings_form: forms.AccountSetingsForm):
+    def update_settings(self, settings_form: forms.AccountSettingsForm):
         """Takes a form and updates values from it."""
         form = settings_form
         if form.validate_on_submit():

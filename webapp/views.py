@@ -244,7 +244,7 @@ class SettingsView(MethodView):
 
     @flask_login.login_required
     def post(self):
-        form = forms.AccountSetingsForm()
+        form = forms.AccountSettingsForm()
         cu = flask_login.current_user
         if form.validate_on_submit():
             cu.update_settings(form)
