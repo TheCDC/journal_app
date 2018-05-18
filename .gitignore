@@ -1,3 +1,7 @@
+# PyCharm
+.idea/*
+
+# Things to be ignored that were discovered during developments
 __pycache__*
 __pycache__/*
 dist/*
