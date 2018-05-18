@@ -11,6 +11,7 @@ from flask import request
 import flask
 
 pattern = re.compile(r'\b[^\W\d_]+\b')
+# pattern = re.compile("/^[a-z ,.'-]+$/i")
 
 
 class NameExtractorPluginView(MethodView):
@@ -36,7 +37,7 @@ class NameExtractorPluginView(MethodView):
         context = self.get_context(request)
         pagination = self.get_objects(context)
         context['pagination'] = pagination
-        context['pagination_annotated'] = [dict(item=item,link=api.link_for_entry(item)) for item in pagination.items]
+        context['pagination_annotated'] = [dict(item=item, link=api.link_for_entry(item)) for item in pagination.items]
         try:
             return flask.render_template('plugins/name_extractor.html', context=context)
             # return 'Name Recognizer {pagination.items[0].contents} {pagination.items}'.format(pagination=context['pagination'])
