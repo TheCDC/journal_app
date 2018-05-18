@@ -101,7 +101,7 @@ class Plugin:
 
     @classmethod
     def get_unique_name(cls):
-        """Return the name of this class including the file in which it is defined."""
+        """Return the name of this plugin."""
         s = cls.get_class_name()
         return s.split('.')[0]
 
@@ -141,7 +141,7 @@ class Plugin:
         url = f'/{base}/{self.get_unique_name()}'
         self.base_url = url
         app.add_url_rule(url,
-                         view_func=self.view.as_view(f'plugin.{self.get_unique_name()}.index'))
+                         view_func=self.view.as_view(f'plugin.{self.get_unique_name()}'))
 
     @property
     def enabled(self):

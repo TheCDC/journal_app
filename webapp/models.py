@@ -134,6 +134,8 @@ class JournalEntry(db.Model):
 
     def __str__(self):
         return str(self.id)
+    def __repr__(self):
+        return f'< JournaEntry owner={self.owner.id} create_date={self.create_date}'
 
     def to_html(self) -> str:
         """Return HTML necesary to render the entry the same as plain text."""
