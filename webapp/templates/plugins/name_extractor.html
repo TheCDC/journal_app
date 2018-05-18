@@ -18,11 +18,28 @@
 {% extends 'base.html' %} {% block content %} {{super()}}
 <!--  -->
 <div class="container">
+    {% if context.search|length == 0 %}
 
+    <div class="jumbotron">
 
+        <h1>
+            Name Extractor Plugin
+        </h1>
+        <p>This plugin identifies names in the text of your journal entries and links you to other entries containing
+            the same name.</p>
+        <p>
+            Visit an entry and look for "Name Extractor" under the plugin output to start exploring where different
+            people appear in your journal entries!
+        </p>
+    </div>
+    {% else %}
+    <div class="jumbotron">
+
+        <h1>
+            Name Extractor
+        </h1>
+    </div>
     <h1>
-
-
         Found {{context.pagination.total}} entries containing "{{context.search}}".
     </h1>
     <div class="text-center">
@@ -35,7 +52,7 @@
     <div>
         <h2>
             <a href="{{annotation.link}}">
-                {{annotation.item.date_string}}
+                {{annotation.item.date_string}}, {{annotation.item.create_date.strftime('%A')}}
             </a>
 
         </h2>
@@ -51,6 +68,7 @@
         {{render_pagination(context.pagination,'plugin.name_extractor',context.search)}}
 
     </div>
+    {% endif %}
 </div>
 
 {% endblock %}
