@@ -11,6 +11,8 @@ from flask import request
 import flask
 
 pattern = re.compile(r'\b[^\W\d_]+\b')
+
+
 # pattern = re.compile("/^[a-z ,.'-]+$/i")
 
 
@@ -19,13 +21,18 @@ class NameExtractorPluginView(MethodView):
         data = request.args
         context = dict()
         context['page'] = int(data.get('page', 0))
-        context['search'] = data.get('search', [])
+        context['search'] = data.get('search', '')
         return context
 
     def get_objects(self, context):
+
         all_entries = models.JournalEntry.query.filter(models.JournalEntry.owner_id == flask_login.current_user.id)
-        filtered_by_search = all_entries.filter(
-            models.JournalEntry.contents.contains(context['search']))
+        if len(context['search']) > 0:
+            filtered_by_search = all_entries.filter(
+                models.JournalEntry.contents.contains(context['search']))
+        else:
+            filtered_by_search = all_entries.filter(
+                models.JournalEntry.contents.contains(''))
         # Flask-SQLalchemy pagination docs
         # http://flask-sqlalchemy.pocoo.org/2.1/api/?highlight=pagination#flask.ext.sqlalchemy.Pagination
         return filtered_by_search.paginate(
@@ -35,6 +42,7 @@ class NameExtractorPluginView(MethodView):
     def get(self, **kwargs):
         name = flask_login.current_user.first_name
         context = self.get_context(request)
+
         pagination = self.get_objects(context)
         context['pagination'] = pagination
         context['pagination_annotated'] = [dict(item=item, link=api.link_for_entry(item)) for item in pagination.items]
