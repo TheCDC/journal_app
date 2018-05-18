@@ -4,6 +4,8 @@ from webapp import models
 from webapp.app_init import db
 import logging
 from webapp import parsing_plugins
+from flask.views import MethodView
+
 logger = logging.getLogger(__name__)
 # print('__name__', __name__)
 DATE_HEADER_PATTERN = re.compile(r"^[0-9]+-[0-9]+-[0-9]*\w*$")
@@ -95,10 +97,24 @@ class Plugin:
     def get_class_name(cls):
         """Return the name of this class including the file in which it is defined."""
         s = str(cls).split(' ')[1]
-        return s[1:len(s) - 2]
+        return s[1:-2]
+
+    @classmethod
+    def get_unique_name(cls):
+        """Return the name of this class including the file in which it is defined."""
+        s = cls.get_class_name()
+        return s.split('.')[0]
 
     def __init__(self):
         self.logger = logger.getChild(self.name.replace(' ', '_').lower())
+        plugin_class = self.__class__
+
+        class DefaultPluginView(MethodView):
+            def get(self):
+                return f'Hello, this is the default plugin view for {plugin_class.get_unique_name()}!'
+
+        self._view = DefaultPluginView
+        self.base_url = '/plugin/' + plugin_class.get_unique_name()
 
     def get_model(self):
         """Return the databse record associated with this plugin."""
@@ -118,7 +134,12 @@ class Plugin:
         """Return a list of objects found in the Entry."""
         if self.requires_initialization and not self.initialized:
             raise RuntimeError("This classes resources must be initialized!")
-        raise NotImplementedError("parse_entry() not implemented/")
+        raise NotImplementedError("parse_entry() not implemented!")
+
+    def bootstrap_endpoint_onto_app(self, base_endpoint: str, app):
+        base = '/'.join([t for t in base_endpoint.split('/') if len(t) > 0])
+        app.add_url_rule(f'/{base}/{self.get_unique_name()}',
+                         view_func=self.view.as_view(f'plugin.{self.get_unique_name()}.index'))
 
     @property
     def enabled(self):
@@ -132,9 +153,18 @@ class Plugin:
         db.session.flush()
         db.session.commit()
 
+    @property
+    def view(self):
+        return self._view
+
+    @property
+    def url(self):
+        return self.base_url
+
 
 class PluginManager:
-    registered_plugins = list()
+    registered_plugins = list()  # 'List[Plugin]'
+    plugins_by_unique_name = {}
     name = 'Plugin'
 
     @classmethod
