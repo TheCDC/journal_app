@@ -6,6 +6,14 @@ from webapp import api
 import parsedatetime as pdt
 import logging
 
+
+def shorten_phrase(s, max_length=15):
+    if len(s) > 10:
+        return s[:10] + '...'
+    else:
+        return s
+
+
 # ========== Plugin Class  ==========
 
 
@@ -29,8 +37,7 @@ class Plugin(parsing.Plugin):
         seen = set()
         # find all dates mentioned in the entry
         cal = pdt.Calendar()
-        parsed_dates = cal.nlp(
-            e.contents, e.create_date.timetuple())
+        parsed_dates = cal.nlp(e.contents, e.create_date.timetuple())
 
         if parsed_dates is None:
             return
@@ -40,11 +47,12 @@ class Plugin(parsing.Plugin):
             found_date = api.strip_datetime(t[0])
             original_case = t[-1]
             human_strs = grouped_dates.get(found_date, [])
-            human_strs.append(original_case)
+            human_strs.append(shorten_phrase(original_case))
+            # print('original case', original_case)
 
             grouped_dates.update({found_date: human_strs})
         for date in grouped_dates:
-            dates_group = ', '.join(grouped_dates[date])
+            dates_group = ' | '.join(grouped_dates[date])
             pretty = f'''{dates_group}:
             ({date.year}-{date.month}-{date.day})'''
 
@@ -53,9 +61,7 @@ class Plugin(parsing.Plugin):
             else:
                 # get a link to the entry referred to by the found date
                 url = api.link_for_date(
-                    year=date.year,
-                    month=date.month,
-                    day=date.day)
+                    year=date.year, month=date.month, day=date.day)
                 # plugins may return HTML.
                 yield f'<a href="{url}">{pretty}</a>'
 

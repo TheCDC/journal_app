@@ -1,6 +1,7 @@
 import logging
 import logging.config
 from webapp import config
+from . import flask_app
 
 logger = logging.getLogger(__name__)
 stream_handler = logging.StreamHandler()
@@ -17,7 +18,6 @@ for h in handlers:
 
 logger.setLevel(logging.DEBUG)
 
-from . import flask_app
 # logging.config.fileConfig(config.LOG_PATH)
 
 # alias to enable execution of this file from flask cli

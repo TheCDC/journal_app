@@ -9,10 +9,26 @@ import logging
 import flask_migrate
 import alembic
 import markdown
+from flask_security import Security, SQLAlchemyUserDatastore, UserMixin, RoleMixin
+from flask_security.utils import encrypt_password
+
 logger = logging.getLogger(__name__)
 
+# Define models
+roles_users = db.Table('roles_users',
+                       db.Column('user_id', db.Integer(),
+                                 db.ForeignKey('user.id')),
+                       db.Column('role_id', db.Integer(),
+                                 db.ForeignKey('role.id')))
 
-class User(db.Model):
+
+class Role(db.Model, RoleMixin):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    description = db.Column(db.String(255))
+
+
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, index=True)
     password = db.Column(db.String(200))
@@ -20,6 +36,12 @@ class User(db.Model):
     registered_on = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     first_name = db.Column(db.String(200))
     last_name = db.Column(db.String(200))
+    active = db.Column(db.Boolean())
+    confirmed_at = db.Column(db.DateTime())
+    roles = db.relationship(
+        'Role',
+        secondary=roles_users,
+        backref=db.backref('users', lazy='dynamic'))
 
     # ========== flask-login methods ==========
     @property
@@ -79,15 +101,15 @@ class User(db.Model):
             JournalEntry.create_date < e.create_date).order_by(
                 JournalEntry.create_date.desc()).first()
 
-    def get_settings_form(self) -> forms.AccountSetingsForm:
+    def get_settings_form(self) -> forms.AccountSettingsForm:
         """return a pre-filled form for changing user data"""
-        form = forms.AccountSetingsForm()
+        form = forms.AccountSettingsForm()
         form.email.data = self.email
         form.first_name.data = self.first_name
         form.last_name.data = self.last_name
         return form
 
-    def update_settings(self, settings_form: forms.AccountSetingsForm):
+    def update_settings(self, settings_form: forms.AccountSettingsForm):
         """Takes a form and updates values from it."""
         form = settings_form
         if form.validate_on_submit():
@@ -96,7 +118,7 @@ class User(db.Model):
             self.email = form.email.data
             if form.new_password.data == form.new_password_confirm.data:
                 if form.password.data == self.password:
-                    self.password = form.new_password.data
+                    self.password = encrypt_password(form.new_password.data)
             db.session.add(self)
             db.session.commit()
 
@@ -112,17 +134,12 @@ class JournalEntry(db.Model):
 
     def __str__(self):
         return str(self.id)
+    def __repr__(self):
+        return f'< JournaEntry owner={self.owner.id} create_date={self.create_date}'
 
     def to_html(self) -> str:
         """Return HTML necesary to render the entry the same as plain text."""
         return markdown.markdown(self.contents)
-        return self.contents.replace('\n', '<br>')
-
-    @property
-    def tokens(self):
-        """Return the contents parsed as tokens."""
-        raise NotImplementedError(
-            'TODO: tokenize entry contents to allow for wiki-style linking.')
 
     @property
     def date_string(self) -> str:
@@ -188,3 +205,8 @@ def instantiate_db(app):
         except Exception as e:
             logger.debug('flask db upgrade failed: %s', e)
             raise e
+
+
+# ========== Setup Flask-Security ==========
+user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+security = Security(app, user_datastore)

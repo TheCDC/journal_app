@@ -4,9 +4,11 @@ from webapp import models
 from webapp.app_init import db
 import logging
 from webapp import parsing_plugins
+from flask.views import MethodView
+
 logger = logging.getLogger(__name__)
 # print('__name__', __name__)
-DATE_HEADER_PATTERN = re.compile(r"^[0-9]+-[0-9]+-[0-9]*\w*")
+DATE_HEADER_PATTERN = re.compile(r"^[0-9]+-[0-9]+-[0-9]*\w*$")
 
 
 def datestr(y: str, m: str, d: str) -> str:
@@ -23,6 +25,7 @@ def leftpad(s: str, l: int, c=' ') -> str:
 
 
 class Entry:
+
     def __init__(self, date: datetime.date, body: str):
         self._date = date
         self._body = body
@@ -90,27 +93,55 @@ class Plugin:
     requires_initialization = True
     initialized = False
 
+    @classmethod
+    def get_class_name(cls):
+        """Return the name of this class including the file in which it is defined."""
+        s = str(cls).split(' ')[1]
+        return s[1:-2]
+
+    @classmethod
+    def get_unique_name(cls):
+        """Return the name of this plugin."""
+        s = cls.get_class_name()
+        return s.split('.')[0]
+
     def __init__(self):
         self.logger = logger.getChild(self.name.replace(' ', '_').lower())
+        plugin_class = self.__class__
+
+        class DefaultPluginView(MethodView):
+            def get(self):
+                return f'Hello, this is the default plugin view for {plugin_class.get_unique_name()}!'
+
+        self._view = DefaultPluginView
+        self.base_url = '/plugin/' + plugin_class.get_unique_name()
 
     def get_model(self):
+        """Return the databse record associated with this plugin."""
         found = db.session.query(models.PluginConfig).filter(
-            models.PluginConfig.class_name == str(self)).first()
+            models.PluginConfig.class_name == self.get_class_name()).first()
         return found
 
     def init(self):
-        self.initialized = True
         """The responsibility of this method is to perform long-running
         initialization tasks such as downloading resources,
         building large data structures to be read later, etc.
         It is distinct from __init__ in this respect."""
+        self.initialized = True
         raise NotImplementedError("init() not implemented.")
 
     def parse_entry(self, e: Entry) -> list:
         """Return a list of objects found in the Entry."""
         if self.requires_initialization and not self.initialized:
             raise RuntimeError("This classes resources must be initialized!")
-        raise NotImplementedError("parse_entry() not implemented/")
+        raise NotImplementedError("parse_entry() not implemented!")
+
+    def bootstrap_endpoint_onto_app(self, base_endpoint: str, app):
+        base = '/'.join([t for t in base_endpoint.split('/') if len(t) > 0])
+        url = f'/{base}/{self.get_unique_name()}'
+        self.base_url = url
+        app.add_url_rule(url,
+                         view_func=self.view.as_view(f'plugin.{self.get_unique_name()}'))
 
     @property
     def enabled(self):
@@ -124,9 +155,18 @@ class Plugin:
         db.session.flush()
         db.session.commit()
 
+    @property
+    def view(self):
+        return self._view
+
+    @property
+    def url(self):
+        return self.base_url
+
 
 class PluginManager:
-    registered_plugins = list()
+    registered_plugins = list()  # 'List[Plugin]'
+    plugins_by_unique_name = {}
     name = 'Plugin'
 
     @classmethod
@@ -140,12 +180,13 @@ class PluginManager:
         # track plugin configurations in db
         for p in cls.registered_plugins:
             found = db.session.query(models.PluginConfig).filter(
-                models.PluginConfig.class_name == str(p)).first()
+                models.PluginConfig.class_name == p.get_class_name()).first()
             if found is None:
                 # unique name based on filename
-                found = models.PluginConfig(class_name=str(p))
+                found = models.PluginConfig(class_name=p.get_class_name())
+                found.enabled = True
             # human name
-            found.name = p.name
+            found.name = p.get_class_name()
             db.session.add(found)
             db.session.flush()
             db.session.commit()
@@ -161,7 +202,7 @@ class PluginManager:
         plugin to the results of it parsing the target Entry."""
         for p in cls.registered_plugins:
             found = db.session.query(models.PluginConfig).filter(
-                models.PluginConfig.class_name == str(p)).first()
+                models.PluginConfig.class_name == p.get_class_name()).first()
             if found.enabled:
                 items = list(p.parse_entry(e))
                 if items:
