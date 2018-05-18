@@ -138,7 +138,9 @@ class Plugin:
 
     def bootstrap_endpoint_onto_app(self, base_endpoint: str, app):
         base = '/'.join([t for t in base_endpoint.split('/') if len(t) > 0])
-        app.add_url_rule(f'/{base}/{self.get_unique_name()}',
+        url = f'/{base}/{self.get_unique_name()}'
+        self.base_url = url
+        app.add_url_rule(url,
                          view_func=self.view.as_view(f'plugin.{self.get_unique_name()}.index'))
 
     @property

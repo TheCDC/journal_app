@@ -72,11 +72,11 @@
             <h2> Installed plugins </h2>
             <ul>
                 {% for p in context.plugin_manager.registered_plugins %}
-                    <li>
-                        {{p.name}} {% if p.get_model().enabled %}
+                    <p>
+                        <a href="{{p.url}}">{{p.name}} </a> {% if p.get_model().enabled %}
                             <span class="text-success">Enabled</span> {% else %}
                             <span class="text-warning">Disabled</span> {% endif %}
-                        </li>
+                        </p>
                     {% endfor %}
                 </ul>
             </div>
