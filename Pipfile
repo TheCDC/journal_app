@@ -21,6 +21,7 @@ markdown = "*"
 scrython = "*"
 flask-security = "*"
 bcrypt = "*"
+"psycopg2" = "*"
 
 
 [dev-packages]
