@@ -14,7 +14,10 @@ pattern = re.compile(r'\b[^\W\d_]+\b')
 
 
 # pattern = re.compile("/^[a-z ,.'-]+$/i")
-
+def count_occurrences(search):
+    all_entries = models.JournalEntry.query.filter(models.JournalEntry.owner_id == flask_login.current_user.id)
+    return all_entries.filter(
+                models.JournalEntry.contents.contains(search)).count()
 
 class NameExtractorPluginView(MethodView):
     def get_context(self, request):
@@ -69,9 +72,11 @@ class Plugin(parsing.Plugin):
             try:
                 if w[0].isalpha() and w[0] == w[0].upper():
                     if w not in seen:
+                        c = count_occurrences(w)
+                        label = f'{w} <span class="pull-right">({c})</span>'
                         url = flask.url_for('plugin.' + self.get_unique_name(), page=1, search=w)
                         out.append(
-                            f'<a href="{url} ">{w}</a>'
+                            f'<a href="{url}" >{label}</a>'
                         )
                     seen.add(w)
             except IndexError:
