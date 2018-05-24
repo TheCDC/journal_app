@@ -31,6 +31,9 @@
             Visit an entry and look for "Name Extractor" under the plugin output to start exploring where different
             people appear in your journal entries!
         </p>
+        <p>
+            You might be surprised how little or hwo often you mention certain people.
+        </p>
     </div>
     {% else %}
     <div class="jumbotron">
@@ -52,7 +55,7 @@
     <div>
         <h2>
             <a href="{{annotation.link}}">
-                {{annotation.item.date_string}}
+                {{annotation.item.date_string}}, {{annotation.item.create_date.strftime('%A')}}
             </a>
 
         </h2>

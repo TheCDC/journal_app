@@ -23,7 +23,7 @@ app.config['SECURITY_PASSWORD_SALT'] = os.environ.get('SECURITY_PASSWORD_SALT',
                                                       None)
 
 app.config[
-    'SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{config.SQLALCHEMY_DATABASE_URI}'
+    'SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
 # ========== Setup sqlalchemy ==========
 db = SQLAlchemy(app)
 # initialize migration engine
