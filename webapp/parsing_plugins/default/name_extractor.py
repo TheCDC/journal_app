@@ -38,7 +38,7 @@ class NameExtractorPluginView(MethodView):
                 models.JournalEntry.contents.contains(''))
         # Flask-SQLalchemy pagination docs
         # http://flask-sqlalchemy.pocoo.org/2.1/api/?highlight=pagination#flask.ext.sqlalchemy.Pagination
-        return filtered_by_search.paginate(
+        return filtered_by_search.order_by(models.JournalEntry.create_date).paginate(
             context['page'], 10,
             False)
 
