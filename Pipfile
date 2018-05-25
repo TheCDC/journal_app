@@ -22,6 +22,7 @@ scrython = "*"
 flask-security = "*"
 bcrypt = "*"
 "psycopg2" = "*"
+requests = "*"
 
 
 [dev-packages]

@@ -1,9 +1,11 @@
 import re
 import datetime
 from webapp import models
+from webapp import config
 from webapp.app_init import db
-import logging
 from webapp import parsing_plugins
+import os
+import logging
 from flask.views import MethodView
 
 logger = logging.getLogger(__name__)
@@ -115,6 +117,12 @@ class Plugin:
 
         self._view = DefaultPluginView
         self.base_url = '/plugin/' + plugin_class.get_unique_name()
+        self.resources_path = os.path.join(config.CONFIG_PATH, 'plugins', self.get_class_name())
+        try:
+            os.makedirs(self.resources_path)
+            logging.info('created plugin data directory: %s', self.resources_path)
+        except FileExistsError:
+            pass
 
     def get_model(self):
         """Return the databse record associated with this plugin."""
