@@ -153,18 +153,14 @@ class Plugin(parsing.Plugin):
 
     def parse_entry(self, e: models.JournalEntry) -> 'iterable[str]':
         if self.cards_tree is None:
-            if not self.thread.isAlive() :
+            if self.thread.isAlive() :
+                yield "Card database still downloading."
+                return
+            else:
                 self.cards_tree = self.queue.pop()
-            yield "Card database still downloading."
-        else:
-            for c in identify_cards(e.contents, self.cards_tree):
-                cardname = ''.join(c.get_phrase())
-                yield link_element_template.format(link=base_url + '+'.join(cardname.split(' ')), body=cardname)
-        return
-        seen = set()
-        cards = list(card_pattern.findall(e.contents))
-        for card in cards:
-            if card not in seen:
-                seen.add(card)
-                cardname = card[2:-2]
-                yield link_element_template.format(link=base_url + '+'.join(cardname.split(' ')), body=cardname)
+
+
+        for c in identify_cards(e.contents, self.cards_tree):
+            cardname = ''.join(c.get_phrase())
+            yield link_element_template.format(link=base_url + '+'.join(cardname.split(' ')), body=cardname)
+        
