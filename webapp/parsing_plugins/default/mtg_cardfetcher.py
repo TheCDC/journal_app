@@ -10,6 +10,7 @@ import json
 import io
 import zipfile
 import os
+
 card_pattern = re.compile(r'\[\[[^\[^\].]*\]\]')
 link_element_template = '<a target="_blank" href="{link}">{body}</a>'
 base_url = 'https://scryfall.com/search?q='
@@ -42,12 +43,20 @@ class Node:
 
 class SuffixTree:
 
-    def __init__(self, list_of_phrases):
+    def __init__(self, list_of_phrases, comparator=None):
         self.root = Node(None)
+        if comparator:
+            self.compare_function = comparator
+        else:
+            self.compare_function = lambda a, b: a == b
         for p in list_of_phrases:
             self.search(p, insert=True)
 
     def search(self, list_of_words, insert=False, key=None):
+        """Return a tuple of (node, remaining_tokens).
+        The search consumes tokens from list_of_words as it performs the search.
+        Un-consumed tokens are return in remaining_tokens.
+        """
         words_iter = iter(list_of_words)
         cur_token = next(words_iter)
         cur_node = self.root
@@ -57,7 +66,7 @@ class SuffixTree:
                 return (cur_node, list(words_iter))
             # check children for match
             for n in cur_node.children:
-                if n.value == cur_token:
+                if self.compare_function(n.value, cur_token):
                     cur_node = n
                     try:
                         cur_token = next(words_iter)
@@ -65,7 +74,7 @@ class SuffixTree:
                         return (cur_node, list(words_iter))
                     break
             else:
-                # no matching chilrden
+                # no matching children
                 if not insert:
                     return (cur_node, [cur_token] + list(words_iter))
                 # make new node
@@ -103,6 +112,7 @@ class SuffixTree:
             else:
                 stack.extend(cur.children)
 
+
 url = 'http://mtgjson.com/json/AllCards.json.zip'
 
 
@@ -116,51 +126,54 @@ def download_cards_to_file(destination='resources/cards.json'):
         f.write(json.dumps(cards))
 
 
-
 def fetch(mailbox, target):
     download_cards_to_file(target)
     with open(target) as f:
         cards = json.load(f)
-    cards_tree = SuffixTree(list(name.strip()) for name in cards)
+    cards_tree = SuffixTree([list(name.strip()) for name in cards], comparator=lambda a, b: a.lower() == b.lower())
     mailbox.append(cards_tree)
 
 
 def identify_cards(s, cards_tree):
+    seen = set()
     tokens = []
-    for c in s:
-        tokens.append(c)
+    for i, c in enumerate(s):
+        tokens.append(c.lower())
+        tokens_t = tuple(tokens)
         found_cards = list(cards_tree.find_all(tokens))
         if len(found_cards) == 0:
+            # case of no cards possibly matching current search string
             tokens = [c]
+            yield from found_cards
         elif len(found_cards) == 1:
-            card = found_cards.pop()
-            p = card.get_phrase()
-            if len(p) == len(tokens):
+            # case of exactly one card matching current search string
+            card = found_cards[0]
+            p = tuple(char.lower() for char in card.get_phrase())
+            if (p == tokens_t) and (p not in seen):
+                seen.add(p)
                 yield card
-
 
 
 class Plugin(parsing.Plugin):
     """An example plugin that simply splits the entry on spaces."""
     name = 'Magic: the Gathering Fetcher'
+
     def __init__(self):
         super().__init__()
         self.queue = []
-        self.cards_file_path = os.path.join(self.resources_path,'cards.json')
+        self.cards_file_path = os.path.join(self.resources_path, 'cards.json')
         self.thread = threading.Thread(target=fetch, kwargs=dict(mailbox=self.queue, target=self.cards_file_path))
         self.thread.start()
         self.cards_tree = None
 
     def parse_entry(self, e: models.JournalEntry) -> 'iterable[str]':
         if self.cards_tree is None:
-            if self.thread.isAlive() :
+            if self.thread.isAlive():
                 yield "Card database still downloading."
                 return
             else:
                 self.cards_tree = self.queue.pop()
 
-
         for c in identify_cards(e.contents, self.cards_tree):
             cardname = ''.join(c.get_phrase())
             yield link_element_template.format(link=base_url + '+'.join(cardname.split(' ')), body=cardname)
-        

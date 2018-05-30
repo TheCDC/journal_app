@@ -23,6 +23,7 @@ flask-security = "*"
 bcrypt = "*"
 "psycopg2" = "*"
 requests = "*"
+"psycopg2-binary" = "*"
 
 
 [dev-packages]

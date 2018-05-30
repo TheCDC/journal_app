@@ -73,7 +73,7 @@ class Plugin(parsing.Plugin):
                 if w[0].isalpha() and w[0] == w[0].upper():
                     if w not in seen:
                         c = count_occurrences(w)
-                        label = f'{w} <span class="pull-right">({c})</span>'
+                        label = f'{w} ({c}),'
                         url = flask.url_for('plugin.' + self.get_unique_name(), page=1, search=w)
                         out.append(
                             f'<a href="{url}" >{label}</a>'
