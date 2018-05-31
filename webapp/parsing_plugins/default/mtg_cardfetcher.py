@@ -13,7 +13,7 @@ import os
 
 card_pattern = re.compile(r'\[\[[^\[^\].]*\]\]')
 link_element_template = '<a target="_blank" href="{link}">{body}</a>'
-base_url = 'https://scryfall.com/search?q='
+base_url = 'https://scryfall.com/search?q=!'
 
 
 class Node:
@@ -144,12 +144,11 @@ def identify_cards(s, cards_tree):
         if len(found_cards) == 0:
             # case of no cards possibly matching current search string
             tokens = [c]
-            yield from found_cards
         elif len(found_cards) == 1:
             # case of exactly one card matching current search string
             card = found_cards[0]
-            p = tuple(char.lower() for char in card.get_phrase())
-            if (p == tokens_t) and (p not in seen):
+            p = tuple(card.get_phrase())
+            if (len(p) == len(tokens_t)) and (p not in seen):
                 seen.add(p)
                 yield card
 
@@ -176,4 +175,4 @@ class Plugin(parsing.Plugin):
 
         for c in identify_cards(e.contents, self.cards_tree):
             cardname = ''.join(c.get_phrase())
-            yield link_element_template.format(link=base_url + '+'.join(cardname.split(' ')), body=cardname)
+            yield link_element_template.format(link=base_url + '&quot '+ '+'.join(cardname.split(' ')) + '&quot', body=cardname)
