@@ -10,7 +10,9 @@ import json
 import io
 import zipfile
 import os
-
+import datetime
+import dateutil.parser
+import logging
 card_pattern = re.compile(r'\[\[[^\[^\].]*\]\]')
 link_element_template = '<a target="_blank" href="{link}">{body}</a>'
 base_url = 'https://scryfall.com/search?q=!'
@@ -127,7 +129,23 @@ def download_cards_to_file(destination='resources/cards.json'):
 
 
 def fetch(mailbox, target):
-    download_cards_to_file(target)
+    meta_path = os.path.join(os.path.dirname(target),'meta.json')
+    now = datetime.datetime.now()
+    try:
+        with open(meta_path) as meta_info_file:
+            meta_info = json.load(meta_info_file)
+            updated_at = dateutil.parser.parse(meta_info['updated_at'])
+    except FileNotFoundError:
+        with open(meta_path,'w') as meta_info_file:
+            updated_at = now
+            obj = {
+                'updated_at':updated_at.isoformat()
+            }
+            meta_info_file.write(json.dumps(obj))
+    td = datetime.timedelta(days=1)
+    if (now  - updated_at) > td or not os.path.exists(target):
+        logging.info('MTG database too old. Updating...')
+        download_cards_to_file(target)
     with open(target) as f:
         cards = json.load(f)
     cards_tree = SuffixTree([list(name.strip()) for name in cards], comparator=lambda a, b: a.lower() == b.lower())
