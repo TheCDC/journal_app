@@ -9,7 +9,8 @@ from webapp import parsing
 from webapp import api
 import sqlalchemy
 import flask_login
-from flask_security.utils import encrypt_password
+from flask_security.utils import hash_password
+
 logger = logging.getLogger(__name__)
 
 if logger.disabled:
@@ -73,7 +74,7 @@ class RegisterView(MethodView):
         if register_form.validate_on_submit():
             models.user_datastore.create_user(
                 username=register_form.username.data,
-                password=encrypt_password(register_form.password.data),
+                password=hash_password(register_form.password.data),
                 email=register_form.email.data)
             try:
                 db.session.commit()
@@ -93,9 +94,11 @@ class RegisterView(MethodView):
 class EntrySearchView(MethodView):
     def get_objects(self, **kwargs):
         start_date = self.args_to_date(**kwargs)
+        session = kwargs.get('session', db.session())
+
         found = list(flask_login.current_user.query_all_entries().filter(
             models.JournalEntry.create_date >= start_date).order_by(
-                models.JournalEntry.create_date))
+            models.JournalEntry.create_date))
         return found
 
     def args_to_date(self,
@@ -118,36 +121,40 @@ class EntrySearchView(MethodView):
             k: kwargs[k]
             for k in ['year', 'month', 'day'] if k in kwargs
         }
-        found = self.get_objects(**my_kwargs)
-        breadcrumbs = [
-            (api.link_for_date(**dict(list(my_kwargs.items())[:i + 1])),
-             list(my_kwargs.values())[i]) for i in range(len(my_kwargs))
-        ]
+        try:
+            found = self.get_objects(**my_kwargs)
+        except ValueError:
+            flask.abort(404)
+
         if len(found) == 0:
             flask.abort(404)
 
         e = found[0]
+        session = db.session()
+        e = session.query(models.JournalEntry).filter(models.JournalEntry.id == e.id).first()
+        for o in [e.next, e.previous]:
+            if o:
+                session.add(o)
+        plugins_output = [(t[0].name, list(t[1])) for t in parsing.PluginManager.parse_entry(e)]
+        context = dict(
+            entry=api.journal_entry_schema.dump(obj=e).data,
+            next=api.journal_entry_schema.dump(obj=e.next).data,
+            previous=api.journal_entry_schema.dump(obj=e.previous).data,
+            plugins_output=plugins_output,
+
+        )
         # handle incompletely specified date
         # take the user to a search
-        if e.create_date != self.args_to_date(
-                **my_kwargs) or len(breadcrumbs) < 3:
-            return flask.render_template(
-                'search_entry.html',
-                context=dict(
-                    search_results=[(e, api.link_for_entry(e)) for e in found],
-                    breadcrumbs=breadcrumbs,
-                ))
+        try:
+            if e.create_date != self.args_to_date(**my_kwargs):
+                flask.abort(404)
+        except ValueError:
+            flask.abort(404)
         forward = flask_login.current_user.next_entry(e)
         backward = flask_login.current_user.previous_entry(e)
         return flask.render_template(
             'entry.html',
-            context=dict(
-                entry=e,
-                next_entry=forward,
-                prev_entry=backward,
-                plugin_manager=parsing.PluginManager,
-                breadcrumbs=breadcrumbs,
-            ))
+            context=context)
 
 
 class IndexView(MethodView):

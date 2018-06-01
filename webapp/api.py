@@ -1,15 +1,16 @@
 from webapp import models
-from webapp.app_init import app, db
+from webapp.app_init import app, db, marshmallow
 import datetime
 import flask
 import logging
 import datetime
+
 logger = logging.getLogger(__name__)
 
 
 def link_for_date(**kwargs):
     """Return the app's link for the given date.
-    The date is given as keyuword arguments (year, month,day)."""
+    The date is given as keyword arguments (year, month,day)."""
     expected = ['year', 'month', 'day']
     d = {k: kwargs[k] for k in expected if k in kwargs}
     with app.app_context():
@@ -41,7 +42,7 @@ def get_entries_tree(target_user, target_date=None) -> dict:
     if target_date is not None:
         query = target_user.query_all_entries().order_by(
             models.JournalEntry.create_date).filter(
-                models.JournalEntry.create_date >= target_date)
+            models.JournalEntry.create_date >= target_date)
 
     query = query.order_by(models.JournalEntry.create_date.desc())
 
@@ -59,3 +60,26 @@ def get_entries_tree(target_user, target_date=None) -> dict:
         entries_tree[y]['months'][m].append(e)
         entries_tree[y]['num_entries'] += 1
     return entries_tree
+
+
+# ========== Marshmallow Schemas ==========
+class UserSchema(marshmallow.ModelSchema):
+    class Meta:
+        model = models.User
+        fields = ('id', 'username', 'email',)
+
+
+class JournalEntrySchema(marshmallow.ModelSchema):
+    class Meta:
+        model = models.JournalEntry
+        fields = ('id', 'contents', 'create_date', 'url', 'date_human', 'date_string', 'html')
+
+    owner = marshmallow.Nested(UserSchema)
+    url = marshmallow.Method('get_url')
+
+    def get_url(self, entry):
+        return link_for_entry(entry)
+
+
+user_schema = UserSchema()
+journal_entry_schema = JournalEntrySchema()

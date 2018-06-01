@@ -4,13 +4,12 @@ from webapp import config
 from webapp import forms
 from flask_admin.contrib.sqla import ModelView
 import datetime
-from webapp import parsing
 import logging
 import flask_migrate
 import alembic
 import markdown
 from flask_security import Security, SQLAlchemyUserDatastore, UserMixin, RoleMixin
-from flask_security.utils import encrypt_password
+from flask_security.utils import hash_password
 
 logger = logging.getLogger(__name__)
 
@@ -82,8 +81,8 @@ class User(db.Model, UserMixin):
                 found = self.query_all_entries().filter(
                     JournalEntry.create_date >= datetime.datetime(
                         y, 1, 1, 0, 0)).filter(
-                            JournalEntry.create_date < datetime.datetime(
-                                y + 1, 1, 1, 0, 0)).first()
+                    JournalEntry.create_date < datetime.datetime(
+                        y + 1, 1, 1, 0, 0)).first()
                 # only yield this year if has an entry
                 if found:
                     yield datetime.datetime(y, 1, 1, 0, 0)
@@ -99,7 +98,7 @@ class User(db.Model, UserMixin):
         the given entry."""
         return self.query_all_entries().filter(
             JournalEntry.create_date < e.create_date).order_by(
-                JournalEntry.create_date.desc()).first()
+            JournalEntry.create_date.desc()).first()
 
     def get_settings_form(self) -> forms.AccountSettingsForm:
         """return a pre-filled form for changing user data"""
@@ -118,7 +117,7 @@ class User(db.Model, UserMixin):
             self.email = form.email.data
             if form.new_password.data == form.new_password_confirm.data:
                 if form.password.data == self.password:
-                    self.password = encrypt_password(form.new_password.data)
+                    self.password = hash_password(form.new_password.data)
             db.session.add(self)
             db.session.commit()
 
@@ -127,18 +126,20 @@ class JournalEntry(db.Model):
     """Model for journal entries."""
     id = db.Column(db.Integer, primary_key=True)
     create_date = db.Column(
-        db.DateTime, default=datetime.datetime.utcnow, index=True)
+        db.Date, default=datetime.datetime.utcnow, index=True)
     contents = db.Column(db.String)
     owner_id = db.Column(db.Integer, db.ForeignKey(User.id))
     owner = db.relationship(User, backref='users')
 
     def __str__(self):
         return str(self.id)
-    def __repr__(self):
-        return f'< JournaEntry owner={self.owner.id} create_date={self.create_date}'
 
-    def to_html(self) -> str:
-        """Return HTML necesary to render the entry the same as plain text."""
+    def __repr__(self):
+        return f'< JournaEntry id={self.id} create_date={self.create_date}'
+
+    @property
+    def html(self) -> str:
+        """Return HTML rendering of markdown contents."""
         return markdown.markdown(self.contents)
 
     @property
@@ -149,7 +150,18 @@ class JournalEntry(db.Model):
     @property
     def date_human(self) -> str:
         """A pretty and human readable date."""
-        return self.create_date.strftime('%B %d, %Y')
+        return self.create_date.strftime('%B %d, %Y, a %A')
+
+    @property
+    def next(self):
+        return self.owner.query_all_entries().filter(
+            JournalEntry.create_date > self.create_date).first()
+
+    @property
+    def previous(self):
+        return self.owner.query_all_entries().filter(
+            JournalEntry.create_date < self.create_date).order_by(
+            JournalEntry.create_date.desc()).first()
 
 
 class PluginConfig(db.Model):
