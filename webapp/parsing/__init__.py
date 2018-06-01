@@ -10,7 +10,7 @@ from flask.views import MethodView
 
 logger = logging.getLogger(__name__)
 # print('__name__', __name__)
-DATE_HEADER_PATTERN = re.compile(r"^[0-9]+-[0-9]+-[0-9]*\w*$")
+DATE_HEADER_PATTERN = re.compile(r"^[0-9]+-[0-9]+-[0-9]+\w*$")
 
 
 def datestr(y: str, m: str, d: str) -> str:
@@ -56,36 +56,27 @@ def identify_entries(lines) -> "list[Entry]":
     old_date = None
     a = b = c = 0
     results = []
-    d = None
-    each_line = None
+    date = None
     for each_line in lines:
+        print(each_line)
         if DATE_HEADER_PATTERN.search(each_line):
-            try:
-                a, b, c = map(int, old_date.split("-"))
-                d = datetime.datetime(a, b, c, 0, 0)
-            except (ValueError, AttributeError):
-                d = None
-            if len(cur_body_lines) > 0 and d is not None:
-                results.append(Entry(d, '\n'.join(cur_body_lines)))
-            if not old_date:
-                old_date = each_line
+            print('<is header line>')
+            e = Entry(date, '\n'.join(cur_body_lines))
+            print('Appending:',e)
+            if date is not None:
+                results.append(e)
+
+            a, b, c = map(int, each_line.split("-"))
+            date = datetime.datetime(a, b, c, 0, 0)
 
             cur_body_lines = []
             old_date = each_line
         else:
+            print('<is body line>')
             cur_body_lines.append(each_line)
-    if old_date is not None:
-        d = old_date
-    else:
-        d = each_line
-    try:
-        d = (
-            datetime.datetime(*(list(map(int, old_date.split("-"))) + [0, 0])))
-    except AttributeError:
-        raise ValueError(f"Error parsing journal. Invalid date: '{d}'")
-    b = '\n'.join(cur_body_lines)
-    if d is not None and len(b) > 0:
-        results.append(Entry(d, b))
+    if date is not None and len(cur_body_lines) > 0:
+        b = '\n'.join(cur_body_lines)
+        results.append(Entry(date, b))
     return results
 
 
