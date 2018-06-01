@@ -138,7 +138,7 @@ class JournalEntry(db.Model):
         return f'< JournaEntry owner={self.owner.id} create_date={self.create_date}'
 
     def to_html(self) -> str:
-        """Return HTML necesary to render the entry the same as plain text."""
+        """Return HTML rendering of markdown contents."""
         return markdown.markdown(self.contents)
 
     @property
