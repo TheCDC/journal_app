@@ -72,14 +72,13 @@ class UserSchema(marshmallow.ModelSchema):
 class JournalEntrySchema(marshmallow.ModelSchema):
     class Meta:
         model = models.JournalEntry
-        fields = ('id', 'contents', 'create_date',  'url','date_human','date_string','html')
+        fields = ('id', 'contents', 'create_date', 'url', 'date_human', 'date_string', 'html')
 
     owner = marshmallow.Nested(UserSchema)
     url = marshmallow.Method('get_url')
 
     def get_url(self, entry):
         return link_for_entry(entry)
-
 
 
 user_schema = UserSchema()

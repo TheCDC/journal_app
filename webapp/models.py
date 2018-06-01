@@ -26,6 +26,7 @@ class Role(db.Model, RoleMixin):
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
 
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, index=True)
@@ -80,8 +81,8 @@ class User(db.Model, UserMixin):
                 found = self.query_all_entries().filter(
                     JournalEntry.create_date >= datetime.datetime(
                         y, 1, 1, 0, 0)).filter(
-                            JournalEntry.create_date < datetime.datetime(
-                                y + 1, 1, 1, 0, 0)).first()
+                    JournalEntry.create_date < datetime.datetime(
+                        y + 1, 1, 1, 0, 0)).first()
                 # only yield this year if has an entry
                 if found:
                     yield datetime.datetime(y, 1, 1, 0, 0)
@@ -97,7 +98,7 @@ class User(db.Model, UserMixin):
         the given entry."""
         return self.query_all_entries().filter(
             JournalEntry.create_date < e.create_date).order_by(
-                JournalEntry.create_date.desc()).first()
+            JournalEntry.create_date.desc()).first()
 
     def get_settings_form(self) -> forms.AccountSettingsForm:
         """return a pre-filled form for changing user data"""
@@ -121,7 +122,6 @@ class User(db.Model, UserMixin):
             db.session.commit()
 
 
-
 class JournalEntry(db.Model):
     """Model for journal entries."""
     id = db.Column(db.Integer, primary_key=True)
@@ -133,8 +133,10 @@ class JournalEntry(db.Model):
 
     def __str__(self):
         return str(self.id)
+
     def __repr__(self):
         return f'< JournaEntry id={self.id} create_date={self.create_date}'
+
     @property
     def html(self) -> str:
         """Return HTML rendering of markdown contents."""
@@ -160,7 +162,6 @@ class JournalEntry(db.Model):
         return self.owner.query_all_entries().filter(
             JournalEntry.create_date < self.create_date).order_by(
             JournalEntry.create_date.desc()).first()
-
 
 
 class PluginConfig(db.Model):

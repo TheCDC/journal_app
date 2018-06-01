@@ -32,11 +32,11 @@ app.add_url_rule('/', view_func=views.IndexView.as_view('index'))
 # generate endpoints for search view
 search_view = views.EntrySearchView.as_view('entry')
 delimiter = '-'
-url_args = ['<int:year>', '<int:month>','<int:day>']
+url_args = ['<int:year>', '<int:month>', '<int:day>']
 # construct url endpoints for searching dates with increasing precision
 for i in range(1, len(url_args) + 1):
     endpoint = '/entry/' + delimiter.join(url_args[:i])
-    print('endpoint',endpoint)
+    print('endpoint', endpoint)
     app.add_url_rule(endpoint, view_func=search_view)
 
 login_manager.login_view = "login"

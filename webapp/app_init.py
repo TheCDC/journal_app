@@ -9,6 +9,7 @@ from flask_admin import Admin
 import logging
 from . import config
 import os
+
 logger = logging.getLogger(__name__)
 #  ========== Flask App ==========
 app = flask.Flask(
