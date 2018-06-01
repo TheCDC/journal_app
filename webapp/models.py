@@ -135,8 +135,8 @@ class JournalEntry(db.Model):
         return str(self.id)
     def __repr__(self):
         return f'< JournaEntry id={self.id} create_date={self.create_date}'
-
-    def to_html(self) -> str:
+    @property
+    def html(self) -> str:
         """Return HTML rendering of markdown contents."""
         return markdown.markdown(self.contents)
 

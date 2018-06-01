@@ -1,28 +1,21 @@
 {% extends 'base.html' %} {% block content %} {{super()}}
 <div class="container">
-    <!--  -->
-    <h2 class="page-header text-center">
-        {{render_breadcrumbs(context.breadcrumbs)}}
-        </h2>
-    <p>
 
-        {{context.test_marshmallow}}
-    </p>
     <ul class="pager">
-        {% if context.prev_entry %}
+        {% if context.previous%}
         <!--  -->
         <li>
-            <a class="btn btn-default" href="{{link_for_entry(context.entry.previous)}}">
+            <a class="btn btn-default" href="{{context.previous.url}}">
                 Previous
-                ({{context.entry.previous.date_string}})</a>
+                ({{context.previous.date_string}})</a>
         </li>
         <!--  -->
         {% endif %}
         <!--  -->
-        {% if context.next_entry %}
+        {% if context.next %}
         <!--  -->
         <li>
-            <a class="btn btn-default" href="{{link_for_entry(context.entry.next)}}">Next ({{context.entry.next.date_string}})</a>
+            <a class="btn btn-default" href="{{context.next.url}}">Next ({{context.next.date_string}})</a>
         </li>
         <!--  -->
         {% endif %}
@@ -32,17 +25,17 @@
             {{context.entry.date_human}}
             </h2>
         <p>
-            {{context.entry.to_html()|safe}}
+            {{context.entry.html|safe}}
         </p>
     </div>
     <h2 class="text-center">Plugins Output</h2>
     <div class="plugins_output" style="">
-        {% for t in context.plugin_manager.parse_entry(context.entry) %}
+        {% for t in context.plugins_output %}
         <div class="plugin_output panel panel-default">
             <!--  -->
             {% if t[1] %}
             <div class="panel-heading">
-                {% if t[0].name is defined %} {{t[0].name}} {% else %} undefined {% endif %}
+                {{t[0]}}
             </div>
             <ul class="panel-body list-group">
                 {% for word in t[1] %}
