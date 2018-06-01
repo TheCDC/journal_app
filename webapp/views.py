@@ -9,7 +9,8 @@ from webapp import parsing
 from webapp import api
 import sqlalchemy
 import flask_login
-from flask_security.utils import encrypt_password
+from flask_security.utils import hash_password
+
 logger = logging.getLogger(__name__)
 
 if logger.disabled:
@@ -73,7 +74,7 @@ class RegisterView(MethodView):
         if register_form.validate_on_submit():
             models.user_datastore.create_user(
                 username=register_form.username.data,
-                password=encrypt_password(register_form.password.data),
+                password=hash_password(register_form.password.data),
                 email=register_form.email.data)
             try:
                 db.session.commit()
@@ -93,9 +94,11 @@ class RegisterView(MethodView):
 class EntrySearchView(MethodView):
     def get_objects(self, **kwargs):
         start_date = self.args_to_date(**kwargs)
+        session = kwargs.get('session', db.session())
+
         found = list(flask_login.current_user.query_all_entries().filter(
             models.JournalEntry.create_date >= start_date).order_by(
-                models.JournalEntry.create_date))
+            models.JournalEntry.create_date))
         return found
 
     def args_to_date(self,
@@ -127,6 +130,15 @@ class EntrySearchView(MethodView):
             flask.abort(404)
 
         e = found[0]
+        session = db.session()
+        e = session.query(models.JournalEntry).filter(models.JournalEntry.id == e.id).first()
+        session.add(e.next)
+        session.add(e.previous)
+        plugins_output = [(t[0].name, list(t[1])) for t in parsing.PluginManager.parse_entry(e)]
+        test_marshmallow = {'entry': api.journal_entry_schema.dump(obj=e).data,
+                            'next':  api.journal_entry_schema.dump(obj=e.next).data,
+                            'previous':  api.journal_entry_schema.dump(obj=e.previous).data,
+                            'plugins_ouput':plugins_output,}
         # handle incompletely specified date
         # take the user to a search
         if e.create_date != self.args_to_date(
@@ -147,6 +159,8 @@ class EntrySearchView(MethodView):
                 prev_entry=backward,
                 plugin_manager=parsing.PluginManager,
                 breadcrumbs=breadcrumbs,
+                test_marshmallow=test_marshmallow,
+
             ))
 
 

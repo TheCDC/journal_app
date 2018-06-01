@@ -4,11 +4,17 @@
     <h2 class="page-header text-center">
         {{render_breadcrumbs(context.breadcrumbs)}}
         </h2>
+    <p>
+
+        {{context.test_marshmallow}}
+    </p>
     <ul class="pager">
         {% if context.prev_entry %}
         <!--  -->
         <li>
-            <a class="btn btn-default" href="{{link_for_entry(context.prev_entry)}}">Previous ({{context.prev_entry.date_string}})</a>
+            <a class="btn btn-default" href="{{link_for_entry(context.entry.previous)}}">
+                Previous
+                ({{context.entry.previous.date_string}})</a>
         </li>
         <!--  -->
         {% endif %}
@@ -16,14 +22,14 @@
         {% if context.next_entry %}
         <!--  -->
         <li>
-            <a class="btn btn-default" href="{{link_for_entry(context.next_entry)}}">Next ({{context.next_entry.date_string}})</a>
+            <a class="btn btn-default" href="{{link_for_entry(context.entry.next)}}">Next ({{context.entry.next.date_string}})</a>
         </li>
         <!--  -->
         {% endif %}
     </ul>
     <div class="jumbotron">
         <h2>
-            {{context.entry.date_string}}, a {{context.entry.create_date.strftime('%A')}}
+            {{context.entry.date_human}}
             </h2>
         <p>
             {{context.entry.to_html()|safe}}
