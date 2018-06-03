@@ -21,6 +21,12 @@ markdown = "*"
 scrython = "*"
 flask-security = "*"
 bcrypt = "*"
+"psycopg2" = "*"
+requests = "*"
+"psycopg2-binary" = "*"
+flask-sqlalchemy = "*"
+marshmallow-sqlalchemy = "*"
+flask-marshmallow = "*"
 
 
 [dev-packages]

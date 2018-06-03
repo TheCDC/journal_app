@@ -24,7 +24,7 @@
         <h2> Today's entry </h2>
         {% endif %}
         <p>
-            {{context.latest_entry.to_html()|safe}}
+            {{context.latest_entry.html|safe}}
         </p>
         {% else %}
         <h2> Hi {{current_user.first_name}}. It looks pretty empty in here. Upload a journal? </h2>

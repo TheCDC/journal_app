@@ -1,14 +1,16 @@
 import re
 import datetime
 from webapp import models
+from webapp import config
 from webapp.app_init import db
-import logging
 from webapp import parsing_plugins
+import os
+import logging
 from flask.views import MethodView
 
 logger = logging.getLogger(__name__)
 # print('__name__', __name__)
-DATE_HEADER_PATTERN = re.compile(r"^[0-9]+-[0-9]+-[0-9]*\w*$")
+DATE_HEADER_PATTERN = re.compile(r"^[0-9]+-[0-9]+-[0-9]+\w*$")
 
 
 def datestr(y: str, m: str, d: str) -> str:
@@ -54,36 +56,27 @@ def identify_entries(lines) -> "list[Entry]":
     old_date = None
     a = b = c = 0
     results = []
-    d = None
-    each_line = None
+    date = None
     for each_line in lines:
+        print(each_line)
         if DATE_HEADER_PATTERN.search(each_line):
-            try:
-                a, b, c = map(int, old_date.split("-"))
-                d = datetime.datetime(a, b, c, 0, 0)
-            except (ValueError, AttributeError):
-                d = None
-            if len(cur_body_lines) > 0 and d is not None:
-                results.append(Entry(d, '\n'.join(cur_body_lines)))
-            if not old_date:
-                old_date = each_line
+            print('<is header line>')
+            e = Entry(date, '\n'.join(cur_body_lines))
+            print('Appending:',e)
+            if date is not None:
+                results.append(e)
+
+            a, b, c = map(int, each_line.split("-"))
+            date = datetime.datetime(a, b, c, 0, 0)
 
             cur_body_lines = []
             old_date = each_line
         else:
+            print('<is body line>')
             cur_body_lines.append(each_line)
-    if old_date is not None:
-        d = old_date
-    else:
-        d = each_line
-    try:
-        d = (
-            datetime.datetime(*(list(map(int, old_date.split("-"))) + [0, 0])))
-    except AttributeError:
-        raise ValueError(f"Error parsing journal. Invalid date: '{d}'")
-    b = '\n'.join(cur_body_lines)
-    if d is not None and len(b) > 0:
-        results.append(Entry(d, b))
+    if date is not None and len(cur_body_lines) > 0:
+        b = '\n'.join(cur_body_lines)
+        results.append(Entry(date, b))
     return results
 
 
@@ -115,6 +108,12 @@ class Plugin:
 
         self._view = DefaultPluginView
         self.base_url = '/plugin/' + plugin_class.get_unique_name()
+        self.resources_path = os.path.join(config.CONFIG_PATH, 'plugins', self.get_class_name())
+        try:
+            os.makedirs(self.resources_path)
+            logging.info('created plugin data directory: %s', self.resources_path)
+        except FileExistsError:
+            pass
 
     def get_model(self):
         """Return the databse record associated with this plugin."""

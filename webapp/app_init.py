@@ -3,11 +3,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import flask_bootstrap
 import flask_login
+from flask_marshmallow import Marshmallow
 # for editing DB entries
 from flask_admin import Admin
 import logging
 from . import config
 import os
+
 logger = logging.getLogger(__name__)
 #  ========== Flask App ==========
 app = flask.Flask(
@@ -23,9 +25,11 @@ app.config['SECURITY_PASSWORD_SALT'] = os.environ.get('SECURITY_PASSWORD_SALT',
                                                       None)
 
 app.config[
-    'SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{config.SQLALCHEMY_DATABASE_URI}'
+    'SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
 # ========== Setup sqlalchemy ==========
 db = SQLAlchemy(app)
+# ========== Setup flask-marshmallow ==========
+marshmallow = Marshmallow(app)
 # initialize migration engine
 migrate = Migrate(app, db, directory=config.ALEMBIC_PATH)
 # ========== Setup flask-admin ==========
@@ -38,4 +42,4 @@ bootstrap = flask_bootstrap.Bootstrap(app)
 # ========== Setup flask-login ==========
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
-login_manager.logiin_view = 'login'
+login_manager.login_view = 'login'
