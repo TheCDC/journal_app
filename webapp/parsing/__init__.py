@@ -58,11 +58,8 @@ def identify_entries(lines) -> "list[Entry]":
     results = []
     date = None
     for each_line in lines:
-        print(each_line)
         if DATE_HEADER_PATTERN.search(each_line):
-            print('<is header line>')
             e = Entry(date, '\n'.join(cur_body_lines))
-            print('Appending:',e)
             if date is not None:
                 results.append(e)
 
