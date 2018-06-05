@@ -1,8 +1,12 @@
 {% extends 'base.html' %} {% block content %} {{super()}}
-<form action="/" method="POST">
-
-    {{render_field(context.form.create_date)}}
-    {{render_field(context.form.contents)}}
+<form action="/" method="POST" enctype="multipart/form-data">
+    <div class="form-group">
+        {{context.form.hidden_tag()}}
+        <label for="contents">contents</label>
+        <textarea name="contents" id="contents" class="form-control entry_editor" rows="10">{{context.form.contents.data}}</textarea>
+        {{render_field(context.form.create_date)}}
+    </div>
+    <input class="btn btn-success" type="submit" value="submit">
 
 </form>
 {% endblock %}
