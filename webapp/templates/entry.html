@@ -1,6 +1,10 @@
 {% extends 'base.html' %} {% block content %} {{super()}}
 <div class="container">
-
+    <div>
+        <p>
+            <a href="{{url_for('edit_entry',id=context.entry.id)}}"> Edit</a>
+        </p>
+    </div>
     <ul class="pager">
         {% if context.previous%}
         <!--  -->

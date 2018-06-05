@@ -258,3 +258,16 @@ class SettingsView(MethodView):
         else:
             return self.get(settings_form=form)
         return flask.redirect(flask.url_for('settings'))
+
+class EntryEditView(MethodView):
+    def get(self,**kwargs):
+        obj = models.JournalEntry(owner=flask_login.current_user)
+        if kwargs['id']:
+            found = models.JournalEntry.query.filter_by(id=kwargs['id'], owner=flask_login.current_user).first()
+            if not found:
+                flask.abort(404)
+            else:
+                obj = found
+
+        context = dict(form=forms.JournalEntryEditForm(**api.object_as_dict(obj)))
+        return flask.render_template('edit_entry.html',context=context)

@@ -1,0 +1,8 @@
+{% extends 'base.html' %} {% block content %} {{super()}}
+<form action="/" method="POST">
+
+    {{render_field(context.form.create_date)}}
+    {{render_field(context.form.contents)}}
+
+</form>
+{% endblock %}

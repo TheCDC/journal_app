@@ -28,6 +28,9 @@ app.add_url_rule('/register', view_func=views.RegisterView.as_view('register'))
 app.add_url_rule('/home', view_func=views.HomeView.as_view('home'))
 app.add_url_rule('/settings', view_func=views.SettingsView.as_view('settings'))
 app.add_url_rule('/', view_func=views.IndexView.as_view('index'))
+edit_entry_view = views.EntryEditView.as_view('edit_entry')
+app.add_url_rule('/edit/new', view_func=edit_entry_view)
+app.add_url_rule('/edit/<int:id>', view_func=edit_entry_view)
 
 # generate endpoints for search view
 search_view = views.EntrySearchView.as_view('entry')
