@@ -51,16 +51,7 @@ Remember remember the fifth of November.</pre>
                 </form>
                 {{context.file_contents}}
             </div>
-            <div class="col col-md-3">
-                <h2>Search by year</h2>
-                <ul>
-                    {% for t in context.years %}
-                    <li>
-                        <a href="{{t[0]}}">{{t[1]}}</a>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
+
             <div class="col col-md-3">
                 <h2>Search contents</h2>
                 <p>

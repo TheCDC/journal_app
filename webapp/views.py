@@ -231,8 +231,6 @@ class HomeView(MethodView, EnableLoggingMixin):
             latest_entry=latest_entry,
             now=datetime.datetime.now(),
             days_since_latest=(datetime.datetime.now().date() - latest_entry.create_date).days if latest_entry else None,
-            years=[(api.link_for_date(year=y.year), y.year)
-                   for y in flask_login.current_user.get_all_years()],
             error=None,
             success=None,
         )
