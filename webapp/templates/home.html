@@ -40,7 +40,7 @@ Remember remember the fifth of November.</pre>
     </div>
     <div class="container">
         <div class="row">
-            <div class="col col-md-3" id="upload_div">
+            <div class="col col-md-6" id="upload_div">
                 <h2>Upload Journal File</h2>
                 <form class="upload_form {% if context.error %}alert alert-danger{% endif %}" method="POST"
                       action="{{url_for('home')}}" enctype="multipart/form-data">
@@ -51,14 +51,7 @@ Remember remember the fifth of November.</pre>
                 </form>
                 {{context.file_contents}}
             </div>
-
-            <div class="col col-md-3">
-                <h2>Search contents</h2>
-                <p>
-                    Coming soon!
-                </p>
-            </div>
-            <div class="col col-md-3" id="plugins_div">
+            <div class="col col-md-6" id="plugins_div">
                 <h2> Installed plugins </h2>
                 <ul>
                     {% for p in context.plugin_manager.registered_plugins %}
