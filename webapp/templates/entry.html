@@ -1,6 +1,5 @@
 {% extends 'base.html' %} {% block content %} {{super()}}
 <div class="container">
-
     <ul class="pager">
         {% if context.previous%}
         <!--  -->
@@ -26,6 +25,15 @@
             </h2>
         <p>
             {{context.entry.html|safe}}
+        </p>
+    </div>
+    <div>
+        <p>
+            <form action="{{url_for('delete_entry',id=context.entry.id)}}" method="POST">
+    <a class="btn btn-success" href="{{url_for('edit_entry',id=context.entry.id)}}">Edit</a>
+
+        <input type="submit" class="btn btn-danger" value="Delete">
+    </form>
         </p>
     </div>
     <h2 class="text-center">Plugins Output</h2>

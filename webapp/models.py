@@ -1,7 +1,7 @@
 from webapp.app_init import app, db, admin
 import webapp.app_init
 from webapp import config
-from webapp import forms
+# from webapp import forms
 from flask_admin.contrib.sqla import ModelView
 import datetime
 import logging
@@ -100,26 +100,26 @@ class User(db.Model, UserMixin):
             JournalEntry.create_date < e.create_date).order_by(
             JournalEntry.create_date.desc()).first()
 
-    def get_settings_form(self) -> forms.AccountSettingsForm:
-        """return a pre-filled form for changing user data"""
-        form = forms.AccountSettingsForm()
-        form.email.data = self.email
-        form.first_name.data = self.first_name
-        form.last_name.data = self.last_name
-        return form
-
-    def update_settings(self, settings_form: forms.AccountSettingsForm):
-        """Takes a form and updates values from it."""
-        form = settings_form
-        if form.validate_on_submit():
-            self.first_name = form.first_name.data
-            self.last_name = form.last_name.data
-            self.email = form.email.data
-            if form.new_password.data == form.new_password_confirm.data:
-                if form.password.data == self.password:
-                    self.password = hash_password(form.new_password.data)
-            db.session.add(self)
-            db.session.commit()
+    # def get_settings_form(self) -> forms.AccountSettingsForm:
+    #     """return a pre-filled form for changing user data"""
+    #     form = forms.AccountSettingsForm()
+    #     form.email.data = self.email
+    #     form.first_name.data = self.first_name
+    #     form.last_name.data = self.last_name
+    #     return form
+    #
+    # def update_settings(self, settings_form: forms.AccountSettingsForm):
+    #     """Takes a form and updates values from it."""
+    #     form = settings_form
+    #     if form.validate_on_submit():
+    #         self.first_name = form.first_name.data
+    #         self.last_name = form.last_name.data
+    #         self.email = form.email.data
+    #         if form.new_password.data == form.new_password_confirm.data:
+    #             if form.password.data == self.password:
+    #                 self.password = hash_password(form.new_password.data)
+    #         db.session.add(self)
+    #         db.session.commit()
 
 
 class JournalEntry(db.Model):

@@ -58,7 +58,7 @@ class NameExtractorPluginView(MethodView):
 
 class Plugin(parsing.Plugin):
     """An example plugin that simply splits the entry on spaces."""
-    name = 'Name Extractor'
+    name = 'Name Search'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
