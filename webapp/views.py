@@ -75,7 +75,10 @@ class RegisterView(MethodView):
             models.user_datastore.create_user(
                 username=register_form.username.data,
                 password=hash_password(register_form.password.data),
-                email=register_form.email.data)
+                email=register_form.email.data,
+                first_name=register_form.first_name.data,
+                last_name=register_form.last_name.data,
+            )
             try:
                 db.session.commit()
                 flask_login.login_user(
@@ -227,7 +230,7 @@ class HomeView(MethodView, EnableLoggingMixin):
             plugin_manager=parsing.PluginManager,
             latest_entry=latest_entry,
             now=datetime.datetime.now(),
-            days_since_latest=(datetime.datetime.now().date() - latest_entry.create_date).days,
+            days_since_latest=(datetime.datetime.now().date() - latest_entry.create_date).days if latest_entry else None,
             years=[(api.link_for_date(year=y.year), y.year)
                    for y in flask_login.current_user.get_all_years()],
             error=None,

@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 # hack to get a reference to the templates directory within the package
 tmpl_dir = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), 'templates')
-ALEMBIC_PATH = os.path.join(CONFIG_PATH, 'migrations')
+ALEMBIC_PATH = os.path.join(os.path.dirname(__file__), 'migrations')
 # set the database location and protocol
 fallback_db_path = os.path.join(CONFIG_PATH, 'database.db')
 
