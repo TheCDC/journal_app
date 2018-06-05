@@ -3,9 +3,9 @@
 		<h1>Account Settings</h1>
 		<form  class="user_settings_form " method="POST" action="{{url_for('settings')}}" enctype="multipart/form-data">
 			{{context.settings_form.hidden_tag()}}
+			{{render_field(context.settings_form.old_password)}}
 			{{render_field(context.settings_form.password)}}
-			{{render_field(context.settings_form.new_password)}}
-			{{render_field(context.settings_form.new_password_confirm)}}
+			{{render_field(context.settings_form.password_confirm)}}
 			{{render_field(context.settings_form.first_name)}}
 			{{render_field(context.settings_form.last_name)}}
 			{{render_field(context.settings_form.email)}}

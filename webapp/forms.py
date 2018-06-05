@@ -64,3 +64,10 @@ class JournalEntryEditForm(ModelForm):
 class UserEditForm(ModelForm):
     class Meta:
         model = models.User
+        exclude = ['password']
+    old_password = wtforms.PasswordField('Old password', validators=[])
+
+    password_confirm = wtforms.PasswordField(validators=[])
+    password = wtforms.PasswordField(validators=[])
+
+

@@ -106,7 +106,7 @@ class EntrySearchView(MethodView):
                      month: int = None,
                      day: int = None):
 
-        start_date = datetime.datetime(1, 1, 1)
+        start_date = datetime.date(1, 1, 1)
         if year is not None:
             start_date = start_date.replace(year=year)
         if month is not None:
@@ -247,7 +247,9 @@ class SettingsView(MethodView):
 
     @flask_login.login_required
     def get(self, **kwargs):
-        form = flask_login.current_user.get_settings_form()
+
+        # form = flask_login.current_user.get_settings_form()
+        form = forms.UserEditForm(**api.object_as_dict(flask_login.current_user))
         context = dict(settings_form=form)
 
         context.update(kwargs)
@@ -258,7 +260,11 @@ class SettingsView(MethodView):
         form = forms.AccountSettingsForm()
         cu = flask_login.current_user
         if form.validate_on_submit():
-            cu.update_settings(form)
+            session = db.session()
+            form.populate_obj(cu)
+            session.add(cu)
+            session.commit()
+            # cu.update_settings(form)
         else:
             return self.get(settings_form=form)
         return flask.redirect(flask.url_for('settings'))
