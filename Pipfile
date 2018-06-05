@@ -28,6 +28,7 @@ flask-sqlalchemy = "*"
 marshmallow-sqlalchemy = "*"
 flask-marshmallow = "*"
 wtforms-alchemy = "*"
+gunicorn = "*"
 
 
 [dev-packages]
