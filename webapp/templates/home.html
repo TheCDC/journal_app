@@ -18,8 +18,8 @@
     {% endif %}
     <div class="jumbotron">
         {% if context.latest_entry %}
-        {% if (context.now - context.latest_entry.create_date).days > 0 %}
-        <h2> Remember this from {{(context.now - context.latest_entry.create_date).days}} day(s) ago?</h2>
+        {% if context.days_since_latest > 0 %}
+        <h2> Remember this from {{context.days_since_latest}} day(s) ago?</h2>
         {% else %}
         <h2> Today's entry </h2>
         {% endif %}

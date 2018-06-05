@@ -227,6 +227,7 @@ class HomeView(MethodView, EnableLoggingMixin):
             plugin_manager=parsing.PluginManager,
             latest_entry=latest_entry,
             now=datetime.datetime.now(),
+            days_since_latest=(datetime.datetime.now().date() - latest_entry.create_date).days,
             years=[(api.link_for_date(year=y.year), y.year)
                    for y in flask_login.current_user.get_all_years()],
             error=None,
@@ -274,7 +275,7 @@ class EntryEditView(MethodView):
             else:
                 obj = found
 
-        context = dict(back=api.link_for_entry(obj),form=forms.JournalEntryEditForm(**api.object_as_dict(obj)))
+        context = dict(back=api.link_for_entry(obj), form=forms.JournalEntryEditForm(**api.object_as_dict(obj)))
         context.update(kwargs)
         return flask.render_template('edit_entry.html', context=context)
 
@@ -298,7 +299,7 @@ class EntryEditView(MethodView):
                 flask.abort(403)
         else:
             context['errors'].append('form invalid')
-            return flask.redirect(flask.url_for('edit_entry',form=form))
+            return flask.redirect(flask.url_for('edit_entry', form=form))
 
 
 class ExportJournalView(MethodView):
