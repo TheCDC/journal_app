@@ -1,9 +1,22 @@
 import flask_wtf
 from flask_wtf.file import FileField, FileRequired
-import wtforms
 import wtforms.fields.html5
 import wtforms.validators
 
+from webapp import models
+
+from flask_wtf import FlaskForm
+from wtforms_alchemy import model_form_factory
+# The variable db here is a SQLAlchemy object instance from
+# Flask-SQLAlchemy package
+from webapp.app_init import db
+
+BaseModelForm = model_form_factory(FlaskForm)
+
+class ModelForm(BaseModelForm):
+    @classmethod
+    def get_session(self):
+        return db.session
 
 class UploadForm(flask_wtf.FlaskForm):
     file = FileField('Journal File', validators=[FileRequired()])
@@ -42,3 +55,12 @@ class AccountSettingsForm(flask_wtf.FlaskForm):
     first_name = wtforms.StringField('First name', validators=[])
     last_name = wtforms.StringField('Last name', validators=[])
     email = wtforms.fields.html5.EmailField('New email address', validators=[])
+
+class JournalEntryEditForm(ModelForm):
+    class Meta:
+        model = models.JournalEntry
+        include=['id','owner_id']
+
+class UserEditForm(ModelForm):
+    class Meta:
+        model = models.User

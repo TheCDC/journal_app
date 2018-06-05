@@ -27,6 +27,7 @@ requests = "*"
 flask-sqlalchemy = "*"
 marshmallow-sqlalchemy = "*"
 flask-marshmallow = "*"
+wtforms-alchemy = "*"
 
 
 [dev-packages]

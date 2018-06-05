@@ -4,8 +4,15 @@ import datetime
 import flask
 import logging
 import datetime
+from sqlalchemy import inspect
 
 logger = logging.getLogger(__name__)
+
+
+def object_as_dict(obj):
+    return {c.key: getattr(obj, c.key)
+            for c in inspect(obj).mapper.column_attrs}
+
 
 
 def link_for_date(**kwargs):
