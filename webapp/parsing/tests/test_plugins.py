@@ -15,8 +15,9 @@ def test_default_instantiate():
 def test_default_parse():
     en = parsing.Entry('2000-01-01', 'body')
     err = None
-    p = parsing.Plugin
+    p = parsing.Plugin()
     try:
+        p.init()
         p.parse_entry(en)
     except Exception as e:
         err = e
