@@ -10,7 +10,7 @@ from flask.views import MethodView
 
 logger = logging.getLogger(__name__)
 # print('__name__', __name__)
-DATE_HEADER_PATTERN = re.compile(r"^[0-9]+-[0-9]+-[0-9]+\w*$")
+DATE_HEADER_PATTERN = re.compile(r"^[0-9]+-[0-9]+-[0-9]+\s*$")
 
 
 def datestr(y: str, m: str, d: str) -> str:
@@ -69,7 +69,6 @@ def identify_entries(lines) -> "list[Entry]":
             cur_body_lines = []
             old_date = each_line
         else:
-            print('<is body line>')
             cur_body_lines.append(each_line)
     if date is not None and len(cur_body_lines) > 0:
         b = '\n'.join(cur_body_lines)
@@ -82,7 +81,7 @@ class Plugin:
     and recognizing rich content within Entry(s)."""
     requires_initialization = True
     initialized = False
-
+    name = 'Default Plugin (you might have forgotten to override this plugin\'s name)'
     @classmethod
     def get_class_name(cls):
         """Return the name of this class including the file in which it is defined."""
@@ -96,6 +95,7 @@ class Plugin:
         return s.split('.')[0]
 
     def __init__(self):
+        self.name = type(self).name
         self.logger = logger.getChild(self.name.replace(' ', '_').lower())
         plugin_class = self.__class__
 

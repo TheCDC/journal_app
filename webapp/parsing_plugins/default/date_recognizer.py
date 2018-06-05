@@ -26,7 +26,6 @@ class Plugin(parsing.Plugin):
 
     def __init__(self):
         super().__init__()
-
         self.logger.debug(f'{Plugin.name} initialized!')
 
     def parse_entry(self, e: models.JournalEntry) -> 'iterable[str]':
