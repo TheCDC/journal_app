@@ -1,12 +1,25 @@
 {% extends 'base.html' %} {% block content %} {{super()}}
-<form action="/" method="POST" enctype="multipart/form-data">
-    <div class="form-group">
-        {{context.form.hidden_tag()}}
-        <label for="contents">contents</label>
-        <textarea name="contents" id="contents" class="form-control entry_editor" rows="10">{{context.form.contents.data}}</textarea>
-        {{render_field(context.form.create_date)}}
+<div class="container">
+    <div>
+        <a  href="{{context.back}}"><button class="btn">Back</button></a>
     </div>
-    <input class="btn btn-success" type="submit" value="submit">
+    <form action="{{url_for('edit_entry',id=context.form.id.data)}}" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            {{context.form.hidden_tag()}}
+            <label for="contents">Entry contents</label>
+            <textarea name="contents" id="contents" class="form-control entry_editor" rows="10">{{context.form.contents.data}}</textarea>
+            {{render_field(context.form.create_date,label='test')}}
+            <div class="hidden">
 
-</form>
+                {{render_field(context.form.owner_id)}}
+                {{render_field(context.form.id)}}
+
+            </div>
+
+
+        </div>
+        <input class="btn btn-success" type="submit" value="submit">
+
+    </form>
+</div>
 {% endblock %}

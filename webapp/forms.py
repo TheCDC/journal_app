@@ -59,6 +59,8 @@ class AccountSettingsForm(flask_wtf.FlaskForm):
 class JournalEntryEditForm(ModelForm):
     class Meta:
         model = models.JournalEntry
+        include=['id','owner_id']
+
 class UserEditForm(ModelForm):
     class Meta:
         model = models.User

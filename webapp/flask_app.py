@@ -31,6 +31,9 @@ app.add_url_rule('/', view_func=views.IndexView.as_view('index'))
 edit_entry_view = views.EntryEditView.as_view('edit_entry')
 app.add_url_rule('/edit/new', view_func=edit_entry_view)
 app.add_url_rule('/edit/<int:id>', view_func=edit_entry_view)
+app.add_url_rule('/export', view_func=views.ExportJournalView.as_view('export_journal'))
+app.add_url_rule('/delete/<int:id>', view_func=views.DeleteEntryView.as_view('delete_entry'))
+
 
 # generate endpoints for search view
 search_view = views.EntrySearchView.as_view('entry')

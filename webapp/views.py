@@ -232,8 +232,11 @@ class HomeView(MethodView, EnableLoggingMixin):
             error=None,
             success=None,
         )
-        # allow context values to be overridden by kwargs
+        # allow context values to be overridden by kwargs and request
         context.update(kwargs)
+        for key in context:
+            if key in flask.request.args:
+                context[key] = flask.request.args.get(key)
         return flask.render_template(self.get_template_name(), context=context)
 
 
@@ -259,8 +262,10 @@ class SettingsView(MethodView):
             return self.get(settings_form=form)
         return flask.redirect(flask.url_for('settings'))
 
+
 class EntryEditView(MethodView):
-    def get(self,**kwargs):
+    @flask_login.login_required
+    def get(self, **kwargs):
         obj = models.JournalEntry(owner=flask_login.current_user)
         if kwargs['id']:
             found = models.JournalEntry.query.filter_by(id=kwargs['id'], owner=flask_login.current_user).first()
@@ -269,5 +274,63 @@ class EntryEditView(MethodView):
             else:
                 obj = found
 
-        context = dict(form=forms.JournalEntryEditForm(**api.object_as_dict(obj)))
-        return flask.render_template('edit_entry.html',context=context)
+        context = dict(back=api.link_for_entry(obj),form=forms.JournalEntryEditForm(**api.object_as_dict(obj)))
+        context.update(kwargs)
+        return flask.render_template('edit_entry.html', context=context)
+
+    @flask_login.login_required
+    def post(self, **kwargs):
+        form = forms.JournalEntryEditForm()
+        cu = flask_login.current_user
+        context = dict(errors=list())
+        if form.validate_on_submit():
+            if form.owner_id.data == cu.id:
+                obj = models.JournalEntry.query.filter_by(id=form.id.data, owner=cu).first()
+                if not obj:
+                    obj = models.JournalEntry(owner=cu)
+                form.populate_obj(obj)
+                session = db.session()
+                session.add(obj)
+                session.commit()
+
+                return flask.redirect(api.link_for_entry(obj))
+            else:
+                flask.abort(403)
+        else:
+            context['errors'].append('form invalid')
+            return flask.redirect(flask.url_for('edit_entry',form=form))
+
+
+class ExportJournalView(MethodView):
+    @flask_login.login_required
+    def get(self, **kwargs):
+        cu = flask_login.current_user
+        entries = models.JournalEntry.query.filter_by(owner=cu).order_by(models.JournalEntry.create_date)
+
+        def generate():
+            for e in entries:
+                yield e.date_string
+                yield '\n'
+                yield e.contents
+                yield '\n'
+
+        response = flask.Response(flask.stream_with_context(generate()))
+        filename = f'{cu.first_name} {cu.last_name} journal.txt'
+        cd = f'attachment; filename="{filename}"'
+        response.headers['Content-Disposition'] = cd
+        response.mimetype = 'application/octet-stream'
+        return response
+
+
+class DeleteEntryView(MethodView):
+    def post(self, **kwargs):
+        session = db.session()
+        cu = flask_login.current_user
+        obj = models.JournalEntry.query.filter_by(id=kwargs['id']).first()
+        if not obj:
+            flask.abort(404)
+        if cu == obj.owner:
+            old_date = obj.date_string
+            session.delete(obj)
+        session.commit()
+        return flask.redirect(flask.url_for('home', success=f'Deleted entry for {old_date}'))
