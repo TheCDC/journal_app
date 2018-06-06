@@ -14,6 +14,7 @@ import datetime
 import dateutil.parser
 import logging
 card_pattern = re.compile(r'\[\[[^\[^\].]*\]\]')
+word_pattern = re.compile(r'\b[^\W_]+\b')
 link_element_template = '<a target="_blank" href="{link}">{body}</a>'
 base_url = 'https://scryfall.com/search?q=!'
 
@@ -41,6 +42,8 @@ class Node:
     def __str__(self):
         ancestry = self.get_phrase()
         return f'Node < "{self.value}", {len(self.children)} children >'
+    def __hash__(self):
+        return hash((self.value,))
 
 
 class SuffixTree:
@@ -66,7 +69,6 @@ class SuffixTree:
         cur_node = self.root
         if words_tuple in self.memory:
             return self.memory[words_tuple]
-
         while True:
             # guard
             if len(cur_node.children) == 0 and not _insert:
@@ -133,6 +135,9 @@ class SuffixTree:
 
 url = 'http://mtgjson.com/json/AllCards.json.zip'
 
+def tokenize(s):
+    return s.strip()
+
 
 def download_cards_to_file(destination='resources/cards.json'):
     resp = requests.get(url, stream=True)
@@ -164,14 +169,14 @@ def fetch(mailbox, target):
         download_cards_to_file(target)
     with open(target) as f:
         cards = json.load(f)
-    cards_tree = SuffixTree([list(name.strip()) for name in cards], comparator=lambda a, b: a.lower() == b.lower())
+    cards_tree = SuffixTree([list(tokenize(name)) for name in cards], comparator=lambda a, b: a.lower() == b.lower())
     mailbox.append(cards_tree)
 
 
 def identify_cards(s, cards_tree):
     seen = set()
     tokens = []
-    for i, c in enumerate(s.lower()):
+    for i, c in enumerate(tokenize(s)):
         tokens.append(c)
         tokens_t = tuple(tokens)
         found_cards = list(cards_tree.find_all(tokens))
@@ -184,7 +189,7 @@ def identify_cards(s, cards_tree):
             # case of exactly one card matching current search string
             card = found_cards[0]
             p = tuple(card.get_phrase())
-            if (len(p) == len(tokens_t)) and (p not in seen):
+            if (len(p) == len(tokens)) and (p not in seen):
                 seen.add(p)
                 yield card
 
@@ -204,7 +209,7 @@ class Plugin(parsing.Plugin):
     def parse_entry(self, e: models.JournalEntry) -> 'iterable[str]':
         if self.cards_tree is None:
             if self.thread.isAlive():
-                yield "Card database still downloading."
+                yield "Card database being built."
                 return
             else:
                 self.cards_tree = self.queue.pop()
