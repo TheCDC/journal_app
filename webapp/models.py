@@ -8,7 +8,7 @@ import logging
 import flask_migrate
 import alembic
 import markdown
-from flask_security import Security, SQLAlchemyUserDatastore, UserMixin, RoleMixin
+from flask_security import UserMixin, RoleMixin
 from flask_security.utils import hash_password
 
 logger = logging.getLogger(__name__)
@@ -218,7 +218,3 @@ def instantiate_db(app):
             logger.debug('flask db upgrade failed: %s', e)
             raise e
 
-
-# ========== Setup Flask-Security ==========
-user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-security = Security(app, user_datastore)

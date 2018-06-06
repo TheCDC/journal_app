@@ -230,7 +230,8 @@ class HomeView(MethodView, EnableLoggingMixin):
             plugin_manager=parsing.PluginManager,
             latest_entry=latest_entry,
             now=datetime.datetime.now(),
-            days_since_latest=(datetime.datetime.now().date() - latest_entry.create_date).days if latest_entry else None,
+            days_since_latest=(
+                        datetime.datetime.now().date() - latest_entry.create_date).days if latest_entry else None,
             error=None,
             success=None,
         )
@@ -250,7 +251,9 @@ class SettingsView(MethodView):
     def get(self, **kwargs):
 
         # form = flask_login.current_user.get_settings_form()
-        form = forms.UserEditForm(**api.object_as_dict(flask_login.current_user))
+        form = kwargs.get('form', None)
+        if not form:
+            form = forms.UserEditForm(**api.object_as_dict(flask_login.current_user),obj=flask_login.current_user)
         context = dict(settings_form=form)
 
         context.update(kwargs)
@@ -258,16 +261,18 @@ class SettingsView(MethodView):
 
     @flask_login.login_required
     def post(self):
-        form = forms.AccountSettingsForm()
         cu = flask_login.current_user
+        form = forms.UserEditForm(obj=cu)
         if form.validate_on_submit():
             session = db.session()
-            form.populate_obj(cu)
+            cu.first_name = form.first_name.data
+            cu.last_name = form.last_name.data
+            cu.email = form.email.data
             session.add(cu)
             session.commit()
             # cu.update_settings(form)
         else:
-            return self.get(settings_form=form)
+            return flask.render_template(context=dict(settings_form=form))
         return flask.redirect(flask.url_for('settings'))
 
 

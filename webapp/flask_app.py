@@ -4,6 +4,14 @@ from . import views
 from . import models
 from . import api
 import logging
+from flask_security import Security, SQLAlchemyUserDatastore
+
+
+# ========== Setup Flask-Security ==========
+user_datastore = SQLAlchemyUserDatastore(models.db, models.User, models.Role)
+security = Security(app, user_datastore)
+
+
 
 logger = logging.getLogger(__name__)
 
