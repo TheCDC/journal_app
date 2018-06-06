@@ -18,11 +18,11 @@
                 <a class="btn" href="{{url_for('settings')}}">{{current_user.first_name if current_user.first_name else "You"}}</a>
             </li>
             <li>
-                <a class="btn" href="{{url_for('logout')}}">Log out</a>
+                <a class="btn" href="{{url_for('security.logout')}}">Log out</a>
             </li>
             {% else %}
             <li>
-                <a class="btn" href="{{url_for('login')}}">Log in</a>
+                <a class="btn" href="{{url_for('security.logout')}}">Log in</a>
             </li>
             {% endif %}
         </ul>

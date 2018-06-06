@@ -31,28 +31,6 @@ class EnableLoggingMixin:
         return self._logger
 
 
-class LoginView(MethodView):
-    def get_template_name(self, ):
-        return 'login.html'
-
-    def get(self, **kwargs):
-        context = dict(login_form=forms.LoginForm())
-        context.update(kwargs)
-        return flask.render_template(self.get_template_name(), context=context)
-
-    def post(self, **kwargs):
-        login_form = forms.LoginForm()
-        context = dict(login_form=login_form)
-        context.update(kwargs)
-        found_user = models.User.query.filter_by(
-            username=login_form.username.data,
-            password=login_form.password.data).first()
-        if found_user is not None:
-            flask_login.login_user(found_user)
-            return flask.redirect(flask.url_for('index'))
-        return self.get(error="User not found")
-
-
 class LogoutView(MethodView):
     def get(self):
         flask_login.logout_user()

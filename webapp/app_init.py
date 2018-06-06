@@ -28,6 +28,8 @@ app.config[
 app.config.update(dict(
     SECURITY_PASSWORD_SALT=os.environ.get('SECURITY_PASSWORD_SALT', None),
     SECURITY_REGISTER_URL='/register',
+    SECURITY_LOGIN_URL='/login',
+
     SECURITY_REGISTERABLE=True,
     SECURITY_CONFIRMABLE=False,
     SECURITY_SEND_REGISTER_EMAIL=False,
