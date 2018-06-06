@@ -3,12 +3,12 @@
 {% macro render_field(field) %}
 <p>
     {{ field.label }} {{ field(**kwargs)|safe }} {% if field.errors %}
-    <ul class=errors>
-        {% for error in field.errors %}
-        <li class="text-danger">{{ error }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
+<ul class=errors>
+    {% for error in field.errors %}
+    <li class="text-danger">{{ error }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
 </p>
 {% endmacro %}
 <!--  -->
@@ -44,7 +44,8 @@
 <!--  -->
 {% macro render_year(year, year_obj) %}
 <div>
-    <h2 class="year_div text-center">{{year}} ({{year_obj.num_entries}})</h2> {% for month in year_obj.months|reverse %} {{render_month(month, year_obj.months[month])}} {% endfor %}
+    <h2 class="year_div text-center">{{year}} ({{year_obj.num_entries}})</h2> {% for month in year_obj.months|reverse %}
+    {{render_month(month, year_obj.months[month])}} {% endfor %}
     <hr>
 </div>
 {% endmacro %}
@@ -54,9 +55,14 @@
     <title>Journal App</title>
     {{super()}}
     <!-- custom -->
-    <link rel="stylesheet" type="text/css" href="/static/stylesheets/default.css"> {% endblock %}
+    <link rel="stylesheet" type="text/css" href="/static/stylesheets/default.css">
+    {% endblock %}
 </head>
 
 <body>
-    {% block content %}{{super()}}{% include "navbar.html" %} {% endblock %}
+    {% block content %}{{super()}}{% include "navbar.html" %}
+
+    {% endblock %}
+
+
 </body>

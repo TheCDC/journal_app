@@ -14,7 +14,8 @@
             {% endif %}
             <!--  -->
             <li {% if request.path==url_for( 'settings') %} class="active" {% endif %}>
-                <a class="btn" href="{{url_for('settings')}}">{{current_user.first_name}}</a>
+
+                <a class="btn" href="{{url_for('settings')}}">{{current_user.first_name if current_user.first_name else "You"}}</a>
             </li>
             <li>
                 <a class="btn" href="{{url_for('logout')}}">Log out</a>

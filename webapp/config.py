@@ -25,6 +25,5 @@ tmpl_dir = os.path.join(
 ALEMBIC_PATH = os.path.join(os.path.dirname(__file__), 'migrations')
 # set the database location and protocol
 fallback_db_path = os.path.join(CONFIG_PATH, 'database.db')
-
-SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL',f'sqlite:///{fallback_db_path}')
+SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
 DEBUG_ENABLED = os.environ.get('DEBUG_ENABLED', False)

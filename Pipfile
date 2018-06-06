@@ -29,6 +29,7 @@ marshmallow-sqlalchemy = "*"
 flask-marshmallow = "*"
 wtforms-alchemy = "*"
 gunicorn = "*"
+flask-mail = "*"
 
 
 [dev-packages]

@@ -9,7 +9,7 @@ import flask_migrate
 import alembic
 import markdown
 from flask_security import UserMixin, RoleMixin
-from flask_security.utils import hash_password
+from sqlalchemy.orm import backref
 
 logger = logging.getLogger(__name__)
 
@@ -129,7 +129,7 @@ class JournalEntry(db.Model):
         db.Date, default=datetime.datetime.utcnow, index=True)
     contents = db.Column(db.String)
     owner_id = db.Column(db.Integer, db.ForeignKey(User.id))
-    owner = db.relationship(User, backref='users')
+    owner = db.relationship(User, backref=backref('entries', cascade="all,delete"),)
 
     def __str__(self):
         return str(self.id)
@@ -217,4 +217,3 @@ def instantiate_db(app):
         except Exception as e:
             logger.debug('flask db upgrade failed: %s', e)
             raise e
-

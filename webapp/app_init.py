@@ -3,13 +3,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import flask_bootstrap
 import flask_login
+import flask_mail
 from flask_marshmallow import Marshmallow
 # for editing DB entries
 from flask_admin import Admin
 import logging
 from . import config
 import os
-
 
 logger = logging.getLogger(__name__)
 #  ========== Flask App ==========
@@ -22,17 +22,26 @@ key = os.environ.get('SECRET_KEY', None)
 if key is None:
     raise RuntimeError('App SECRET_KEY must be provided in env vars!')
 app.config['SECRET_KEY'] = key
-app.config['SECURITY_PASSWORD_SALT'] = os.environ.get('SECURITY_PASSWORD_SALT',
-                                                      None)
-
 app.config[
     'SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
+# ========== Flask-Security config ==========
+app.config.update(dict(
+    SECURITY_PASSWORD_SALT=os.environ.get('SECURITY_PASSWORD_SALT', None),
+    SECURITY_REGISTER_URL='/register',
+    SECURITY_REGISTERABLE=True,
+    SECURITY_CONFIRMABLE=False,
+    SECURITY_SEND_REGISTER_EMAIL=False,
+))
+
 # ========== Setup sqlalchemy ==========
 db = SQLAlchemy(app)
 # ========== Setup flask-marshmallow ==========
 marshmallow = Marshmallow(app)
 # initialize migration engine
 migrate = Migrate(app, db, directory=config.ALEMBIC_PATH)
+# ========== Setup flask-mail ==========
+mail = flask_mail.Mail(app)
+
 # ========== Setup flask-admin ==========
 if config.DEBUG_ENABLED:
     admin = Admin(app, name='Journal Wiki App', template_mode='bootstrap3')
