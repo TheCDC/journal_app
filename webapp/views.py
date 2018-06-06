@@ -306,7 +306,7 @@ class ExportJournalView(MethodView):
                 yield '\n'
 
         response = flask.Response(flask.stream_with_context(generate()))
-        filename = f'{cu.first_name} {cu.last_name} journal.txt'
+        filename = f'{cu.first_name} {cu.last_name} journal exported {datetime.datetime.now().isoformat()}.txt'
         cd = f'attachment; filename="{filename}"'
         response.headers['Content-Disposition'] = cd
         response.mimetype = 'application/octet-stream'
