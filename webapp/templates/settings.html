@@ -1,6 +1,7 @@
 {% extends 'base.html' %} {% block content %} {{super()}}
 	<div class="container container-fluid">
 		<h1>Account Settings</h1>
+		<a href="{{url_for('security.change_password')}}">Change password</a>
 		<form  class="user_settings_form " method="POST" action="{{url_for('settings')}}" enctype="multipart/form-data">
 			{{context.settings_form.hidden_tag()}}
 			{{render_field(context.settings_form.first_name)}}
