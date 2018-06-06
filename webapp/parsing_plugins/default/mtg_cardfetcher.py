@@ -47,25 +47,34 @@ class SuffixTree:
 
     def __init__(self, list_of_phrases, comparator=None):
         self.root = Node(None)
+        self.memory = dict()
         if comparator:
             self.compare_function = comparator
         else:
             self.compare_function = lambda a, b: a == b
         for p in list_of_phrases:
-            self.search(p, insert=True)
+            self.search(p, _insert=True)
 
-    def search(self, list_of_words, insert=False, key=None):
+    def search(self, list_of_words, _insert=False):
         """Return a tuple of (node, remaining_tokens).
         The search consumes tokens from list_of_words as it performs the search.
         Un-consumed tokens are return in remaining_tokens.
         """
         words_iter = iter(list_of_words)
+        words_tuple = tuple(list_of_words)
         cur_token = next(words_iter)
         cur_node = self.root
+        if words_tuple in self.memory:
+            return self.memory[words_tuple]
+
         while True:
             # guard
-            if len(cur_node.children) == 0 and not insert:
-                return (cur_node, list(words_iter))
+            if len(cur_node.children) == 0 and not _insert:
+                # memoize search and return value
+                ret = (cur_node, list(words_iter))
+                if words_tuple not in self.memory:
+                    self.memory.update({words_tuple: ret})
+                return self.memory[words_tuple]
             # check children for match
             for n in cur_node.children:
                 if self.compare_function(n.value, cur_token):
@@ -73,11 +82,15 @@ class SuffixTree:
                     try:
                         cur_token = next(words_iter)
                     except StopIteration:
-                        return (cur_node, list(words_iter))
+                        # memoize search and return value
+                        ret = (cur_node, list(words_iter))
+                        if words_tuple not in self.memory:
+                            self.memory.update({words_tuple:ret})
+                        return self.memory[words_tuple]
                     break
             else:
                 # no matching children
-                if not insert:
+                if not _insert:
                     return (cur_node, [cur_token] + list(words_iter))
                 # make new node
                 new_node = Node(cur_token)
@@ -86,8 +99,11 @@ class SuffixTree:
                 try:
                     cur_token = next(words_iter)
                 except StopIteration:
-                    return (cur_node, list(words_iter))
-
+                    # memoize search and return value
+                    ret = (cur_node, list(words_iter))
+                    if words_tuple not in self.memory:
+                        self.memory.update({words_tuple: ret})
+                    return self.memory[words_tuple]
     def __str__(self):
         outlines = []
         d = 0
@@ -155,14 +171,16 @@ def fetch(mailbox, target):
 def identify_cards(s, cards_tree):
     seen = set()
     tokens = []
-    for i, c in enumerate(s):
-        tokens.append(c.lower())
+    for i, c in enumerate(s.lower()):
+        tokens.append(c)
         tokens_t = tuple(tokens)
         found_cards = list(cards_tree.find_all(tokens))
-        if len(found_cards) == 0:
+        while len(found_cards) == 0 and len(tokens) > 0:
             # case of no cards possibly matching current search string
-            tokens = [c]
-        elif len(found_cards) == 1:
+            tokens.pop(0)
+            found_cards = list(cards_tree.find_all(tokens))
+
+        if len(found_cards) == 1:
             # case of exactly one card matching current search string
             card = found_cards[0]
             p = tuple(card.get_phrase())
