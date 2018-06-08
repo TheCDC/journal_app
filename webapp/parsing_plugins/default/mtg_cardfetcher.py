@@ -13,6 +13,7 @@ import os
 import datetime
 import dateutil.parser
 import logging
+
 card_pattern = re.compile(r'\[\[[^\[^\].]*\]\]')
 word_pattern = re.compile(r'\b[^\W_]+\b')
 link_element_template = '<a target="_blank" href="{link}">{body}</a>'
@@ -42,6 +43,7 @@ class Node:
     def __str__(self):
         ancestry = self.get_phrase()
         return f'Node < "{self.value}", {len(self.children)} children >'
+
     def __hash__(self):
         return hash((self.value,))
 
@@ -58,6 +60,12 @@ class SuffixTree:
         for p in list_of_phrases:
             self.search(p, _insert=True)
 
+    def _ret(self, words_tuple, cur_node, words_iter):
+        ret = (cur_node, list(words_iter))
+        if words_tuple not in self.memory:
+            self.memory.update({words_tuple: ret})
+        return self.memory[words_tuple]
+
     def search(self, list_of_words, _insert=False):
         """Return a tuple of (node, remaining_tokens).
         The search consumes tokens from list_of_words as it performs the search.
@@ -73,10 +81,7 @@ class SuffixTree:
             # guard
             if len(cur_node.children) == 0 and not _insert:
                 # memoize search and return value
-                ret = (cur_node, list(words_iter))
-                if words_tuple not in self.memory:
-                    self.memory.update({words_tuple: ret})
-                return self.memory[words_tuple]
+                self._ret(words_tuple, cur_node, words_iter)
             # check children for match
             for n in cur_node.children:
                 if self.compare_function(n.value, cur_token):
@@ -85,10 +90,8 @@ class SuffixTree:
                         cur_token = next(words_iter)
                     except StopIteration:
                         # memoize search and return value
-                        ret = (cur_node, list(words_iter))
-                        if words_tuple not in self.memory:
-                            self.memory.update({words_tuple:ret})
-                        return self.memory[words_tuple]
+                        self._ret(words_tuple, cur_node, words_iter)
+
                     break
             else:
                 # no matching children
@@ -102,10 +105,8 @@ class SuffixTree:
                     cur_token = next(words_iter)
                 except StopIteration:
                     # memoize search and return value
-                    ret = (cur_node, list(words_iter))
-                    if words_tuple not in self.memory:
-                        self.memory.update({words_tuple: ret})
-                    return self.memory[words_tuple]
+                    self._ret(words_tuple, cur_node, words_iter)
+
     def __str__(self):
         outlines = []
         d = 0
@@ -135,6 +136,7 @@ class SuffixTree:
 
 url = 'http://mtgjson.com/json/AllCards.json.zip'
 
+
 def tokenize(s):
     return s.strip()
 
@@ -150,21 +152,21 @@ def download_cards_to_file(destination='resources/cards.json'):
 
 
 def fetch(mailbox, target):
-    meta_path = os.path.join(os.path.dirname(target),'meta.json')
+    meta_path = os.path.join(os.path.dirname(target), 'meta.json')
     now = datetime.datetime.now()
     try:
         with open(meta_path) as meta_info_file:
             meta_info = json.load(meta_info_file)
             updated_at = dateutil.parser.parse(meta_info['updated_at'])
     except FileNotFoundError:
-        with open(meta_path,'w') as meta_info_file:
+        with open(meta_path, 'w') as meta_info_file:
             updated_at = now
             obj = {
-                'updated_at':updated_at.isoformat()
+                'updated_at': updated_at.isoformat()
             }
             meta_info_file.write(json.dumps(obj))
     td = datetime.timedelta(days=1)
-    if (now  - updated_at) > td or not os.path.exists(target):
+    if (now - updated_at) > td or not os.path.exists(target):
         logging.info('MTG database too old. Updating...')
         download_cards_to_file(target)
     with open(target) as f:
@@ -216,4 +218,5 @@ class Plugin(parsing.Plugin):
 
         for c in identify_cards(e.contents, self.cards_tree):
             cardname = ''.join(c.get_phrase())
-            yield link_element_template.format(link=base_url + '&quot '+ '+'.join(cardname.split(' ')) + '&quot', body=cardname)
+            yield link_element_template.format(link=base_url + '&quot ' + '+'.join(cardname.split(' ')) + '&quot',
+                                               body=cardname)
