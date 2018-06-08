@@ -13,6 +13,8 @@ import os
 import datetime
 import dateutil.parser
 import logging
+import ahocorasick
+
 link_element_template = '<a target="_blank" href="{link}">{body}</a>'
 base_url = 'https://scryfall.com/search?q=!'
 
@@ -58,34 +60,21 @@ def fetch(mailbox, target):
         update_timestamp()
     with open(target) as f:
         cards = json.load(f)
-    print('start build re pattern')
-    pattern = '(' + '|'.join(f'{re.escape(name)}'for name in cards) + ')'
-    print(pattern)
-    cards_patttern = re.compile(pattern)
-    print('built re pattern')
-    mailbox.append(cards_patttern)
+    A = ahocorasick.Automaton()
+    for card in cards:
+        A.add_word(card,card)
+    A.make_automaton()
+    mailbox.append(A)
     return
 
 
-def identify_cards(s, cards_tree):
+def identify_cards(s, card_matcher):
     seen = set()
-    tokens = []
-    for i, c in enumerate(tokenize(s)):
-        tokens.append(c)
-        tokens_t = tuple(tokens)
-        found_cards = list(cards_tree.find_all(tokens))
-        while len(found_cards) == 0 and len(tokens) > 0:
-            # case of no cards possibly matching current search string
-            tokens.pop(0)
-            found_cards = list(cards_tree.find_all(tokens))
-
-        if len(found_cards) == 1:
-            # case of exactly one card matching current search string
-            card = found_cards[0]
-            p = tuple(card.get_phrase())
-            if (len(p) == len(tokens)) and (p not in seen):
-                seen.add(p)
-                yield card
+    for match in card_matcher.iter(s):
+        name = match[1]
+        if name not in seen:
+            seen.add(name)
+            yield name
 
 
 class Plugin(parsing.Plugin):
@@ -98,22 +87,16 @@ class Plugin(parsing.Plugin):
         self.cards_file_path = os.path.join(self.resources_path, 'cards.json')
         self.thread = threading.Thread(target=fetch, kwargs=dict(mailbox=self.queue, target=self.cards_file_path))
         self.thread.start()
-        self.cards_pattern = None
+        self.card_matcher = None
 
     def parse_entry(self, e: models.JournalEntry) -> 'iterable[str]':
-        if self.cards_pattern is None:
+        if self.card_matcher is None:
             if self.thread.isAlive():
                 yield "Card database being built."
                 return
             else:
-                self.cards_pattern = self.queue.pop()
-        found = list(self.cards_pattern.finditer(e.contents))
-        print('found',found)
-        seen = set()
+                self.card_matcher = self.queue.pop()
+        found = identify_cards(e.contents, self.card_matcher)
         for cardname in found:
-            cardname = cardname.group(1)
-            if cardname not in seen:
-                seen.add(cardname)
-                print(cardname)
-                yield link_element_template.format(link=base_url + '&quot '+ '+'.join(cardname.split(' ')) + '&quot', body=cardname)
-        print(seen)
+            yield link_element_template.format(link=base_url + '&quot ' + '+'.join(cardname.split(' ')) + '&quot',
+                                               body=cardname)
