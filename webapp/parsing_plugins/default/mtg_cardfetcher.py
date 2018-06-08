@@ -55,7 +55,7 @@ def fetch(mailbox, target):
             updated_at = dateutil.parser.parse(meta_info['updated_at'])
     except FileNotFoundError:
         update_timestamp()
-        updated_at = datetime.now()
+        updated_at = datetime.datetime.now()
     td = datetime.timedelta(days=1)
     if (now - updated_at) > td or not os.path.exists(target):
         print('download cards db')
