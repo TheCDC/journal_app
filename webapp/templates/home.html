@@ -42,14 +42,20 @@ Remember remember the fifth of November.</pre>
         <div class="row">
             <div class="col col-md-6" id="upload_div">
                 <h2>Upload Journal File</h2>
+                <p>
+
                 <form class="upload_form {% if context.error %}alert alert-danger{% endif %}" method="POST"
                       action="{{url_for('home')}}" enctype="multipart/form-data">
                     {{context.upload_form.hidden_tag()}}
                     <!--  -->
                     {{render_field(context.upload_form.file)}}
-                    <input class="btn btn-success" type="submit" value="submit">
+                    <input class="btn btn-primary" type="submit" value="submit">
                 </form>
                 {{context.file_contents}}
+                </p>
+                <p>
+                    <a class="btn btn-default" href="{{url_for('export_journal')}}">Export your journal</a>
+                </p>
             </div>
             <div class="col col-md-6" id="plugins_div">
                 <h2> Installed plugins </h2>
