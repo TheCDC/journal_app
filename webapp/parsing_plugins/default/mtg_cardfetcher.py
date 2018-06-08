@@ -38,13 +38,15 @@ def download_cards_to_file(destination='resources/cards.json'):
 def fetch(mailbox, target):
     meta_path = os.path.join(os.path.dirname(target), 'meta.json')
     now = datetime.datetime.now()
+
     def update_timestamp():
-        with open(meta_path,'w') as meta_info_file:
+        with open(meta_path, 'w') as meta_info_file:
             updated_at = now
             obj = {
                 'updated_at': updated_at.isoformat()
             }
             meta_info_file.write(json.dumps(obj))
+
     try:
         with open(meta_path) as meta_info_file:
             meta_info = json.load(meta_info_file)
@@ -52,8 +54,7 @@ def fetch(mailbox, target):
     except FileNotFoundError:
         update_timestamp()
     td = datetime.timedelta(days=1)
-    if (now  - updated_at) > td or not os.path.exists(target):
-
+    if (now - updated_at) > td or not os.path.exists(target):
         print('download cards db')
         logging.info('MTG database too old. Updating...')
         download_cards_to_file(target)
@@ -62,7 +63,7 @@ def fetch(mailbox, target):
         cards = json.load(f)
     A = ahocorasick.Automaton()
     for card in cards:
-        A.add_word(card,card)
+        A.add_word(card, card)
     A.make_automaton()
     mailbox.append(A)
     return
