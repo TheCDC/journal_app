@@ -105,9 +105,10 @@ class Plugin(parsing.Plugin):
                 try:
                     self.card_matcher = self.queue.pop()
                 except IndexError:
-                    print('This literally shouldn\'t happen. The thread is dead but the mailbox is empty?!')
-                    print(self.queue)
-        found = identify_cards(e.contents, self.card_matcher)
-        for cardname in found:
-            yield link_element_template.format(link=base_url + '&quot ' + '+'.join(cardname.split(' ')) + '&quot',
+                    logging.warning('This literally shouldn\'t happen. The thread is dead but the mailbox is empty?!')
+                    logging.warning(self.queue)
+        else:
+            found = identify_cards(e.contents, self.card_matcher)
+            for cardname in found:
+                yield link_element_template.format(link=base_url + '&quot ' + '+'.join(cardname.split(' ')) + '&quot',
                                                body=cardname)
