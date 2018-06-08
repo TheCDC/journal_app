@@ -14,6 +14,8 @@ import datetime
 import dateutil.parser
 import logging
 import ahocorasick
+from flask.views import MethodView
+
 
 link_element_template = '<a target="_blank" href="{link}">{body}</a>'
 base_url = 'https://scryfall.com/search?q=!'
@@ -77,6 +79,9 @@ def identify_cards(s, card_matcher):
             seen.add(name)
             yield name
 
+class MTGCardfetcherView(MethodView):
+    def get(self):
+        return 'MTG Cardfetcher Plugin'
 
 class Plugin(parsing.Plugin):
     """An example plugin that simply splits the entry on spaces."""
@@ -89,6 +94,7 @@ class Plugin(parsing.Plugin):
         self.thread = threading.Thread(target=fetch, kwargs=dict(mailbox=self.queue, target=self.cards_file_path))
         self.thread.start()
         self.card_matcher = None
+        self._view = MTGCardfetcherView
 
     def parse_entry(self, e: models.JournalEntry) -> 'iterable[str]':
         if self.card_matcher is None:
@@ -96,7 +102,11 @@ class Plugin(parsing.Plugin):
                 yield "Card database being built."
                 return
             else:
-                self.card_matcher = self.queue.pop()
+                try:
+                    self.card_matcher = self.queue.pop()
+                except IndexError:
+                    print('This literally shouldn\'t happen. The thread is dead but the mailbox is empty?!')
+                    print(self.queue)
         found = identify_cards(e.contents, self.card_matcher)
         for cardname in found:
             yield link_element_template.format(link=base_url + '&quot ' + '+'.join(cardname.split(' ')) + '&quot',
