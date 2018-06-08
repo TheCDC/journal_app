@@ -36,33 +36,30 @@ def download_cards_to_file(destination='resources/cards.json'):
 def fetch(mailbox, target):
     meta_path = os.path.join(os.path.dirname(target),'meta.json')
     now = datetime.datetime.now()
-    try:
-        with open(meta_path) as meta_info_file:
-            meta_info = json.load(meta_info_file)
-            updated_at = dateutil.parser.parse(meta_info['updated_at'])
-    except FileNotFoundError:
+    def update_timestamp():
         with open(meta_path,'w') as meta_info_file:
             updated_at = now
             obj = {
                 'updated_at':updated_at.isoformat()
             }
             meta_info_file.write(json.dumps(obj))
+    try:
+        with open(meta_path) as meta_info_file:
+            meta_info = json.load(meta_info_file)
+            updated_at = dateutil.parser.parse(meta_info['updated_at'])
+    except FileNotFoundError:
+        update_timestamp()
     td = datetime.timedelta(days=1)
     if (now  - updated_at) > td or not os.path.exists(target):
 
         print('download cards db')
         logging.info('MTG database too old. Updating...')
         download_cards_to_file(target)
-        with open(meta_path,'w') as meta_info_file:
-            updated_at = now
-            obj = {
-                'updated_at':updated_at.isoformat()
-            }
-            meta_info_file.write(json.dumps(obj))
+        update_timestamp()
     with open(target) as f:
         cards = json.load(f)
     print('start build re pattern')
-    pattern = '(' + '|'.join(re.escape(name )for name in cards) + ')'
+    pattern = '(' + '|'.join(f'{re.escape(name)}'for name in cards) + ')'
     print(pattern)
     cards_patttern = re.compile(pattern)
     print('built re pattern')
@@ -110,12 +107,13 @@ class Plugin(parsing.Plugin):
                 return
             else:
                 self.cards_pattern = self.queue.pop()
-        found = self.cards_pattern.finditer(e.contents)
+        found = list(self.cards_pattern.finditer(e.contents))
         print('found',found)
         seen = set()
         for cardname in found:
             cardname = cardname.group(1)
-            if cardname not in found:
+            if cardname not in seen:
                 seen.add(cardname)
                 print(cardname)
                 yield link_element_template.format(link=base_url + '&quot '+ '+'.join(cardname.split(' ')) + '&quot', body=cardname)
+        print(seen)
