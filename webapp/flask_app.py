@@ -3,6 +3,7 @@ from webapp import parsing
 from . import views
 from . import models
 from . import api
+from .journal_plugins import example_blueprint
 import logging
 from flask_security import Security, SQLAlchemyUserDatastore
 
@@ -55,6 +56,9 @@ login_manager.login_view = "login"
 for p in parsing.PluginManager.registered_plugins:
     p.bootstrap_endpoint_onto_app('/plugin/', app)
 
+# ========== Blueprints ==========
+
+app.register_blueprint(example_blueprint)
 
 def main():
     logger.info('run app')
