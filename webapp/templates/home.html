@@ -41,28 +41,22 @@ Remember remember the fifth of November.</pre>
     <div class="container">
         <div class="row">
             <div class="col col-md-6" id="upload_div">
-                <div class="container">
-                    <h2>Upload or export your journal </h2>
-                    <div class="row">
-                        <div class="col col-sm-6">
-
-
-                            <form class="upload_form {% if context.error %}alert alert-danger{% endif %}" method="POST"
-                                  action="{{url_for('home')}}" enctype="multipart/form-data">
-                                {{context.upload_form.hidden_tag()}}
-                                <!--  -->
-                                {{render_field(context.upload_form.file)}}
-                                <input class="btn btn-primary" type="submit" value="submit">
-                            </form>
-                            {{context.file_contents}}
-                        </div>
-
-                        <div class="col col-sm-6">
-                            <a class="btn btn-default" href="{{url_for('export_journal')}}">Export</a>
-                        </div>
-                    </div>
+                <h2>Upload or export your journal </h2>
+                <div>
+                    <p>
+                    <form class="upload_form {% if context.error %}alert alert-danger{% endif %}" method="POST"
+                          action="{{url_for('home')}}" enctype="multipart/form-data">
+                        {{context.upload_form.hidden_tag()}}
+                        <!--  -->
+                        {{render_field(context.upload_form.file)}}
+                        <input class="btn btn-primary" type="submit" value="submit">
+                    </form>
+                    {{context.file_contents}}
+                    </p>
+                    <p>
+                        <a class="btn btn-default" href="{{url_for('export_journal')}}">Export</a>
+                    </p>
                 </div>
-
 
             </div>
             <div class="col col-md-6" id="plugins_div">

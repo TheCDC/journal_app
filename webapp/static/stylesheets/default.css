@@ -19,3 +19,14 @@ img {
 .entry_editor{
     height: 100vh;
 }
+
+#upload_div > div{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+#upload_div > div > p{
+    padding-top: 1vh;
+
+}
