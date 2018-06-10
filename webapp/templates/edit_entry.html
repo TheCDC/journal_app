@@ -2,6 +2,10 @@
 <div class="container">
     <div>
         <a  href="{{context.back}}"><button class="btn">Back</button></a>
+        <h1>{{context.heading}}</h1>
+    </div>
+    <div>
+        {{context.errors}}
     </div>
     <form action="{{url_for('edit_entry',id=context.form.id.data)}}" method="POST" enctype="multipart/form-data">
         <div class="form-group">

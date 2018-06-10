@@ -11,6 +11,7 @@ import sqlalchemy
 import flask_login
 from flask_security.utils import hash_password
 from webapp.journal_plugins.extensions import plugin_manager
+
 logger = logging.getLogger(__name__)
 
 if logger.disabled:
@@ -209,7 +210,7 @@ class HomeView(MethodView, EnableLoggingMixin):
             latest_entry=latest_entry,
             now=datetime.datetime.now(),
             days_since_latest=(
-                        datetime.datetime.now().date() - latest_entry.create_date).days if latest_entry else None,
+                    datetime.datetime.now().date() - latest_entry.create_date).days if latest_entry else None,
             error=None,
             success=None,
         )
@@ -231,7 +232,7 @@ class SettingsView(MethodView):
         # form = flask_login.current_user.get_settings_form()
         form = kwargs.get('form', None)
         if not form:
-            form = forms.UserEditForm(**api.object_as_dict(flask_login.current_user),obj=flask_login.current_user)
+            form = forms.UserEditForm(**api.object_as_dict(flask_login.current_user), obj=flask_login.current_user)
         context = dict(settings_form=form)
 
         context.update(kwargs)
@@ -257,21 +258,27 @@ class SettingsView(MethodView):
 class EntryEditView(MethodView):
     @flask_login.login_required
     def get(self, **kwargs):
-        obj = models.JournalEntry(owner=flask_login.current_user)
-        if kwargs['id']:
+        context = dict()
+        obj = models.JournalEntry(owner=flask_login.current_user, owner_id=flask_login.current_user.id, contents='',
+                                  create_date=datetime.datetime.utcnow())
+        if 'id' in kwargs:
             found = models.JournalEntry.query.filter_by(id=kwargs['id'], owner=flask_login.current_user).first()
             if not found:
                 flask.abort(404)
             else:
                 obj = found
+            context['heading'] = 'Edit entry'
+            context.update(dict(back=api.link_for_entry(obj), ))
+        else:
+            context['heading'] = 'Write a new entry'
 
-        context = dict(back=api.link_for_entry(obj), form=forms.JournalEntryEditForm(**api.object_as_dict(obj)))
+        context.update(dict(form=forms.JournalEntryEditForm(**api.object_as_dict(obj))))
         context.update(kwargs)
         return flask.render_template('edit_entry.html', context=context)
 
     @flask_login.login_required
     def post(self, **kwargs):
-        form = forms.JournalEntryEditForm()
+        form = forms.JournalEntryEditForm(**flask.request.form)
         cu = flask_login.current_user
         context = dict(errors=list())
         if form.validate_on_submit():
@@ -289,7 +296,8 @@ class EntryEditView(MethodView):
                 flask.abort(403)
         else:
             context['errors'].append('form invalid')
-            return flask.redirect(flask.url_for('edit_entry', form=form))
+            return self.get(**context)
+            # return flask.redirect(flask.url_for('edit_entry', form=form))
 
 
 class ExportJournalView(MethodView):
@@ -326,6 +334,7 @@ class DeleteEntryView(MethodView):
         session.commit()
         return flask.redirect(flask.url_for('home', success=f'Deleted entry for {old_date}'))
 
+
 def add_views(app):
     app.add_url_rule('/register', view_func=RegisterView.as_view('register'))
     app.add_url_rule('/home', view_func=HomeView.as_view('home'))
@@ -344,4 +353,3 @@ def add_views(app):
     # construct url endpoints for searching dates with increasing precision
     endpoint = '/entry/' + delimiter.join(url_args)
     app.add_url_rule(endpoint, view_func=search_view)
-
