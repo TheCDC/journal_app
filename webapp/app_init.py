@@ -60,3 +60,9 @@ bootstrap = flask_bootstrap.Bootstrap(app)
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
+# ==========  Journal Parsing Plugins ==========
+from webapp.journal_plugins import PluginManager
+plugin_manager = PluginManager(app)
+from webapp.journal_plugins import example_plugin
+example_plugin = example_plugin.Plugin(plugin_manager)
