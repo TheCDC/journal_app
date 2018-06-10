@@ -1,7 +1,7 @@
 from .. import date_recognizer
 from webapp.models import JournalEntry
 import datetime
-from webapp.app_init import app
+from webapp.__init__ import app
 
 app.config['SERVER_NAME'] = 'localhost'
 

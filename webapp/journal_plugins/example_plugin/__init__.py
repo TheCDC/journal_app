@@ -4,7 +4,7 @@ import webapp
 import logging
 logger = logging.getLogger(__name__)
 
-class Plugin(journal_plugins.BasePlugin):
+class Plugin(journal_plugins.classes.BasePlugin):
     name = 'Example Plugin'
 
     def __init__(self, *args, **kwargs):

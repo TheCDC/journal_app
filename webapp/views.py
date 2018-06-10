@@ -2,15 +2,15 @@ import logging
 import flask
 from flask.views import MethodView
 import datetime
-from webapp.app_init import db
 from webapp import models
 from webapp import forms
 from webapp import parsing
 from webapp import api
+from webapp.extensions import db
 import sqlalchemy
 import flask_login
 from flask_security.utils import hash_password
-
+from webapp.journal_plugins.extensions import plugin_manager
 logger = logging.getLogger(__name__)
 
 if logger.disabled:
@@ -116,7 +116,7 @@ class EntrySearchView(MethodView):
         for o in [e.next, e.previous]:
             if o:
                 session.add(o)
-        plugins_output = [(t[0].name, list(t[1])) for t in parsing.PluginManager.parse_entry(e)]
+        plugins_output = [(t[0].name, list(t[1])) for t in plugin_manager.parse_entry(e)]
         context = dict(
             entry=api.journal_entry_schema.dump(obj=e).data,
             next=api.journal_entry_schema.dump(obj=e.next).data,
@@ -205,7 +205,7 @@ class HomeView(MethodView, EnableLoggingMixin):
         context = dict(
             upload_form=upload_form,
             entries_tree=api.get_entries_tree(flask_login.current_user),
-            plugin_manager=parsing.PluginManager,
+            plugin_manager=plugin_manager,
             latest_entry=latest_entry,
             now=datetime.datetime.now(),
             days_since_latest=(
@@ -325,3 +325,23 @@ class DeleteEntryView(MethodView):
             session.delete(obj)
         session.commit()
         return flask.redirect(flask.url_for('home', success=f'Deleted entry for {old_date}'))
+
+def add_views(app):
+    app.add_url_rule('/register', view_func=RegisterView.as_view('register'))
+    app.add_url_rule('/home', view_func=HomeView.as_view('home'))
+    app.add_url_rule('/settings', view_func=SettingsView.as_view('settings'))
+    app.add_url_rule('/', view_func=IndexView.as_view('index'))
+    edit_entry_view = EntryEditView.as_view('edit_entry')
+    app.add_url_rule('/edit/new', view_func=edit_entry_view)
+    app.add_url_rule('/edit/<int:id>', view_func=edit_entry_view)
+    app.add_url_rule('/export', view_func=ExportJournalView.as_view('export_journal'))
+    app.add_url_rule('/delete/<int:id>', view_func=DeleteEntryView.as_view('delete_entry'))
+
+    # generate endpoints for search view
+    search_view = EntrySearchView.as_view('entry')
+    delimiter = '-'
+    url_args = ['<int:year>', '<int:month>', '<int:day>']
+    # construct url endpoints for searching dates with increasing precision
+    endpoint = '/entry/' + delimiter.join(url_args)
+    app.add_url_rule(endpoint, view_func=search_view)
+

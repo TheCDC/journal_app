@@ -2,21 +2,18 @@ import flask_wtf
 from flask_wtf.file import FileField, FileRequired
 import wtforms.fields.html5
 import wtforms.validators
-
 from webapp import models
-
 from flask_wtf import FlaskForm
 from wtforms_alchemy import model_form_factory
-# The variable db here is a SQLAlchemy object instance from
-# Flask-SQLAlchemy package
-from webapp.app_init import db
 
 BaseModelForm = model_form_factory(FlaskForm)
 
 class ModelForm(BaseModelForm):
     @classmethod
     def get_session(self):
-        return db.session
+        # The variable db here is a SQLAlchemy object instance from
+        # Flask-SQLAlchemy package
+        return models.db.session
 
 class UploadForm(flask_wtf.FlaskForm):
     file = FileField('Journal File', validators=[FileRequired()])

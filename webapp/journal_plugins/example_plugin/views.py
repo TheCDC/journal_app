@@ -3,4 +3,4 @@ import flask
 
 class IndexView(MethodView):
     def get(self,**kwargs):
-        return 'This is Example Plugin'
+        return flask.render_template('example_plugin/index.html')

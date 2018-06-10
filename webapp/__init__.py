@@ -1,30 +1,9 @@
 import flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-import flask_bootstrap
-import flask_login
-import flask_mail
-from flask_marshmallow import Marshmallow
-# for editing DB entries
-from flask_admin import Admin
 import os
-
 import logging.config
 from webapp import config
-logger = logging.getLogger(__name__)
-stream_handler = logging.StreamHandler()
-file_handler = logging.FileHandler(config.LOG_PATH)
+import flask_login
 
-handlers = [file_handler, stream_handler]
-
-for h in handlers:
-    h.setLevel(logging.DEBUG)
-    formatter = logging.Formatter(
-        '%(levelname)-8s [%(name)-12s] %(asctime)s %(message)s')
-    h.setFormatter(formatter)
-    logger.addHandler(h)
-
-logger.setLevel(logging.DEBUG)
 logger = logging.getLogger(__name__)
 #  ========== Flask App ==========
 app = flask.Flask(
@@ -54,29 +33,35 @@ app.config.update(dict(
     SECURITY_SEND_PASSWORD_CHANGE_EMAIL=False,
 ))
 
-# ========== Setup sqlalchemy ==========
-db = SQLAlchemy(app)
-# ========== Setup flask-marshmallow ==========
-marshmallow = Marshmallow(app)
-# initialize migration engine
-migrate = Migrate(app, db, directory=config.ALEMBIC_PATH)
-# ========== Setup flask-mail ==========
-mail = flask_mail.Mail(app)
+print(app.url_map)
 
-# ========== Setup flask-admin ==========
-if config.DEBUG_ENABLED:
-    admin = Admin(app, name='Journal Wiki App', template_mode='bootstrap3')
-else:
-    admin = None
-# ========== Setup Bootstrap ==========
-bootstrap = flask_bootstrap.Bootstrap(app)
+from webapp import parsing
+
+from . import models
+
 # ========== Setup flask-login ==========
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-# ==========  Journal Parsing Plugins ==========
-from webapp.journal_plugins import PluginManager
-plugin_manager = PluginManager(app)
-from webapp.journal_plugins import example_plugin
-example_plugin = example_plugin.Plugin(plugin_manager)
+
+@login_manager.user_loader
+def load_user(target_id: int) -> models.User:
+    return models.User.query.filter_by(id=int(target_id)).first()
+
+
+@app.before_first_request
+def setup_app():
+    from webapp.extensions import db
+    db.create_all()
+
+
+from . import views
+
+views.add_views(app)
+
+
+def main():
+    logger.info('run app')
+    app.run(debug=True)
+    print(app.url_map)

@@ -1,10 +1,11 @@
 from webapp import models
-from webapp.app_init import app, db, marshmallow
-import datetime
+from webapp.extensions import app, marshmallow
 import flask
 import logging
 import datetime
 from sqlalchemy import inspect
+
+
 
 logger = logging.getLogger(__name__)
 
@@ -90,3 +91,8 @@ class JournalEntrySchema(marshmallow.ModelSchema):
 
 user_schema = UserSchema()
 journal_entry_schema = JournalEntrySchema()
+
+
+
+# make functions available in templates
+app.jinja_env.globals.update(link_for_entry=link_for_entry, )
