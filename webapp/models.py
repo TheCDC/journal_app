@@ -106,7 +106,7 @@ class JournalEntry(db.Model):
     """Model for journal entries."""
     id = db.Column(db.Integer, primary_key=True)
     create_date = db.Column(
-        db.Date, default=datetime.datetime.utcnow, index=True)
+        db.Date, default=datetime.datetime.utcnow, index=True,unique=True)
     contents = db.Column(db.String)
     owner_id = db.Column(db.Integer, db.ForeignKey(User.id))
     owner = db.relationship(User, backref=backref('entries', cascade="all,delete"),)

@@ -1,18 +1,31 @@
-{% extends 'base.html' %} {% block content %} {{super()}}
+{% extends 'base.html' %}
+
+{% block content %} {{super()}}
 <div class="container">
     <div>
-        <a  href="{{context.back}}"><button class="btn">Back</button></a>
+        <a href="{{context.back}}">
+            <button class="btn">Back</button>
+        </a>
         <h1>{{context.heading}}</h1>
     </div>
     <div>
-        {{context.errors}}
+        {% for e in context.errors %}
+        <div class="alert alert-danger">
+            {{e}}
+        </div>
+        {% endfor %}
     </div>
-    <form action="{{url_for('edit_entry',id=context.form.id.data)}}" method="POST" enctype="multipart/form-data">
+
+    <form action="{{context.action}}" method="POST" enctype="multipart/form-data">
+
         <div class="form-group">
+            {{render_field(context.form.create_date,label='test')}}
+
             {{context.form.hidden_tag()}}
             <label for="contents">Entry contents</label>
-            <textarea name="contents" id="contents" class="form-control entry_editor" rows="10">{{context.form.contents.data}}</textarea>
-            {{render_field(context.form.create_date,label='test')}}
+            <textarea name="contents" id="contents" class="form-control entry_editor" rows="15">{{context.form.contents.data}}</textarea>
+            {% if not context.create %}
+
             <div class="hidden">
 
                 {{render_field(context.form.owner_id)}}
@@ -20,10 +33,28 @@
 
             </div>
 
+            {% endif %}
+
 
         </div>
         <input class="btn btn-success" type="submit" value="submit">
 
     </form>
 </div>
+{% endblock %}
+
+{% block scripts %}
+
+{{super()}}
+<script type="text/javascript">
+
+var isodate = function(){
+    var local = new Date();
+    local.setMinutes(local.getMinutes() - local.getTimezoneOffset());
+    return local.toJSON().slice(0,10);
+}
+document.getElementById('create_date').value = isodate();
+
+
+</script>
 {% endblock %}

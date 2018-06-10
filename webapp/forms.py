@@ -58,6 +58,13 @@ class JournalEntryEditForm(ModelForm):
         model = models.JournalEntry
         include=['id','owner_id']
 
+
+class JournalEntryCreateForm(ModelForm):
+    class Meta:
+        model = models.JournalEntry
+
+
+
 class UserEditForm(ModelForm):
     class Meta:
         model = models.User

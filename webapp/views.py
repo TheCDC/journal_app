@@ -1,16 +1,16 @@
-import logging
-import flask
-from flask.views import MethodView
-import datetime
 from webapp import models
 from webapp import forms
 from webapp import parsing
 from webapp import api
 from webapp.extensions import db
+from webapp.journal_plugins.extensions import plugin_manager
+import logging
+import flask
+import datetime
 import sqlalchemy
 import flask_login
+from flask.views import MethodView
 from flask_security.utils import hash_password
-from webapp.journal_plugins.extensions import plugin_manager
 
 logger = logging.getLogger(__name__)
 
@@ -258,21 +258,13 @@ class SettingsView(MethodView):
 class EntryEditView(MethodView):
     @flask_login.login_required
     def get(self, **kwargs):
-        context = dict()
-        obj = models.JournalEntry(owner=flask_login.current_user, owner_id=flask_login.current_user.id, contents='',
-                                  create_date=datetime.datetime.utcnow())
-        if 'id' in kwargs:
-            found = models.JournalEntry.query.filter_by(id=kwargs['id'], owner=flask_login.current_user).first()
-            if not found:
-                flask.abort(404)
-            else:
-                obj = found
-            context['heading'] = 'Edit entry'
-            context.update(dict(back=api.link_for_entry(obj), ))
-        else:
-            context['heading'] = 'Write a new entry'
-
-        context.update(dict(form=forms.JournalEntryEditForm(**api.object_as_dict(obj))))
+        found = models.JournalEntry.query.filter_by(id=kwargs['id'], owner=flask_login.current_user).first()
+        if not found:
+            flask.abort(404)
+        context = dict(create=False, heading='Edit Entry')
+        context['heading'] = 'Edit entry'
+        context.update(dict(back=api.link_for_entry(found), action=flask.url_for('edit_entry', id=context.form.id.data),
+                            form=forms.JournalEntryEditForm(**api.object_as_dict(found))))
         context.update(kwargs)
         return flask.render_template('edit_entry.html', context=context)
 
@@ -284,8 +276,6 @@ class EntryEditView(MethodView):
         if form.validate_on_submit():
             if form.owner_id.data == cu.id:
                 obj = models.JournalEntry.query.filter_by(id=form.id.data, owner=cu).first()
-                if not obj:
-                    obj = models.JournalEntry(owner=cu)
                 form.populate_obj(obj)
                 session = db.session()
                 session.add(obj)
@@ -297,7 +287,43 @@ class EntryEditView(MethodView):
         else:
             context['errors'].append('form invalid')
             return self.get(**context)
-            # return flask.redirect(flask.url_for('edit_entry', form=form))
+
+
+class EntryCreateView(MethodView):
+    @flask_login.login_required
+    def get(self, **kwargs):
+        context = dict(
+            create=True, back=flask.url_for('home'), action=flask.url_for('create_entry'),
+            heading='Create Entry'
+        )
+        form = forms.JournalEntryCreateForm()
+        form.contents.data = ''
+        context.update(dict(form=form))
+        context.update(**kwargs)
+        return flask.render_template('edit_entry.html', context=context)
+
+    @flask_login.login_required
+    def post(self, **kwargs):
+        form = forms.JournalEntryCreateForm(**flask.request.form)
+        context = dict(form=form,errors=[])
+        context.update(**kwargs)
+        if form.validate_on_submit():
+            obj = models.JournalEntry(owner=flask_login.current_user)
+            form.populate_obj(obj)
+            print('obj', obj.owner)
+            session = db.session()
+            try:
+                session.add(obj)
+                session.commit()
+            except sqlalchemy.exc.IntegrityError:
+                session.rollback()
+                context['errors'].append('That date already has an entry!')
+                return self.get(**context)
+
+            return flask.redirect(api.link_for_entry(flask_login.current_user.get_latest_entry()))
+
+        else:
+            return self.get(**context)
 
 
 class ExportJournalView(MethodView):
@@ -336,14 +362,13 @@ class DeleteEntryView(MethodView):
 
 
 def add_views(app):
+    app.add_url_rule('/', view_func=IndexView.as_view('index'))
     app.add_url_rule('/register', view_func=RegisterView.as_view('register'))
     app.add_url_rule('/home', view_func=HomeView.as_view('home'))
-    app.add_url_rule('/settings', view_func=SettingsView.as_view('settings'))
-    app.add_url_rule('/', view_func=IndexView.as_view('index'))
-    edit_entry_view = EntryEditView.as_view('edit_entry')
-    app.add_url_rule('/edit/new', view_func=edit_entry_view)
-    app.add_url_rule('/edit/<int:id>', view_func=edit_entry_view)
     app.add_url_rule('/export', view_func=ExportJournalView.as_view('export_journal'))
+    app.add_url_rule('/settings', view_func=SettingsView.as_view('settings'))
+    app.add_url_rule('/edit/new', view_func=EntryCreateView.as_view('create_entry'))
+    app.add_url_rule('/edit/<int:id>', view_func=EntryEditView.as_view('edit_entry'))
     app.add_url_rule('/delete/<int:id>', view_func=DeleteEntryView.as_view('delete_entry'))
 
     # generate endpoints for search view
