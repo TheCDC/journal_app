@@ -11,3 +11,7 @@ class ExampleView(MethodView):
 
     def get(self,**kwargs):
         return flask.render_template('journal_plugins_index.html', context=self.get_context(**kwargs))
+
+class DefaultPluginIndexView(MethodView):
+    def get(self,**kwargs):
+        return 'This plugin has no page.'

@@ -1,5 +1,12 @@
 {% extends 'base.html' %} {% block content %} {{super()}}
 
 {{context}}
+{% for plugin in context.plugins %}
+<p>
 
+    {{plugin}}
+    <a href="{{plugin.url}}">{{plugin.name}}</a>
+</p>
+
+{% endfor %}
 {% endblock %}

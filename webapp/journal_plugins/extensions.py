@@ -15,3 +15,5 @@ from . import date_recognizer
 date_recognizer = date_recognizer.Plugin(plugin_manager)
 
 plugin_manager.init_app(app)
+
+print(app.url_map)
