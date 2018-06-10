@@ -1,6 +1,7 @@
 from webapp.extensions import db, admin
 from webapp import app
 from webapp import config
+import webapp
 from flask_admin.contrib.sqla import ModelView
 import datetime
 import logging

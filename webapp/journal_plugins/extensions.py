@@ -10,4 +10,8 @@ from . import example_plugin
 
 example_plugin = example_plugin.Plugin(plugin_manager)
 
+from . import date_recognizer
+
+date_recognizer = date_recognizer.Plugin(plugin_manager)
+
 plugin_manager.init_app(app)
