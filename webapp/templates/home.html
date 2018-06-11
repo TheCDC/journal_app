@@ -17,7 +17,7 @@
     </div>
     {% endif %}
     <div class="jumbotron">
-        {% if context.days_since_latest%}
+        {% if context.latest_entry%}
         {% if context.days_since_latest > 0 %}
         <h2> Remember this from {{context.days_since_latest}} day(s) ago?</h2>
         {% else %}
@@ -59,7 +59,7 @@ Remember remember the fifth of November.</pre>
                 </div>
 
             </div>
-            {% if context.days_since_latest%}
+            {% if context.latest_entry %}
 
             {% if context.days_since_latest > 0 %}
 

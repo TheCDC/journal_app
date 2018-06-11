@@ -54,6 +54,9 @@ var isodate = function(){
     return local.toJSON().slice(0,10);
 }
 document.getElementById('create_date').value = isodate();
+window.onbeforeunload = function() {
+  return "Are you sure you want to navigate away?";
+}
 
 
 </script>

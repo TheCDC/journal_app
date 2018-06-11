@@ -97,6 +97,7 @@ class EntrySearchView(MethodView):
         if day is not None:
             start_date = start_date.replace(day=day)
         return start_date
+
     @flask_login.login_required
     def get(self, **kwargs):
         # return a rendered entry if the date is fully specified
@@ -202,7 +203,8 @@ class HomeView(MethodView, EnableLoggingMixin):
     def get(self, **kwargs):
         upload_form = forms.UploadForm()
 
-        latest_entry = flask_login.current_user.get_latest_entry()
+        latest_entry = models.JournalEntry.query.filter(models.JournalEntry.owner == flask_login.current_user).order_by(
+            models.JournalEntry.create_date.desc()).first()
         # form the context with default values
         context = dict(
             upload_form=upload_form,
@@ -262,7 +264,7 @@ class EntryEditView(MethodView):
         found = models.JournalEntry.query.filter_by(id=kwargs['id'], owner=flask_login.current_user).first()
         if not found:
             flask.abort(404)
-        form= forms.JournalEntryEditForm(**api.object_as_dict(found))
+        form = forms.JournalEntryEditForm(**api.object_as_dict(found))
         context = dict(create=False, heading='Edit Entry')
         context['heading'] = 'Edit entry'
         context.update(dict(back=api.link_for_entry(found), action=flask.url_for('edit_entry', id=form.id.data),
@@ -307,7 +309,7 @@ class EntryCreateView(MethodView):
     @flask_login.login_required
     def post(self, **kwargs):
         form = forms.JournalEntryCreateForm(**flask.request.form)
-        context = dict(form=form,errors=[])
+        context = dict(form=form, errors=[])
         context.update(**kwargs)
         if form.validate_on_submit():
             obj = models.JournalEntry(owner=flask_login.current_user)
