@@ -7,7 +7,7 @@ from webapp.journal_plugins import extensions
 
 class IndexView(MethodView):
     def get_context(self, **kwargs):
-        context = dict(plugin=extensions.date_recognizer.to_dict())
+        context = dict(plugin=extensions.word_counter.to_dict())
         return context
 
     def get(self, **kwargs):

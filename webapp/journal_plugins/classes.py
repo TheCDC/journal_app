@@ -1,4 +1,5 @@
 from flask import Blueprint, url_for
+import flask
 import os
 from . import views
 
@@ -42,9 +43,11 @@ class PluginManager:
 
 class BasePlugin:
     name = 'Default Plugin Name'
-
+    description = 'Description for the BasePlugin'
     def __init__(self, plugin_manager: PluginManager):
         self.name = self.__class__.name
+        self.description = self.__class__.description
+
         plugin_manager.register_plugin(self)
         self.manager = plugin_manager
         # create a url endpoint (just the endpoint) for this plugin based on its name
@@ -67,4 +70,4 @@ class BasePlugin:
 
     def to_dict(self):
         """A JSON ready representation of this plugin."""
-        return dict(name=self.name, url=self.url, safe_name=self.safe_name, type='journal_plugin')
+        return dict(name=self.name, url=self.url, safe_name=self.safe_name, type='journal_plugin',description=self.description,back=flask.url_for('site.plugins.index'))

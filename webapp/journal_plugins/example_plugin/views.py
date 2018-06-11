@@ -11,4 +11,4 @@ class IndexView(MethodView):
         return context
 
     def get(self, **kwargs):
-        return flask.render_template('example_plugin/index.html', context=self.get_context(**kwargs))
+        return flask.render_template('default_index.html', context=self.get_context(**kwargs))
