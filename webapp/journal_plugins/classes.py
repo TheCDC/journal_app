@@ -39,7 +39,7 @@ class PluginManager:
     def parse_entry(self, e):
         """Call all registered plugins on the entry."""
         for p in self.plugins.items():
-            yield (p[1], p[1].parse_entry(e))
+            yield dict(plugin=p[1].to_dict(), output=p[1].parse_entry(e))
 
 
 class BasePlugin:

@@ -119,7 +119,8 @@ class EntrySearchView(MethodView):
         for o in [e.next, e.previous]:
             if o:
                 session.add(o)
-        plugins_output = [(t[0].name, list(t[1])) for t in plugin_manager.parse_entry(e)]
+        # plugins_output = [(obj['plugin']['name'], list(obj['output'])) for obj in plugin_manager.parse_entry(e)]
+        plugins_output = list(plugin_manager.parse_entry(e))
         context = dict(
             entry=api.journal_entry_schema.dump(obj=e).data,
             next=api.journal_entry_schema.dump(obj=e.next).data,
