@@ -97,7 +97,7 @@ class EntrySearchView(MethodView):
         if day is not None:
             start_date = start_date.replace(day=day)
         return start_date
-
+    @flask_login.login_required
     def get(self, **kwargs):
         # return a rendered entry if the date is fully specified
         my_kwargs = {

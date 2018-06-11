@@ -40,8 +40,8 @@ from . import models
 # ========== Setup flask-login ==========
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'login'
-
+login_manager.login_view = 'security.login'
+login_manager.login_view = 'security.register'
 
 @login_manager.user_loader
 def load_user(target_id: int) -> models.User:
