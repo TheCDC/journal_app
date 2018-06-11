@@ -20,6 +20,10 @@ from . import word_counter
 
 word_counter = word_counter.Plugin(plugin_manager)
 
+# MTG Cardfetcher
+from . import mtg_cardfetcher
+
+mtg_cardfetcher = mtg_cardfetcher.Plugin(plugin_manager)
 
 # ==========  Journal Parsing Plugins - Apply plugins to app==========
 

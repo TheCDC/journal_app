@@ -1,7 +1,8 @@
-from flask import Blueprint, url_for
+from flask import Blueprint
 import flask
 import os
-from . import views
+from webapp import config
+import logging
 
 
 def concat_urls(a, b):
@@ -55,6 +56,13 @@ class BasePlugin:
         self.endpoint = f'/{self.safe_name}'
 
         self.url_rule_base_name = f'plugins.{self.safe_name}'
+        self.resources_path = os.path.join(config.CONFIG_PATH, 'plugins', self.safe_name)
+        try:
+            os.makedirs(self.resources_path)
+            logging.info('created plugin data directory: %s', self.resources_path)
+        except FileExistsError:
+            pass
+
 
     def parse_entry(self, e):
         """The developer must override this in order to provide entry parsing functionality"""
