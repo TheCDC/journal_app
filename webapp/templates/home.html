@@ -74,6 +74,7 @@ Remember remember the fifth of November.</pre>
 
         </div>
     </div>
+    <h1 class="text-center">Archive</h1>
     <div>
         {% for year in context.entries_tree|reverse %} {{render_year(year, context.entries_tree[year])}} {% endfor %}
     </div>
