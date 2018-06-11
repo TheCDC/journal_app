@@ -14,6 +14,9 @@ def shorten_phrase(s, max_length=15):
     else:
         return s
 
+def prettify(date_obj):
+    pretty = f'{date_obj.year}-{date_obj.month}-{date_obj.day}'
+    return pretty
 
 # ========== Plugin Class  ==========
 
@@ -50,18 +53,23 @@ class Plugin(classes.BasePlugin):
             # print('original case', original_case)
 
             grouped_dates.update({found_date: human_strs})
-        for date in grouped_dates:
-            dates_group = ' | '.join(grouped_dates[date])
-            pretty = f'''{dates_group}:
-            ({date.year}-{date.month}-{date.day})'''
+        for date,date_str in grouped_dates.items():
+            found_entry = models.JournalEntry.query.filter(models.JournalEntry.create_date >= date).order_by(models.JournalEntry.create_date ).first()
+            dates_group = ' | '.join(date_str)
 
-            if not api.entry_exists(date):
+
+            if not found_entry:
                 yield f'<del>{pretty}</del>'
             else:
                 # get a link to the entry referred to by the found date
-                url = api.link_for_date(
-                    year=date.year, month=date.month, day=date.day)
+                url = api.link_for_entry(
+                    found_entry)
                 # plugins may return HTML.
-                yield f'<a href="{url}">{pretty}</a>'
+                if found_entry.create_date == date:
+                    yield f'<a href="{url}">{dates_group}: {prettify(date)}</a>'
+
+                else:
+                    yield f'<a href="{url}">{dates_group}: <del>{prettify(date)} </del> ➤ {prettify(found_entry.create_date)}</a>'
+
 
                 seen.add(found_date)

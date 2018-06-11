@@ -35,7 +35,7 @@ def link_for_entry(entry: models.JournalEntry):
 
 
 def strip_datetime(d: datetime.datetime):
-    return datetime.datetime(d.year, d.month, d.day)
+    return datetime.date(d.year, d.month, d.day)
 
 
 def entry_exists(target_date: datetime.datetime):
