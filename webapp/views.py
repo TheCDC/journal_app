@@ -1,6 +1,5 @@
 from webapp import models
 from webapp import forms
-from webapp import parsing
 from webapp import api
 from webapp.extensions import db
 from webapp.journal_plugins.extensions import plugin_manager

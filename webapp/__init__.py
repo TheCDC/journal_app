@@ -35,8 +35,6 @@ app.config.update(dict(
 
 print(app.url_map)
 
-from webapp import parsing
-
 from . import models
 
 # ========== Setup flask-login ==========
