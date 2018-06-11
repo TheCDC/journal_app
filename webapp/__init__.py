@@ -51,7 +51,7 @@ def load_user(target_id: int) -> models.User:
 @app.before_first_request
 def setup_app():
     from webapp import models
-    models.instantiate_db(app)
+    # models.instantiate_db(app)
 
 
 from . import views
