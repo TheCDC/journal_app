@@ -53,7 +53,10 @@ var isodate = function(){
     local.setMinutes(local.getMinutes() - local.getTimezoneOffset());
     return local.toJSON().slice(0,10);
 }
+if (document.getElementById('create_date').value.length == 0){
 document.getElementById('create_date').value = isodate();
+
+}
 window.onbeforeunload = function() {
   return "Are you sure you want to navigate away?";
 }
