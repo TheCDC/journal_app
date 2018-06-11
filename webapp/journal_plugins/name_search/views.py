@@ -41,7 +41,7 @@ class NameExtractorPluginView(MethodView):
         context['pagination'] = pagination
         context['pagination_annotated'] = [dict(item=item, link=api.link_for_entry(item)) for item in pagination.items]
         try:
-            return flask.render_template(f'{extensions.name_search.safe_name}/name_extractor.html', context=context)
+            return flask.render_template(f'{extensions.name_search.safe_name}/index.html', context=context)
             # return 'Name Recognizer {pagination.items[0].contents} {pagination.items}'.format(pagination=context['pagination'])
         except IndexError:
             flask.abort(400)
