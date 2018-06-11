@@ -262,10 +262,11 @@ class EntryEditView(MethodView):
         found = models.JournalEntry.query.filter_by(id=kwargs['id'], owner=flask_login.current_user).first()
         if not found:
             flask.abort(404)
+        form= forms.JournalEntryEditForm(**api.object_as_dict(found))
         context = dict(create=False, heading='Edit Entry')
         context['heading'] = 'Edit entry'
-        context.update(dict(back=api.link_for_entry(found), action=flask.url_for('edit_entry', id=context.form.id.data),
-                            form=forms.JournalEntryEditForm(**api.object_as_dict(found))))
+        context.update(dict(back=api.link_for_entry(found), action=flask.url_for('edit_entry', id=form.id.data),
+                            form=form))
         context.update(kwargs)
         return flask.render_template('edit_entry.html', context=context)
 
