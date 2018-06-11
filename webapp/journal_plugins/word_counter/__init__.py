@@ -20,5 +20,3 @@ class Plugin(classes.BasePlugin):
             len(words))
         yield 'Unique words: <span class="pull-right"> {} </span>'.format(
             len(set(words)))
-        for t in Counter(words).most_common():
-            yield '{}: <span class="pull-right">{}</span>'.format(*t)
