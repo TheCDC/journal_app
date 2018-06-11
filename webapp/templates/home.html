@@ -59,18 +59,15 @@ Remember remember the fifth of November.</pre>
                 </div>
 
             </div>
+                    {% if context.days_since_latest > 0 %}
+
             <div class="col col-md-6" id="plugins_div">
-                <h2> Installed plugins </h2>
-                <ul>
-                    {% for p in context.plugin_manager.registered_plugins %}
-                    <p>
-                        <a href="{{p.url}}">{{p.name}} </a> {% if p.get_model().enabled %}
-                        <span class="text-success">Enabled</span> {% else %}
-                        <span class="text-warning">Disabled</span> {% endif %}
-                    </p>
-                    {% endfor %}
-                </ul>
+                <h2> Write Today's Entry</h2>
+                <p>
+                    <a href="{{url_for('create_entry')}}" class="btn btn-success">Today</a>
+                </p>
             </div>
+            {% endif %}
         </div>
     </div>
     <div>
