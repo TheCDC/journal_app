@@ -18,9 +18,9 @@
                 <a class="btn" href="{{url_for('settings')}}">{{current_user.first_name if current_user.first_name else
                     "You"}}</a>
             </li>
-            <li {% if request.path==url_for('site.plugins.index') %} class="active" {% endif %}>
+            <li {% if request.path==url_for('site.plugins-index') %} class="active" {% endif %}>
 
-                <a class="btn" href="{{url_for('site.plugins.index')}}">Plugins</a>
+                <a class="btn" href="{{url_for('site.plugins-index')}}">Plugins</a>
             </li>
             <li>
                 <a class="btn" href="{{url_for('security.logout')}}">Log out</a>

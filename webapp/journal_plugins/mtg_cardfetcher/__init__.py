@@ -92,7 +92,7 @@ class Plugin(classes.BasePlugin):
         self.thread = threading.Thread(target=fetch, kwargs=dict(mailbox=self.queue, target=self.cards_file_path))
         self.thread.start()
         self.card_matcher = None
-        self.manager.blueprint.add_url_rule(self.endpoint, view_func=views.IndexView.as_view(f'{self.url_rule_base_name}.index'))
+        self.manager.blueprint.add_url_rule(self.endpoint, view_func=views.IndexView.as_view(f'{self.url_rule_base_name}-index'))
 
 
     def parse_entry(self, e: models.JournalEntry) -> 'iterable[str]':

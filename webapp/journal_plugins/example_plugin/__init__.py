@@ -9,7 +9,7 @@ class Plugin(classes.BasePlugin):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.manager.blueprint.add_url_rule(self.endpoint, view_func=views.IndexView.as_view(f'{self.url_rule_base_name}.index'))
+        self.manager.blueprint.add_url_rule(self.endpoint, view_func=views.IndexView.as_view(f'{self.url_rule_base_name}-index'))
         logger.info('Registered Exmaple plugin view with url %s', self.url)
 
     def parse_entry(self, e):

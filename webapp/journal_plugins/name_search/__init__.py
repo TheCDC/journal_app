@@ -23,7 +23,7 @@ class Plugin(classes.BasePlugin):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.manager.blueprint.add_url_rule(self.endpoint, view_func=views.NameExtractorPluginView.as_view(f'{self.url_rule_base_name}.index'))
+        self.manager.blueprint.add_url_rule(self.endpoint, view_func=views.NameExtractorPluginView.as_view(f'{self.url_rule_base_name}-index'))
 
 
     def parse_entry(self, e: models.JournalEntry) -> 'iterable[str]':
@@ -36,7 +36,7 @@ class Plugin(classes.BasePlugin):
                     if w not in seen:
                         c = count_occurrences(w)
                         label = f'{w} ({c}),'
-                        url = flask.url_for(f'site.plugins.{self.safe_name}.index' , page=1, search=w)
+                        url = flask.url_for(f'site.plugins-{self.safe_name}-index' , page=1, search=w)
                         out.append(
                             f'<a href="{url}" >{label}</a>'
                         )

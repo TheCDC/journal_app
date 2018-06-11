@@ -55,7 +55,7 @@ class BasePlugin:
         self.url = concat_urls(self.manager.blueprint.url_prefix, self.safe_name)
         self.endpoint = f'/{self.safe_name}'
 
-        self.url_rule_base_name = f'plugins.{self.safe_name}'
+        self.url_rule_base_name = f'plugins-{self.safe_name}'
         self.resources_path = os.path.join(config.CONFIG_PATH, 'plugins', self.safe_name)
         try:
             os.makedirs(self.resources_path)
@@ -78,4 +78,4 @@ class BasePlugin:
 
     def to_dict(self):
         """A JSON ready representation of this plugin."""
-        return dict(name=self.name, url=self.url, safe_name=self.safe_name, type='journal_plugin',description=self.description,back=flask.url_for('site.plugins.index'))
+        return dict(name=self.name, url=self.url, safe_name=self.safe_name, type='journal_plugin',description=self.description,back=flask.url_for('site.plugins-index'))
