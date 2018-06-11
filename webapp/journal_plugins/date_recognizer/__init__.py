@@ -59,7 +59,7 @@ class Plugin(classes.BasePlugin):
 
 
             if not found_entry:
-                yield f'<del>{pretty}</del>'
+                yield f'<del>{dates_group}: {prettify(date)}</del>'
             else:
                 # get a link to the entry referred to by the found date
                 url = api.link_for_entry(
