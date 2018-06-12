@@ -1,7 +1,10 @@
 """This module is an example of making a plugin.
 
 It identifies capitalized words in the text of journal entries."""
-from webapp import models
+from webapp import app
+from webapp.journal_plugins import classes
+from . import views, models
+
 import re
 import requests
 import threading
@@ -13,8 +16,9 @@ import datetime
 import dateutil.parser
 import logging
 import ahocorasick
-from . import views
-from webapp.journal_plugins import classes
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy(app)
 
 
 link_element_template = '<a target="_blank" href="{link}">{body}</a>'
@@ -95,7 +99,7 @@ class Plugin(classes.BasePlugin):
         self.manager.blueprint.add_url_rule(self.endpoint, view_func=views.IndexView.as_view(f'{self.url_rule_base_name}-index'))
 
 
-    def parse_entry(self, e: 'models.JournalEntry') -> 'iterable[str]':
+    def _parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
         if self.card_matcher is None:
             if self.thread.isAlive():
                 yield "Card database being built."
@@ -111,3 +115,29 @@ class Plugin(classes.BasePlugin):
             for cardname in found:
                 yield link_element_template.format(link=base_url + '&quot ' + '+'.join(cardname.split(' ')) + '&quot',
                                                body=cardname)
+
+    def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
+        session = db.session.object_session(e)
+
+
+        found = models.MTGCardFetcherCache.query.filter(models.MTGCardFetcherCache.parent == e).first()
+        if found:
+            if (found.updated_at < e.updated_at):
+
+                results = list(self._parse_entry(e))
+                found.json = json.dumps(results)
+                session.add(found)
+                session.commit()
+
+            else:
+                results = json.loads(found.json)
+
+            return results
+        else:
+
+            results = list(self._parse_entry(e))
+            found = models.MTGCardFetcherCache(parent=e, json=json.dumps(results))
+            session.add(found.parent)
+            session.add(found)
+            session.commit()
+            return results
