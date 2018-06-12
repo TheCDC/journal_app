@@ -33,7 +33,6 @@ app.config.update(dict(
     SECURITY_SEND_PASSWORD_CHANGE_EMAIL=False,
 ))
 
-print(app.url_map)
 
 from . import models
 
