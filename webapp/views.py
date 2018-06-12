@@ -131,6 +131,7 @@ class EntrySearchView(MethodView):
         )
         # handle incompletely specified date
         # take the user to a search
+        session.close()
         try:
             if e.create_date != self.args_to_date(**my_kwargs):
                 flask.abort(404)
