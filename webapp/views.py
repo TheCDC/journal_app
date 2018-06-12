@@ -116,6 +116,7 @@ class EntrySearchView(MethodView):
 
         e = found[0]
         session = db.session()
+        session.add(flask_login.current_user)
         e = session.query(models.JournalEntry).filter(models.JournalEntry.id == e.id).first()
         for o in [e.next, e.previous]:
             if o:
@@ -129,15 +130,11 @@ class EntrySearchView(MethodView):
             plugins_output=plugins_output,
 
         )
-        # handle incompletely specified date
-        # take the user to a search
         try:
             if e.create_date != self.args_to_date(**my_kwargs):
                 flask.abort(404)
         except ValueError:
             flask.abort(404)
-        forward = flask_login.current_user.next_entry(e)
-        backward = flask_login.current_user.previous_entry(e)
         return flask.render_template(
             'entry.html',
             context=context)
@@ -367,10 +364,20 @@ class DeleteEntryView(MethodView):
         return flask.redirect(flask.url_for('home', success=f'Deleted entry for {old_date}'))
 
 
+class LatestView(MethodView):
+    def get(self, **kwargs):
+        latest = flask_login.current_user.get_latest_entry()
+        if latest:
+            return flask.redirect(api.link_for_entry())
+        else:
+            flask.abort(404)
+
+
 def add_views(app):
     app.add_url_rule('/', view_func=IndexView.as_view('index'))
     app.add_url_rule('/register', view_func=RegisterView.as_view('register'))
     app.add_url_rule('/home', view_func=HomeView.as_view('home'))
+    app.add_url_rule('/latest', view_func=LatestView.as_view('latest_entry'))
     app.add_url_rule('/export', view_func=ExportJournalView.as_view('export_journal'))
     app.add_url_rule('/settings', view_func=SettingsView.as_view('settings'))
     app.add_url_rule('/edit/new', view_func=EntryCreateView.as_view('create_entry'))

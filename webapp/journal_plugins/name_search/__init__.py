@@ -3,20 +3,23 @@
 It identifies capitalized words in the text of journal entries."""
 import webapp.models
 from webapp.journal_plugins import classes
+from webapp.extensions import db
 from . import views
+from . import models
 import flask
 import re
 import flask_login
-from webapp.journal_plugins.name_search import models
+import json
 
 pattern = re.compile(r'\b[^\W\d_]+\b')
 
+
 # pattern = re.compile("/^[a-z ,.'-]+$/i")
 def count_occurrences(search):
-    all_entries = models.JournalEntry.query.filter(webapp.models.JournalEntry.owner_id == flask_login.current_user.id)
+    all_entries = webapp.models.JournalEntry.query.filter(
+        webapp.models.JournalEntry.owner_id == flask_login.current_user.id)
     return all_entries.filter(
-                models.JournalEntry.contents.contains(search)).count()
-
+        webapp.models.JournalEntry.contents.contains(search)).count()
 
 
 class Plugin(classes.BasePlugin):
@@ -25,11 +28,11 @@ class Plugin(classes.BasePlugin):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.manager.blueprint.add_url_rule(self.endpoint, view_func=views.NameExtractorPluginView.as_view(f'{self.url_rule_base_name}-index'))
+        self.manager.blueprint.add_url_rule(self.endpoint, view_func=views.NameExtractorPluginView.as_view(
+            f'{self.url_rule_base_name}-index'))
         # _ = models.NameSearchCache.query.first()
 
-
-    def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
+    def _parse_entry(self, e):
         seen = set()
         words = list(pattern.findall(e.contents))
         out = []
@@ -39,7 +42,7 @@ class Plugin(classes.BasePlugin):
                     if w not in seen:
                         c = count_occurrences(w)
                         label = f'{w} ({c}),'
-                        url = flask.url_for(f'site.plugins-{self.safe_name}-index' , page=1, search=w)
+                        url = flask.url_for(f'site.plugins-{self.safe_name}-index', page=1, search=w)
                         out.append(
                             f'<a href="{url}" >{label}</a>'
                         )
@@ -48,3 +51,21 @@ class Plugin(classes.BasePlugin):
                 pass
         yield 'Names found: {}'.format(len(out))
         yield from out
+
+    def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
+        found = models.NameSearchCache.query.filter(models.NameSearchCache.parent == e).first()
+        if found:
+            if (found.updated_at < e.create_date):
+                results = list(self._parse_entry(e))
+                found.json = json.dumps(results)
+
+            else:
+                results = json.loads(found.json)
+            return results
+        else:
+            results = list(self._parse_entry(e))
+            found = models.NameSearchCache(parent=e, json=json.dumps(results))
+            session = db.session()
+            session.add(found)
+            session.commit()
+            return results

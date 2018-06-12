@@ -62,7 +62,9 @@ class User(db.Model, UserMixin):
 
     def get_latest_entry(self, ) -> "JournalEntry":
         """Return the chronologically latest JournalEntry."""
-        return self.query_all_entries().order_by(
+        session = db.session()
+        session.add(self)
+        return JournalEntry.query.filter(JournalEntry.id==self.id).order_by(
             JournalEntry.create_date.desc()).first()
 
     def query_all_entries(self):
@@ -110,8 +112,8 @@ class JournalEntry(db.Model):
         db.Date, default=datetime.datetime.utcnow, index=True)
     contents = db.Column(db.String)
     owner_id = db.Column(db.Integer, db.ForeignKey(User.id))
-    owner = db.relationship(User, backref=backref('entries', cascade="all,delete"),)
-    __table__args = (db.UniqueConstraint('id','create_date',name='_id_date'),)
+    owner = db.relationship(User, backref=backref('entries', cascade="all,delete"), )
+    __table__args = (db.UniqueConstraint('id', 'create_date', name='_id_date'),)
 
     def __str__(self):
         return str(self.id)
@@ -136,7 +138,13 @@ class JournalEntry(db.Model):
 
     @property
     def next(self):
-        return self.owner.query_all_entries().filter(
+        found = JournalEntry.query.filter(JournalEntry.owner==self.owner).filter(JournalEntry.create_date > self.create_date).first()
+        if found:
+            if found.id != self.id:
+                return found
+        else:
+            return None
+        return self.owner.entries.filter(
             JournalEntry.create_date > self.create_date).first()
 
     @property
@@ -174,7 +182,6 @@ class JournalEntryView(ModelView):
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore)
 
-
 if config.DEBUG_ENABLED:
     admin.add_view(
         JournalEntryView(
@@ -204,6 +211,7 @@ def instantiate_db(app):
         except Exception as e:
             logger.debug('flask db upgrade failed: %s', e)
             raise e
+
 
 # ========== Marshmallow Schemas ==========
 
