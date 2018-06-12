@@ -9,15 +9,18 @@
             'home') %} class="active" {% endif %}>
             <a class="btn" href="{{url_for('index')}}">Home</a>
             </li>
-
-        </ul>
-        <ul class="nav navbar-nav navbar-right">
-
             {% if current_user.is_authenticated %}
             <!--  -->
             <li {% if request.path==link_for_entry(current_user.get_latest_entry()) %} class="active" {% endif %}>
                 <a class="btn" href="{{url_for('latest_entry')}}">Latest Entry</a>
             </li>
+            {% endif %}
+
+
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+
+            {% if current_user.is_authenticated %}
             <li {% if request.path==url_for('settings') %} class="active" {% endif %}>
 
                 <a class="btn" href="{{url_for('settings')}}">{{current_user.first_name if current_user.first_name else
