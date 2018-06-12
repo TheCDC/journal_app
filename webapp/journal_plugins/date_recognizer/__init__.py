@@ -34,7 +34,7 @@ class Plugin(classes.BasePlugin):
         self.manager.blueprint.add_url_rule(self.endpoint, view_func=views.IndexView.as_view(f'{self.url_rule_base_name}-index'))
         logger.info('Registered MTG Cardfetcher plugin view with url %s', self.url)
 
-    def parse_entry(self, e: models.JournalEntry) -> 'iterable[str]':
+    def parse_entry(self, e: 'models.JournalEntry') -> 'iterable[str]':
         """Find all dates mentioned in the entry body."""
         logger.disabled = False
         seen = set()

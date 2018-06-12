@@ -1,4 +1,5 @@
-from webapp.extensions import db, admin
+from webapp.api import link_for_entry
+from webapp.extensions import db, admin, marshmallow
 from webapp import app
 from webapp import config
 import webapp
@@ -203,3 +204,26 @@ def instantiate_db(app):
         except Exception as e:
             logger.debug('flask db upgrade failed: %s', e)
             raise e
+
+# ========== Marshmallow Schemas ==========
+
+class UserSchema(marshmallow.ModelSchema):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email',)
+
+
+class JournalEntrySchema(marshmallow.ModelSchema):
+    class Meta:
+        model = JournalEntry
+        fields = ('id', 'contents', 'create_date', 'url', 'date_human', 'date_string', 'html')
+
+    owner = marshmallow.Nested(UserSchema)
+    url = marshmallow.Method('get_url')
+
+    def get_url(self, entry):
+        return link_for_entry(entry)
+
+
+user_schema = UserSchema()
+journal_entry_schema = JournalEntrySchema()

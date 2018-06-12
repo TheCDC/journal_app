@@ -1,17 +1,19 @@
 """This module is an example of making a plugin.
 
 It identifies capitalized words in the text of journal entries."""
-from webapp import models
+import webapp.models
 from webapp.journal_plugins import classes
 from . import views
 import flask
 import re
 import flask_login
+from webapp.journal_plugins.name_search import models
+
 pattern = re.compile(r'\b[^\W\d_]+\b')
 
 # pattern = re.compile("/^[a-z ,.'-]+$/i")
 def count_occurrences(search):
-    all_entries = models.JournalEntry.query.filter(models.JournalEntry.owner_id == flask_login.current_user.id)
+    all_entries = models.JournalEntry.query.filter(webapp.models.JournalEntry.owner_id == flask_login.current_user.id)
     return all_entries.filter(
                 models.JournalEntry.contents.contains(search)).count()
 
@@ -24,9 +26,10 @@ class Plugin(classes.BasePlugin):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.manager.blueprint.add_url_rule(self.endpoint, view_func=views.NameExtractorPluginView.as_view(f'{self.url_rule_base_name}-index'))
+        # _ = models.NameSearchCache.query.first()
 
 
-    def parse_entry(self, e: models.JournalEntry) -> 'iterable[str]':
+    def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
         seen = set()
         words = list(pattern.findall(e.contents))
         out = []

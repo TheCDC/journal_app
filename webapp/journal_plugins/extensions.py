@@ -1,4 +1,5 @@
 from webapp import app
+from webapp.extensions import db
 # ==========  Journal Parsing Plugins - Instantiate manager ==========
 from .classes import PluginManager
 

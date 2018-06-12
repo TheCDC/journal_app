@@ -1,3 +1,4 @@
+import webapp.models
 from webapp import models
 from webapp import forms
 from webapp import api
@@ -122,9 +123,9 @@ class EntrySearchView(MethodView):
         # plugins_output = [(obj['plugin']['name'], list(obj['output'])) for obj in plugin_manager.parse_entry(e)]
         plugins_output = list(plugin_manager.parse_entry(e))
         context = dict(
-            entry=api.journal_entry_schema.dump(obj=e).data,
-            next=api.journal_entry_schema.dump(obj=e.next).data,
-            previous=api.journal_entry_schema.dump(obj=e.previous).data,
+            entry=webapp.models.journal_entry_schema.dump(obj=e).data,
+            next=webapp.models.journal_entry_schema.dump(obj=e.next).data,
+            previous=webapp.models.journal_entry_schema.dump(obj=e.previous).data,
             plugins_output=plugins_output,
 
         )

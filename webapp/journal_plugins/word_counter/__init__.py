@@ -14,7 +14,7 @@ class Plugin(classes.BasePlugin):
         super().__init__(*args, **kwargs)
         self.manager.blueprint.add_url_rule(self.endpoint, view_func=views.IndexView.as_view(f'{self.url_rule_base_name}-index'))
 
-    def parse_entry(self, e: models.JournalEntry) -> 'iterable[str]':
+    def parse_entry(self, e: 'models.JournalEntry') -> 'iterable[str]':
         words = list(pattern.findall(e.contents.lower()))
         yield 'Word count: <span class="pull-right"> {} </span>'.format(
             len(words))

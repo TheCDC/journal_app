@@ -1,15 +1,15 @@
-from webapp import models
-
-from webapp import api
-
-
+import flask
 import flask_login
 from flask.views import MethodView
 from flask import request
 
-import flask
-
+from webapp import models
+from webapp import api
 from webapp.journal_plugins import extensions
+
+
+
+
 class NameExtractorPluginView(MethodView):
     def get_context(self, request):
         data = request.args

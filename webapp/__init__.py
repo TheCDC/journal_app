@@ -43,6 +43,7 @@ login_manager.init_app(app)
 login_manager.login_view = 'security.login'
 login_manager.login_view = 'security.register'
 
+
 @login_manager.user_loader
 def load_user(target_id: int) -> models.User:
     return models.User.query.filter_by(id=int(target_id)).first()
@@ -57,6 +58,14 @@ def setup_app():
 from . import views
 
 views.add_views(app)
+
+
+import webapp.journal_plugins
+
+webapp.journal_plugins.extensions.plugin_manager.init_app(app,
+                                                          view_func=webapp.journal_plugins.views.ExampleView.as_view(
+                                                              'plugins-index'))
+
 
 
 def main():

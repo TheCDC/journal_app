@@ -95,7 +95,7 @@ class Plugin(classes.BasePlugin):
         self.manager.blueprint.add_url_rule(self.endpoint, view_func=views.IndexView.as_view(f'{self.url_rule_base_name}-index'))
 
 
-    def parse_entry(self, e: models.JournalEntry) -> 'iterable[str]':
+    def parse_entry(self, e: 'models.JournalEntry') -> 'iterable[str]':
         if self.card_matcher is None:
             if self.thread.isAlive():
                 yield "Card database being built."

@@ -6,10 +6,7 @@ from flask_marshmallow import Marshmallow
 # for editing DB entries
 from flask_admin import Admin
 from webapp import config
-import webapp
 from webapp import app
-
-
 
 # ========== Setup sqlalchemy ==========
 db = SQLAlchemy(app)
@@ -29,3 +26,6 @@ else:
     admin = None
 # ========== Setup Bootstrap ==========
 bootstrap = flask_bootstrap.Bootstrap(app)
+
+
+# from webapp import
