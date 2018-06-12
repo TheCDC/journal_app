@@ -12,6 +12,8 @@ import markdown
 from flask_security import UserMixin, RoleMixin
 from flask_security import Security, SQLAlchemyUserDatastore
 from sqlalchemy.orm import backref
+from sqlalchemy.sql import func
+
 
 logger = logging.getLogger(__name__)
 
@@ -110,6 +112,9 @@ class JournalEntry(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     create_date = db.Column(
         db.Date, default=datetime.datetime.utcnow, index=True)
+    updated_at = db.Column(
+        db.DateTime, default=func.now(), onupdate=func.now(), nullable=False,
+        server_default=func.now())
     contents = db.Column(db.String)
     owner_id = db.Column(db.Integer, db.ForeignKey(User.id))
     owner = db.relationship(User, backref=backref('entries', cascade="all,delete"), )

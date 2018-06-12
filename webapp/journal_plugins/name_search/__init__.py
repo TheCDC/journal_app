@@ -65,7 +65,7 @@ class Plugin(classes.BasePlugin):
 
         found = models.NameSearchCache.query.filter(models.NameSearchCache.parent == e).first()
         if found:
-            if (found.updated_at < e.create_date):
+            if (found.updated_at < e.updated_at):
 
                 results = list(self._parse_entry(e))
                 found.json = json.dumps(results)
@@ -74,7 +74,6 @@ class Plugin(classes.BasePlugin):
 
             else:
                 results = json.loads(found.json)
-            session.close()
 
             return results
         else:
