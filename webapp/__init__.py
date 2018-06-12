@@ -70,4 +70,4 @@ webapp.journal_plugins.extensions.plugin_manager.init_app(app,
 def main():
     logger.info('run app')
     app.run(debug=True)
-    print(app.url_map)
+    # print(app.url_map)
