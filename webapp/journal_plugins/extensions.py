@@ -30,4 +30,3 @@ mtg_cardfetcher = mtg_cardfetcher.Plugin(plugin_manager)
 
 plugin_manager.init_app(app)
 
-print(app.url_map)
