@@ -3,13 +3,19 @@
 It identifies capitalized words in the text of journal entries."""
 import webapp.models
 from webapp.journal_plugins import classes
-from webapp.extensions import db
+from webapp import app
 from . import views
 from . import models
+
+from flask_sqlalchemy import SQLAlchemy
 import flask
 import re
 import flask_login
 import json
+
+# establish a new connection so as to avoid interfering with the db of the main app
+db = SQLAlchemy(app)
+
 
 pattern = re.compile(r'\b[^\W\d_]+\b')
 
@@ -53,19 +59,30 @@ class Plugin(classes.BasePlugin):
         yield from out
 
     def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
+        results = list(self._parse_entry(e))
+
         found = models.NameSearchCache.query.filter(models.NameSearchCache.parent == e).first()
+        session = db.session()
         if found:
             if (found.updated_at < e.create_date):
+                print('Cache Invalid!')
+
                 results = list(self._parse_entry(e))
                 found.json = json.dumps(results)
+                session.add(found)
+                session.commit()
 
             else:
+                print('Cache hit!')
                 results = json.loads(found.json)
             return results
         else:
+            print('Cache miss!')
+
+            session.add(e)
             results = list(self._parse_entry(e))
             found = models.NameSearchCache(parent=e, json=json.dumps(results))
-            session = db.session()
             session.add(found)
+            session.add(found.parent)
             session.commit()
-            return results
+            return resul

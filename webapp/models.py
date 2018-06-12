@@ -62,9 +62,9 @@ class User(db.Model, UserMixin):
 
     def get_latest_entry(self, ) -> "JournalEntry":
         """Return the chronologically latest JournalEntry."""
-        session = db.session()
-        session.add(self)
-        return JournalEntry.query.filter(JournalEntry.id==self.id).order_by(
+        # session = db.session()
+        # session.add(self)
+        return JournalEntry.query.filter(JournalEntry.owner_id == self.id).order_by(
             JournalEntry.create_date.desc()).first()
 
     def query_all_entries(self):
@@ -116,7 +116,7 @@ class JournalEntry(db.Model):
     __table__args = (db.UniqueConstraint('id', 'create_date', name='_id_date'),)
 
     def __str__(self):
-        return str(self.id)
+        return repr(self.id)
 
     def __repr__(self):
         return f'< JournaEntry id={self.id} create_date={self.create_date}'
@@ -138,20 +138,24 @@ class JournalEntry(db.Model):
 
     @property
     def next(self):
-        found = JournalEntry.query.filter(JournalEntry.owner==self.owner).filter(JournalEntry.create_date > self.create_date).first()
+        found = JournalEntry.query.filter(JournalEntry.owner_id == self.owner.id).filter(
+            JournalEntry.create_date > self.create_date).first()
         if found:
             if found.id != self.id:
                 return found
-        else:
-            return None
-        return self.owner.entries.filter(
-            JournalEntry.create_date > self.create_date).first()
+        return None
 
     @property
     def previous(self):
-        return self.owner.query_all_entries().filter(
+
+        found = self.owner.query_all_entries().filter(
             JournalEntry.create_date < self.create_date).order_by(
             JournalEntry.create_date.desc()).first()
+
+        if found:
+            if found.id != self.id:
+                return found
+        return None
 
 
 class PluginConfig(db.Model):
@@ -226,7 +230,6 @@ class JournalEntrySchema(marshmallow.ModelSchema):
         model = JournalEntry
         fields = ('id', 'contents', 'create_date', 'url', 'date_human', 'date_string', 'html')
 
-    owner = marshmallow.Nested(UserSchema)
     url = marshmallow.Method('get_url')
 
     def get_url(self, entry):

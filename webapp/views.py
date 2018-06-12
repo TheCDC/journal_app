@@ -115,26 +115,29 @@ class EntrySearchView(MethodView):
             flask.abort(404)
 
         e = found[0]
+        plugins_output = list(plugin_manager.parse_entry(e))
         session = db.session()
-        session.add(flask_login.current_user)
         e = session.query(models.JournalEntry).filter(models.JournalEntry.id == e.id).first()
         for o in [e.next, e.previous]:
             if o:
                 session.add(o)
         # plugins_output = [(obj['plugin']['name'], list(obj['output'])) for obj in plugin_manager.parse_entry(e)]
-        plugins_output = list(plugin_manager.parse_entry(e))
         context = dict(
-            entry=webapp.models.journal_entry_schema.dump(obj=e).data,
-            next=webapp.models.journal_entry_schema.dump(obj=e.next).data,
-            previous=webapp.models.journal_entry_schema.dump(obj=e.previous).data,
+            entry=models.journal_entry_schema.dump(obj=e).data,
+            next=models.journal_entry_schema.dump(obj=e.next).data,
+            previous=models.journal_entry_schema.dump(obj=e.previous).data,
             plugins_output=plugins_output,
 
         )
+        # handle incompletely specified date
+        # take the user to a search
         try:
             if e.create_date != self.args_to_date(**my_kwargs):
                 flask.abort(404)
         except ValueError:
             flask.abort(404)
+        forward = flask_login.current_user.next_entry(e)
+        backward = flask_login.current_user.previous_entry(e)
         return flask.render_template(
             'entry.html',
             context=context)
@@ -366,9 +369,13 @@ class DeleteEntryView(MethodView):
 
 class LatestView(MethodView):
     def get(self, **kwargs):
-        latest = flask_login.current_user.get_latest_entry()
-        if latest:
-            return flask.redirect(api.link_for_entry())
+        u = flask_login.current_user
+        latest = u.get_latest_entry()
+        print('latest', latest)
+        print('user', u.query_all_entries().order_by(
+            models.JournalEntry.create_date.desc()).first())
+        if latest is not None:
+            return flask.redirect(api.link_for_entry(latest))
         else:
             flask.abort(404)
 
