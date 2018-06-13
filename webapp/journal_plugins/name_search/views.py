@@ -6,7 +6,7 @@ from flask import request
 from webapp import models
 from webapp import api
 from webapp.journal_plugins import extensions
-
+from . import models as mymodels
 
 
 
@@ -14,8 +14,13 @@ class NameExtractorPluginView(MethodView):
     def get_context(self, request):
         data = request.args
         context = dict()
-        context['page'] = int(data.get('page', 0))
-        context['search'] = data.get('search', '')
+        if 'search' in data:
+            context['page'] = int(data.get('page', 0))
+            context['search'] = data.get('search', '')
+
+            pagination = self.get_objects(context)
+            context['pagination'] = pagination
+            context['pagination_annotated'] = [dict(item=item, link=api.link_for_entry(item)) for item in pagination.items]
         return context
 
     def get_objects(self, context):
@@ -37,9 +42,6 @@ class NameExtractorPluginView(MethodView):
         name = flask_login.current_user.first_name
         context = self.get_context(request)
 
-        pagination = self.get_objects(context)
-        context['pagination'] = pagination
-        context['pagination_annotated'] = [dict(item=item, link=api.link_for_entry(item)) for item in pagination.items]
         try:
             return flask.render_template(f'{extensions.name_search.safe_name}/index.html', context=context)
             # return 'Name Recognizer {pagination.items[0].contents} {pagination.items}'.format(pagination=context['pagination'])
