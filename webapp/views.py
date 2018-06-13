@@ -187,6 +187,7 @@ class HomeView(MethodView, EnableLoggingMixin):
                         owner=flask_login.current_user,
                         create_date=e.date,
                         contents=body_text)
+                plugin_manager.parse_entry(found)
                 session.add(found)
 
             session.flush()
@@ -194,6 +195,11 @@ class HomeView(MethodView, EnableLoggingMixin):
             self.logger.debug('parse succeeded')
             good_parse = True
         if good_parse:
+            # pre-calculate any plugins that happen to cache things.
+            q = list(flask_login.current_user.query_all_entries())
+
+            for e in q:
+                list(plugin_manager.parse_entry(e))
             return self.get(
                 upload_form=upload_form,
                 success='Your journal was successfully parsed!')
