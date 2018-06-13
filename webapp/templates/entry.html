@@ -45,7 +45,7 @@
         {% for obj in context.plugins_output %}
         <div class="plugin_output panel panel-default">
             <!--  -->
-            {% if obj.plugin %}
+            {% if obj.output %}
             <div class="panel-heading">
                 <a href="{{obj.plugin.url}}">{{obj.plugin.name}}</a>
             </div>

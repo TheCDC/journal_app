@@ -2,6 +2,7 @@ from flask import Blueprint
 import flask
 import os
 from webapp import config
+from webapp.extensions import  db
 import logging
 
 
@@ -42,6 +43,7 @@ class PluginManager:
             yield dict(plugin=p[1].to_dict(), output=p[1].parse_entry(e))
 
 
+
 class BasePlugin:
     name = 'Default Plugin Name'
     description = 'Description for the BasePlugin'
@@ -79,3 +81,5 @@ class BasePlugin:
     def to_dict(self):
         """A JSON ready representation of this plugin."""
         return dict(name=self.name, url=self.url, safe_name=self.safe_name, type='journal_plugin',description=self.description,back=flask.url_for('site.plugins-index'))
+
+
