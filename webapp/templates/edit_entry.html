@@ -24,6 +24,8 @@
             {{context.form.hidden_tag()}}
             <label for="contents">Entry contents</label>
             <textarea name="contents" id="contents" class="form-control entry_editor" rows="15">{{context.form.contents.data}}</textarea>
+            <p>We support <a href="https://daringfireball.net/projects/markdown/syntax">Markdown</a> syntax for fancy
+                formatting of your entries that still looks god as raw text!</p>
             {% if not context.create %}
 
             <div class="hidden">
@@ -60,6 +62,9 @@ document.getElementById('create_date').value = isodate();
 window.onbeforeunload = function() {
   return "Are you sure you want to navigate away?";
 }
+
+
+
 
 
 </script>
