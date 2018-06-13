@@ -118,6 +118,8 @@ class Plugin(classes.BasePlugin):
 
     def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
         session = db.session.object_session(e)
+        if session is None:
+            session = db.session()
 
 
         found = models.MTGCardFetcherCache.query.filter(models.MTGCardFetcherCache.parent == e).first()
