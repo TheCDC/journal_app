@@ -16,7 +16,7 @@ class Plugin(classes.BasePlugin):
 
     def parse_entry(self, e: 'models.JournalEntry') -> 'iterable[str]':
         words = list(pattern.findall(e.contents.lower()))
-        yield 'Word count: <span class="pull-right"> {} </span>'.format(
+        yield 'Word count: {} '.format(
             len(words))
-        yield 'Unique words: <span class="pull-right"> {} </span>'.format(
+        yield 'Unique words: {} '.format(
             len(set(words)))

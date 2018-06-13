@@ -1,0 +1,47 @@
+{% extends 'base.html' %} {% block content %} {{super()}}
+<!--  -->
+<div class="container container-fluid">
+    <div class="jumbotron">
+        <h1>
+            Word Counter
+        </h1>
+    </div>
+    <div>
+        <h2>Entries</h2>
+
+            {% for item in context.objects %}
+            {% if item.output|length > 0 %}
+
+            <p>
+<div class="container container-fluid">
+<div class="row">
+<div class="col col-md-4">
+
+                    <a class="class=" pull-left" href="{{item.entry.url}}">
+    <span class="btn btn-default">
+
+                    {{item.entry.date_human}}
+    </span>
+
+                    </a>
+</div>
+                    {% for card in item.output %}
+    <div class="col col-md-4">
+
+                        {{card|safe}}
+    </div>
+                    {% endfor %}
+    </div>
+
+</div>
+
+            </p>
+
+            {% endif %}
+            {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}
