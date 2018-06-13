@@ -118,7 +118,7 @@ class JournalEntry(db.Model):
     contents = db.Column(db.String)
     owner_id = db.Column(db.Integer, db.ForeignKey(User.id))
     owner = db.relationship(User, backref=backref('entries', cascade="all,delete"), )
-    __table__args = (db.UniqueConstraint('id', 'create_date', name='_id_date'),)
+    __table_args__ = (db.UniqueConstraint('owner_id', 'create_date', name='_id_date'),)
 
     def __str__(self):
         return repr(self.id)
