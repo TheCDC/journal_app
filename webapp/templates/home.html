@@ -27,7 +27,8 @@
             {{context.latest_entry.html|safe}}
         </p>
         {% else %}
-        <h2> Hi {% if current_user.first_name %} {{current_user.first_name}}. {% else %} there! {% endif %} It looks pretty empty in here. Upload a journal? </h2>
+        <h2> Hi {% if current_user.first_name %} {{current_user.first_name}}. {% else %} there! {% endif %} It looks
+            pretty empty in here. Upload a journal? </h2>
         <p>
             Make sure it's a text file in this format:
         <pre>2018-03-15
@@ -40,6 +41,27 @@ Remember remember the fifth of November.</pre>
     </div>
     <div class="container">
         <div class="row">
+            {% if context.latest_entry %}
+
+            {% if context.days_since_latest > 0 %}
+
+            <div class="col col-md-6" id="plugins_div">
+                <h2> Write Today's Entry</h2>
+                <p>
+                    <a href="{{url_for('create_entry')}}" class="btn btn-success">Today</a>
+                </p>
+            </div>
+            {% endif %}
+            {% else %}
+
+            <div class="col col-md-6" id="plugins_div">
+                <h2> Write your first entry!</h2>
+                <p>
+                    <a href="{{url_for('create_entry')}}" class="btn btn-success">Today</a>
+                </p>
+            </div>
+            {% endif %}
+
             <div class="col col-md-6" id="upload_div">
                 <h2>Upload or export your journal </h2>
                 <div>
@@ -59,18 +81,6 @@ Remember remember the fifth of November.</pre>
                 </div>
 
             </div>
-            {% if context.latest_entry %}
-
-            {% if context.days_since_latest > 0 %}
-
-            <div class="col col-md-6" id="plugins_div">
-                <h2> Write Today's Entry</h2>
-                <p>
-                    <a href="{{url_for('create_entry')}}" class="btn btn-success">Today</a>
-                </p>
-            </div>
-            {% endif %}
-            {% endif %}
 
         </div>
     </div>
