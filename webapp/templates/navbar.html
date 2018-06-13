@@ -15,10 +15,11 @@
 
                 <a class="btn" href="{{url_for('site.plugins-index')}}">Plugins</a>
             </li>
-
+            {% if current_user.get_latest_entry() %}
             <li {% if request.path==link_for_entry(current_user.get_latest_entry()) %} class="active" {% endif %}>
                 <a class="btn" href="{{url_for('latest_entry')}}">Latest Entry</a>
             </li>
+            {% endif %}
             {% endif %}
 
 
