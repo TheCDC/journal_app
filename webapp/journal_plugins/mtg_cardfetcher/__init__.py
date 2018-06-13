@@ -102,7 +102,6 @@ class Plugin(classes.BasePlugin):
     def _parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
         if self.card_matcher is None:
             if self.thread.isAlive():
-                yield "Card database being built."
                 return
             else:
                 try:
@@ -117,16 +116,18 @@ class Plugin(classes.BasePlugin):
                                                body=cardname)
 
     def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
+
+
+        found = models.MTGCardFetcherCache.query.filter(models.MTGCardFetcherCache.parent == e).first()
+        found_obj = json.loads(found.json)
         # try to get the session the object is already in
-        session = db.session.object_session(e)
+        session = db.session.object_session(found)
         # if it isn't in a session, make a new onw
         if session is None:
             session = db.session()
 
-
-        found = models.MTGCardFetcherCache.query.filter(models.MTGCardFetcherCache.parent == e).first()
         if found:
-            if (found.updated_at < e.updated_at):
+            if (found.updated_at < e.updated_at or len(found_obj) < 0):
 
                 results = list(self._parse_entry(e))
                 found.json = json.dumps(results)
