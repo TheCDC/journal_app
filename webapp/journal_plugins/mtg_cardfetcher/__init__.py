@@ -117,7 +117,9 @@ class Plugin(classes.BasePlugin):
                                                body=cardname)
 
     def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
+        # try to get the session the object is already in
         session = db.session.object_session(e)
+        # if it isn't in a session, make a new onw
         if session is None:
             session = db.session()
 
