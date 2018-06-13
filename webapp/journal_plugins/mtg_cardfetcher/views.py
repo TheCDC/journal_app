@@ -4,7 +4,7 @@ from webapp.journal_plugins import extensions
 from flask.views import MethodView
 import flask
 import flask_login
-
+from collections import Counter
 
 class IndexView(MethodView):
     def get_objects(self, context):
@@ -17,6 +17,13 @@ class IndexView(MethodView):
         context = dict(plugin=extensions.mtg_cardfetcher.to_dict())
         objects = [dict(entry=models.journal_entry_schema.dump(obj=e).data, output=extensions.mtg_cardfetcher.parse_entry(e)) for e in self.get_objects(context)]
         context['objects'] = objects
+        seen_cards = list()
+        for i in objects:
+            for card in i['output']:
+                seen_cards.append(card)
+        ctr = Counter(seen_cards)
+        summary = list(ctr.most_common())
+        context['summary'] = summary
 
         return context
 
