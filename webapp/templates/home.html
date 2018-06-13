@@ -41,26 +41,15 @@ Remember remember the fifth of November.</pre>
     </div>
     <div class="container">
         <div class="row">
-            {% if context.latest_entry %}
-
-            {% if context.days_since_latest > 0 %}
 
             <div class="col col-md-6" id="plugins_div">
-                <h2> Write Today's Entry</h2>
-                <p>
-                    <a href="{{url_for('create_entry')}}" class="btn btn-success">Today</a>
-                </p>
-            </div>
-            {% endif %}
-            {% else %}
+                <h2> Write a new entry.</h2>
 
-            <div class="col col-md-6" id="plugins_div">
-                <h2> Write your first entry!</h2>
                 <p>
-                    <a href="{{url_for('create_entry')}}" class="btn btn-success">Today</a>
+                    <a href="{{url_for('create_entry')}}" class="btn btn-success">New entry</a>
                 </p>
             </div>
-            {% endif %}
+
 
             <div class="col col-md-6" id="upload_div">
                 <h2>Upload or export your journal </h2>
