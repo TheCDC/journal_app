@@ -20,7 +20,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy(app)
 
-
 link_element_template = '<a target="_blank" href="{link}">{body}</a>'
 base_url = 'https://scryfall.com/search?q=!'
 
@@ -89,15 +88,16 @@ class Plugin(classes.BasePlugin):
     """An example plugin that simply splits the entry on spaces."""
     name = 'Magic: the Gathering Fetcher'
     description = 'Identify Magic: The Gathering cards you mention in your entries.'
-    def __init__(self,*args,**kwargs):
-        super().__init__(*args,**kwargs)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.queue = []
         self.cards_file_path = os.path.join(self.resources_path, 'cards.json')
         self.thread = threading.Thread(target=fetch, kwargs=dict(mailbox=self.queue, target=self.cards_file_path))
         self.thread.start()
         self.card_matcher = None
-        self.manager.blueprint.add_url_rule(self.endpoint, view_func=views.IndexView.as_view(f'{self.url_rule_base_name}-index'))
-
+        self.manager.blueprint.add_url_rule(self.endpoint,
+                                            view_func=views.IndexView.as_view(f'{self.url_rule_base_name}-index'))
 
     def _parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
         if self.card_matcher is None:
@@ -113,20 +113,20 @@ class Plugin(classes.BasePlugin):
             found = identify_cards(e.contents, self.card_matcher)
             for cardname in found:
                 yield link_element_template.format(link=base_url + '&quot ' + '+'.join(cardname.split(' ')) + '&quot',
-                                               body=cardname)
+                                                   body=cardname)
 
     def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
 
-
         found = models.MTGCardFetcherCache.query.filter(models.MTGCardFetcherCache.parent == e).first()
-        found_obj = json.loads(found.json)
-        # try to get the session the object is already in
-        session = db.session.object_session(found)
-        # if it isn't in a session, make a new onw
-        if session is None:
-            session = db.session()
 
         if found:
+            # try to get the session the object is already in
+            session = db.session.object_session(found)
+            # if it isn't in a session, make a new onw
+            if session is None:
+                session = db.session()
+
+            found_obj = json.loads(found.json)
             if (found.updated_at < e.updated_at or len(found_obj) < 0):
 
                 results = list(self._parse_entry(e))
@@ -139,10 +139,11 @@ class Plugin(classes.BasePlugin):
 
             return results
         else:
-
             results = list(self._parse_entry(e))
             found = models.MTGCardFetcherCache(parent=e, json=json.dumps(results))
-            session.add(found.parent)
+            session = db.session.object_session(e)
+            if not session:
+                session = db.session()
             session.add(found)
             session.commit()
             return results

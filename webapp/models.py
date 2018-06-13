@@ -111,7 +111,7 @@ class JournalEntry(db.Model):
     """Model for journal entries."""
     id = db.Column(db.Integer, primary_key=True)
     create_date = db.Column(
-        db.Date, default=datetime.datetime.utcnow, index=True)
+        db.Date, default=func.now(), index=True)
     updated_at = db.Column(
         db.DateTime, default=func.now(), onupdate=func.now(), nullable=False,
         server_default=func.now())
