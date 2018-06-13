@@ -1,0 +1,43 @@
+{% extends 'base.html' %} {% block content %} {{super()}}
+<!--  -->
+<div class="container">
+
+    <div class="jumbotron">
+
+        <h1>
+            MTG Cardfetcher
+        </h1>
+        <p>
+            These are the cards that you've mentioned in the last 30 days.
+        </p>
+    </div>
+
+    <!--{{context}}-->
+    <ul>
+        {% for item in context.objects %}
+        {% if item.output|length > 0 %}
+        <li>
+            <h3>
+                <a href="{{item.entry.url}}">
+                    {{item.entry.date_human}}
+
+                </a>
+            </h3>
+            <ul>
+                {% for card in item.output %}
+                <li>
+                    {{card|safe}}
+
+                </li>
+                {% endfor %}
+            </ul>
+
+        </li>
+        {% endif %}
+        {% endfor %}
+
+    </ul>
+
+</div>
+
+{% endblock %}
