@@ -9,7 +9,6 @@ from webapp.journal_plugins import extensions
 from . import models as mymodels
 
 
-
 class NameExtractorPluginView(MethodView):
     def get_context(self, request):
         data = request.args
@@ -20,7 +19,8 @@ class NameExtractorPluginView(MethodView):
 
             pagination = self.get_objects(context)
             context['pagination'] = pagination
-            context['pagination_annotated'] = [dict(item=item, link=api.link_for_entry(item)) for item in pagination.items]
+            context['pagination_annotated'] = [dict(item=item, link=api.link_for_entry(item)) for item in
+                                               pagination.items]
         return context
 
     def get_objects(self, context):
@@ -38,6 +38,7 @@ class NameExtractorPluginView(MethodView):
             context['page'], 10,
             False)
 
+    @flask_login.login_required
     def get(self, **kwargs):
         name = flask_login.current_user.first_name
         context = self.get_context(request)

@@ -6,6 +6,7 @@ import flask
 import flask_login
 from collections import Counter
 
+
 class IndexView(MethodView):
     def get_objects(self, context):
         q = models.JournalEntry.query.filter(models.JournalEntry.owner == flask_login.current_user).order_by(
@@ -15,7 +16,9 @@ class IndexView(MethodView):
     def get_context(self, **kwargs):
         args = flask.request.args
         context = dict(plugin=extensions.mtg_cardfetcher.to_dict())
-        objects = [dict(entry=models.journal_entry_schema.dump(obj=e).data, output=extensions.mtg_cardfetcher.parse_entry(e)) for e in self.get_objects(context)]
+        objects = [
+            dict(entry=models.journal_entry_schema.dump(obj=e).data, output=extensions.mtg_cardfetcher.parse_entry(e))
+            for e in self.get_objects(context)]
         context['objects'] = objects
         seen_cards = list()
         for i in objects:
@@ -27,5 +30,6 @@ class IndexView(MethodView):
 
         return context
 
+    @flask_login.login_required
     def get(self, **kwargs):
         return flask.render_template(f'mtg_cardfetcher/index.html', context=self.get_context(**kwargs))

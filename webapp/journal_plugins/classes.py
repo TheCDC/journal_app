@@ -21,7 +21,7 @@ class PluginManager:
             url_prefix='/plugins'
         )
 
-        self.url = '/'
+        self.url = ''
 
         self.plugins = dict()
 
