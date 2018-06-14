@@ -43,4 +43,4 @@ class TestLogins(BaseTest):
             response = self.client.post('/login', data={'email': user.email, 'password': user.password},
                                         follow_redirects=True)
             self.assertEqual(response._status_code, 200)
-            self.assertEquals(current_user.email, data['email'])
+            self.assertEqual(current_user.email, data['email'])
