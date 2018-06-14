@@ -1,0 +1,20 @@
+2000-1-1
+This is the first entry in the journal that will contain 5 entries. FIRSTENTRY
+
+2017-11-30
+
+This is an example of the formatting of the journal.
+
+2018-3-2
+Each entry is simply a date header on its own line in the form of YYYY-MM-DD.
+Anything after a date header but before the next one (or the end of the file) is the body of the entry.
+
+2018-3-3
+The application supports plugins written in Python.
+One plugin included as an example can link journal entries together by identifying dates within the contents of entries.
+
+The first entry of this journal occurred on 2000-1-1.
+Yesterday and tomorrow are also dates.
+
+2018-3-4
+This is the last entry in the journal. LASTENTRY
