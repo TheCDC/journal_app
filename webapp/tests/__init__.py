@@ -22,7 +22,7 @@ class BaseTest(TestCase):
         db.session.remove()
         db.drop_all()
 
-    def login_user(self, email, password):
+    def login_user(self, email, password,**kwargs):
         data = dict(email=email, password=password, active=True)
         user = models.User(**data)
 
