@@ -39,11 +39,12 @@ class BaseTest(TestCase):
 
         data = dict(email=email, password=password, active=True)
         user = models.User(**data)
-
         db.session.add(user)
         db.session.commit()
         response = self.client.post('/login', data={'email': user.email, 'password': user.password},
                                     follow_redirects=True)
+        assert len(models.User.query.all()) == 1
+        user = models.User.query.first()
         assert response._status_code == 200
         assert flask_login.current_user.email == data['email']
         return user
@@ -60,5 +61,5 @@ class TestEnfranchisedUser(BaseTest):
                 user = self.login_user()
                 data = dict(file=(f, TestEnfranchisedUser.file_name))
                 response = self.client.post('/home', data=data, follow_redirects=True)
-                print(response)
                 self.assertEqual(response._status_code, 200)
+                self.user = user
