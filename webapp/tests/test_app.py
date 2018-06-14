@@ -24,7 +24,7 @@ class BaseTest(TestCase):
         db.drop_all()
 
 
-class TestLogins(BaseTest):
+class TestLoginRegistration(BaseTest):
     def test_register(self):
         with self.client:
             data = dict(email='test@test.com', password='blahblahblah', password_confirm='blahblahblah')
