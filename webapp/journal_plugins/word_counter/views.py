@@ -13,9 +13,11 @@ class IndexView(MethodView):
 
     def get_context(self, **kwargs):
         context = dict(plugin=extensions.word_counter.to_dict())
-        objs = [dict(entry=models.journal_entry_schema.dump(obj=e).data, output=list(extensions.word_counter.parse_entry(e))) for e in self.get_objects(context)]
+        objs = [dict(entry=models.journal_entry_schema.dump(obj=e).data,
+                     output=list(extensions.word_counter.parse_entry(e))) for e in self.get_objects(context)]
         context['objects'] = objs
         return context
 
+    @flask_login.login_required
     def get(self, **kwargs):
         return flask.render_template('word_counter/index.html', context=self.get_context(**kwargs))

@@ -6,6 +6,7 @@ import parsedatetime as pdt
 from webapp.journal_plugins import classes
 import logging
 from . import views
+
 logger = logging.getLogger(__name__)
 
 def shorten_phrase(s, max_length=15):
