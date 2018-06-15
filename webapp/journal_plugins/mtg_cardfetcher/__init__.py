@@ -17,6 +17,7 @@ import dateutil.parser
 import logging
 import ahocorasick
 from flask_sqlalchemy import SQLAlchemy
+from webapp.journal_plugins.validation import validate
 
 db = SQLAlchemy(app)
 
@@ -116,7 +117,7 @@ class Plugin(classes.BasePlugin):
                     link=base_url + '&quot ' + '+'.join(cardname.split(' ')) + '&quot',
                     body=cardname
                 ),cardname=cardname)
-
+    @validate
     def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
         if self.thread.is_alive():
             return

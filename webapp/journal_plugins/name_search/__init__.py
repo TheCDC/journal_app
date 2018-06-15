@@ -3,6 +3,8 @@
 It identifies capitalized words in the text of journal entries."""
 import webapp.models
 from webapp.journal_plugins import classes
+from webapp.journal_plugins.validation import validate
+
 from webapp.extensions import db
 from webapp import app
 from . import views
@@ -64,6 +66,7 @@ class Plugin(classes.BasePlugin):
                 pass
         yield from out
 
+    @validate
     def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
         session = db.session.object_session(e)
 

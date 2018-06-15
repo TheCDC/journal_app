@@ -1,4 +1,5 @@
 from collections import Counter
+from webapp.journal_plugins.validation import validate
 from webapp.journal_plugins import classes
 from webapp import models
 import re
@@ -16,7 +17,7 @@ class Plugin(classes.BasePlugin):
         super().__init__(*args, **kwargs)
         self.manager.blueprint.add_url_rule(self.endpoint,
                                             view_func=views.IndexView.as_view(f'{self.url_rule_base_name}-index'))
-
+    @validate
     def parse_entry(self, e: 'models.JournalEntry') -> 'iterable[str]':
         words = list(pattern.findall(e.contents.lower()))
         yield dict(html='Word count: {} '.format(

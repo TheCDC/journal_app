@@ -4,6 +4,8 @@ from webapp import models
 from webapp import api
 import parsedatetime as pdt
 from webapp.journal_plugins import classes
+from webapp.journal_plugins.validation import validate
+
 import logging
 from . import views
 
@@ -38,7 +40,7 @@ class Plugin(classes.BasePlugin):
         self.manager.blueprint.add_url_rule(self.endpoint,
                                             view_func=views.IndexView.as_view(f'{self.url_rule_base_name}-index'))
         logger.info('Registered MTG Cardfetcher plugin view with url %s', self.url)
-
+    @validate
     def parse_entry(self, e: 'models.JournalEntry') -> 'iterable[str]':
         """Find all dates mentioned in the entry body."""
         logger.disabled = False
