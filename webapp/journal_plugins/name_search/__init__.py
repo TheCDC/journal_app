@@ -66,10 +66,14 @@ class Plugin(classes.BasePlugin):
 
     def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
         session = db.session.object_session(e)
-        if session is None:
-            session = db.session()
+
         found = models.NameSearchCache.query.filter(models.NameSearchCache.parent == e).first()
+
         if found:
+            if session is None:
+                session = db.session.object_session(found)
+            if session is None:
+                session = db.session()
             if (found.updated_at < e.updated_at):
 
                 results = list(self._parse_entry(e))
