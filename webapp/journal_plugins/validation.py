@@ -9,7 +9,7 @@ def validate(func):
             try:
                 yield PluginReturnValue(**item).dict
             except ValueError as e:
-                raise e
+                raise ValueError(f'Function {func} has invalid output schema! Args: {args}, {kwargs}')
 
 
     return wrapped
