@@ -55,7 +55,7 @@
                     {% if word.html is defined %}
                     {{word.html|safe}}
                     {% else %}
-                    {{word}}
+                    {{word|safe}}
 
                     {% endif %}
                 </li>

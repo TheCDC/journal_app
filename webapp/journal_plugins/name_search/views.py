@@ -8,8 +8,26 @@ from webapp import api
 from webapp.journal_plugins import extensions
 from collections import Counter
 
-
 class NameExtractorPluginView(MethodView):
+    def foo(self, context):
+        objects = [
+            dict(entry=models.journal_entry_schema.dump(obj=e).data,
+                 output=extensions.name_search.parse_entry(e))
+            for e in self.get_objects(context).items]
+        context['summary_objects'] = objects
+        seen_cards = list()
+        for i in objects:
+            for card in i['output']:
+                try:
+                    seen_cards.append(card['label'])
+                except TypeError:
+                    seen_cards.append(card)
+
+
+        ctr = Counter(seen_cards)
+        most_common = list(ctr.most_common())
+        context['summary'] = dict(most_common=most_common, objects=objects)
+
     def get_context(self, request):
         data = request.args
         context = dict(plugin=extensions.name_search.to_dict())
@@ -24,18 +42,7 @@ class NameExtractorPluginView(MethodView):
                                                pagination.items]
         else:
             args = flask.request.args
-            objects = [
-                dict(entry=models.journal_entry_schema.dump(obj=e).data,
-                     output=extensions.name_search.parse_entry(e))
-                for e in self.get_objects(context).items]
-            context['summary_objects'] = objects
-            seen_cards = list()
-            for i in objects:
-                for card in i['output']:
-                    seen_cards.append(card['label'])
-            ctr = Counter(seen_cards)
-            most_common = list(ctr.most_common())
-            context['summary'] = dict(most_common = most_common, objects = objects)
+            self.foo(context)
 
         return context
 
