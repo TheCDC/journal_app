@@ -82,4 +82,17 @@ class BasePlugin:
         """A JSON ready representation of this plugin."""
         return dict(name=self.name, url=self.url, safe_name=self.safe_name, type='journal_plugin',description=self.description,back=flask.url_for('site.plugins-index'))
 
+class PluginReturnValue:
+    """A thin wrapper around the dict type for validating return values from plugins."""
+    def __init__(self,*args,**kwargs):
+        """Validate arguments"""
+        if ['html'] not in kwargs:
+            raise ValueError('html key must be in return value of parse_entry!')
+        else:
+            self.dict = dict(*args,**kwargs)
+
+    def __dict__(self):
+        return self.dict
+
+
 
