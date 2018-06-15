@@ -118,6 +118,8 @@ class Plugin(classes.BasePlugin):
                 ),cardname=cardname)
 
     def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
+        if self.thread.is_alive():
+            return
 
         found = models.MTGCardFetcherCache.query.filter(models.MTGCardFetcherCache.parent == e).first()
 
