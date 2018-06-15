@@ -15,8 +15,7 @@
         </h2>
         {% for tup in context.summary %}
         <span class="btn btn-default">
-    {{tup[0]|safe}} - {{tup[1]}}
-
+            {{tup[0]|safe}} - {{tup[1]}}
         </span>
         {% endfor %}
 
@@ -31,7 +30,6 @@
                 <h3>
                     <a href="{{item.entry.url}}">
                         {{item.entry.date_human}}
-
                     </a>
                 </h3>
                 <ul>
