@@ -52,7 +52,7 @@
             <ul class="panel-body list-group">
                 {% for word in obj.output %}
                 <li class="list-group-item">
-                    {{word|safe}}
+                    {{word.html|safe}}
                 </li>
                 {% endfor %}
             </ul>

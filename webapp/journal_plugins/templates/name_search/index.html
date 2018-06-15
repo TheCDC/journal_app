@@ -72,6 +72,22 @@
 
     </div>
     {% endif %}
+    {{context}}
+    {% if context.summary %}
+    <h3>Names you've mentioned in the last 30 days.</h3>
+    <div>
+        <h2>
+            Summary
+        </h2>
+        {% for tup in context.summary.most_common %}
+        <span class="btn btn-default">
+    {{tup[0]|safe}} - {{tup[1]}}
+
+        </span>
+        {% endfor %}
+
+    </div>
+    {% endif %}
 </div>
 
 {% endblock %}

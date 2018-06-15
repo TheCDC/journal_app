@@ -1,4 +1,3 @@
-from . import models as mymodels
 from webapp import models
 from webapp.journal_plugins import extensions
 from flask.views import MethodView

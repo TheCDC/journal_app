@@ -112,8 +112,9 @@ class Plugin(classes.BasePlugin):
         else:
             found = identify_cards(e.contents, self.card_matcher)
             for cardname in found:
-                yield link_element_template.format(link=base_url + '&quot ' + '+'.join(cardname.split(' ')) + '&quot',
-                                                   body=cardname)
+                yield dict(html=link_element_template.format(
+                    link=base_url + '&quot ' + '+'.join(cardname.split(' ')) + '&quot',
+                    body=cardname))
 
     def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
 
