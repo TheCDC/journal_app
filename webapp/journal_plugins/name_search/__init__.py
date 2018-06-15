@@ -52,11 +52,12 @@ class Plugin(classes.BasePlugin):
                         c = count_occurrences(w)
                         label = f'{w}'
                         url = flask.url_for(f'site.plugins-{self.safe_name}-index', page=1, search=w)
-                        out.append(dict(
-                            html=f'<a href="{url}" >{label}</a>',
-                            url=url,
-                            label=label,
-                        )
+                        out.append(
+                            dict(
+                                html=f'<a href="{url}" >{label}</a>',
+                                url=url,
+                                label=label,
+                            )
                         )
                     seen.add(w)
             except IndexError:
