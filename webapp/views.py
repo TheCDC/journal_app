@@ -387,7 +387,9 @@ class LatestView(MethodView):
             return flask.redirect(api.link_for_entry(latest))
         else:
             flask.abort(404)
-
+class PrivacyPolicyView(MethodView):
+    def get(self,**kwargs):
+        return flask.render_template('privacy.html')
 
 def add_views(app):
     app.add_url_rule('/', view_func=IndexView.as_view('index'))
@@ -396,6 +398,7 @@ def add_views(app):
     app.add_url_rule('/latest', view_func=LatestView.as_view('latest_entry'))
     app.add_url_rule('/export', view_func=ExportJournalView.as_view('export_journal'))
     app.add_url_rule('/settings', view_func=SettingsView.as_view('settings'))
+    app.add_url_rule('/privacy', view_func=PrivacyPolicyView.as_view('privacy'))
     app.add_url_rule('/edit/new', view_func=EntryCreateView.as_view('create_entry'))
     app.add_url_rule('/edit/<int:id>', view_func=EntryEditView.as_view('edit_entry'))
     app.add_url_rule('/delete/<int:id>', view_func=DeleteEntryView.as_view('delete_entry'))

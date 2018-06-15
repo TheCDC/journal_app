@@ -5,7 +5,6 @@ from webapp import config
 from webapp.extensions import db
 import logging
 
-
 def concat_urls(a, b):
     return '/' + '/'.join(x for x in (a.split('/') + b.split('/')) if len(x) > 0)
 

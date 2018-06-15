@@ -1,6 +1,6 @@
 {% extends 'base.html' %} {% block content %} {{super()}}
 <div class="container">
-<h1>Available Plugins</h1>
+<h1>Your Plugins</h1>
     <ul class="list-group">
         {% for plugin in context.plugins %}
         <li class="list-group-item">
@@ -8,6 +8,10 @@
             {% endfor %}
         </li>
     </ul>
+    <div>
+
+        <a href="{{url_for('site.plugins-settings')}}">Customize your plugins</a>
+    </div>
 
 </div>
 

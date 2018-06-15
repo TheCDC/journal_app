@@ -5,6 +5,9 @@ from .classes import PluginManager
 
 plugin_manager = PluginManager()
 
+
+
+
 # ==========  Journal Parsing Plugins - Register plugins ==========
 # Date Recognizer
 from . import date_recognizer
@@ -25,8 +28,3 @@ word_counter = word_counter.Plugin(plugin_manager)
 from . import mtg_cardfetcher
 
 mtg_cardfetcher = mtg_cardfetcher.Plugin(plugin_manager)
-
-# ==========  Journal Parsing Plugins - Apply plugins to app==========
-
-plugin_manager.init_app(app)
-

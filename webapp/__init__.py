@@ -61,9 +61,9 @@ views.add_views(app)
 
 import webapp.journal_plugins
 
-webapp.journal_plugins.extensions.plugin_manager.init_app(app,
-                                                          view_func=webapp.journal_plugins.views.ExampleView.as_view(
-                                                              'plugins-index'))
+import webapp.journal_plugins.views
+webapp.journal_plugins.views.add_views(plugin_manager=webapp.journal_plugins.extensions.plugin_manager)
+webapp.journal_plugins.extensions.plugin_manager.init_app(app)
 
 
 
