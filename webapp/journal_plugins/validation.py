@@ -8,7 +8,7 @@ def validate(func):
         for item in gen:
             try:
                 yield PluginReturnValue(**item).dict
-            except ValueError as e:
+            except Exception as e:
                 raise ValueError(f'Function {func} has invalid output schema! Args: {args}, {kwargs}')
 
 
