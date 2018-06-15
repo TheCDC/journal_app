@@ -4,6 +4,10 @@ def validate(func):
     def wrapped(*args,**kwargs):
         gen = func(*args,**kwargs)
         for item in gen:
-            yield dict(PluginReturnValue(item))
+            try:
+                yield PluginReturnValue(**item).dict
+            except ValueError as e:
+                raise e
+
 
     return wrapped

@@ -66,7 +66,7 @@ class Plugin(classes.BasePlugin):
             dates_group = ' | '.join(date_str)
 
             if not found_entry:
-                yield f'<del>{dates_group}: {prettify(date)}</del>'
+                yield dict(html=f'<del>{dates_group}: {prettify(date)}</del>',url='')
             else:
                 # get a link to the entry referred to by the found date
                 url = api.link_for_entry(

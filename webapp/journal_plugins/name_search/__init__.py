@@ -26,9 +26,9 @@ pattern = re.compile(r'\b[^\W\d_]+\b')
 
 
 # pattern = re.compile("/^[a-z ,.'-]+$/i")
-def count_occurrences(search):
+def count_occurrences(user,search):
     all_entries = webapp.models.JournalEntry.query.filter(
-        webapp.models.JournalEntry.owner_id == flask_login.current_user.id)
+        webapp.models.JournalEntry.owner_id == user.id)
     return all_entries.filter(
         webapp.models.JournalEntry.contents.contains(search)).count()
 
@@ -44,6 +44,9 @@ class Plugin(classes.BasePlugin):
         # _ = models.NameSearchCache.query.first()
 
     def _parse_entry(self, e):
+        session = db.session()
+        session.add(e)
+        session.add(e.owner)
         seen = set()
         words = list(w for w in pattern.findall(e.contents) if w.lower() not in all_stopwords)
         out = []
@@ -51,7 +54,7 @@ class Plugin(classes.BasePlugin):
             try:
                 if w[0] == w[0].upper():
                     if w not in seen:
-                        c = count_occurrences(w)
+                        c = count_occurrences(e.owner, w)
                         label = f'{w}'
                         url = flask.url_for(f'site.plugins-{self.safe_name}-index', page=1, search=w)
                         out.append(
@@ -89,7 +92,8 @@ class Plugin(classes.BasePlugin):
 
             return results
         else:
-
+            if session is None:
+                session = db.session()
             results = list(self._parse_entry(e))
             found = models.NameSearchCache(parent=e, json=json.dumps(results))
             session.add(found.parent)

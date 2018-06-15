@@ -91,7 +91,7 @@ class PluginReturnValue:
         """Validate arguments"""
 
         if 'html' not in kwargs:
-            raise ValueError('html key must be in return value of parse_entry!')
+            raise ValueError(f'html key must be in return value of parse_entry! kwargs:{kwargs}')
         else:
             self.dict = dict(*args, **kwargs)
 
