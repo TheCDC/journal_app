@@ -114,7 +114,8 @@ class Plugin(classes.BasePlugin):
             for cardname in found:
                 yield dict(html=link_element_template.format(
                     link=base_url + '&quot ' + '+'.join(cardname.split(' ')) + '&quot',
-                    body=cardname))
+                    body=cardname
+                ),cardname=cardname)
 
     def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
 

@@ -37,7 +37,7 @@
                 <ul>
                     {% for card in item.output %}
                     <li>
-                        {{card|safe}}
+                        {{card.html|safe}}
                     </li>
                     {% endfor %}
                 </ul>
