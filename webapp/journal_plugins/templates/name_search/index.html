@@ -82,7 +82,12 @@
 
             {% for tup in context.summary.most_common %}
             <li>
-                {{tup[0]|safe}} - {{tup[1]}}
+                <a href="{{url_for('site.plugins-name_search-index',search=tup[0])}}">
+                    <span class="btn btn-default">
+                    {{tup[0]}} - {{tup[1]}}
+
+                    </span>
+                </a>
 
             </li>
             {% endfor %}
