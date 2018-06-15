@@ -52,7 +52,12 @@
             <ul class="panel-body list-group">
                 {% for word in obj.output %}
                 <li class="list-group-item">
+                    {% if word.html is defined %}
+                    {{word.html|safe}}
+                    {% else %}
                     {{word|safe}}
+
+                    {% endif %}
                 </li>
                 {% endfor %}
             </ul>

@@ -2,7 +2,7 @@ from flask import Blueprint
 import flask
 import os
 from webapp import config
-from webapp.extensions import  db
+from webapp.extensions import db
 import logging
 
 
@@ -43,10 +43,10 @@ class PluginManager:
             yield dict(plugin=p[1].to_dict(), output=p[1].parse_entry(e))
 
 
-
 class BasePlugin:
     name = 'Default Plugin Name'
     description = 'Description for the BasePlugin'
+
     def __init__(self, plugin_manager: PluginManager):
         self.name = self.__class__.name
         self.description = self.__class__.description
@@ -65,7 +65,6 @@ class BasePlugin:
         except FileExistsError:
             pass
 
-
     def parse_entry(self, e):
         """The developer must override this in order to provide entry parsing functionality"""
         raise NotImplementedError()
@@ -80,6 +79,21 @@ class BasePlugin:
 
     def to_dict(self):
         """A JSON ready representation of this plugin."""
-        return dict(name=self.name, url=self.url, safe_name=self.safe_name, type='journal_plugin',description=self.description,back=flask.url_for('site.plugins-index'))
+        return dict(name=self.name, url=self.url, safe_name=self.safe_name, type='journal_plugin',
+                    description=self.description, back=flask.url_for('site.plugins-index'))
 
 
+class PluginReturnValue:
+    """A thin wrapper around the dict type for validating return values from plugins."""
+    required = ['plugin', 'output']
+
+    def __init__(self, *args, **kwargs):
+        """Validate arguments"""
+
+        if 'html' not in kwargs:
+            raise ValueError('html key must be in return value of parse_entry!')
+        else:
+            self.dict = dict(*args, **kwargs)
+
+    def __dict__(self):
+        return self.dict

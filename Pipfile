@@ -31,6 +31,8 @@ wtforms-alchemy = "*"
 gunicorn = "*"
 flask-mail = "*"
 pyahocorasick = "*"
+nltk = "*"
+flask-script = "*"
 
 
 [dev-packages]

@@ -3,6 +3,8 @@
 It identifies capitalized words in the text of journal entries."""
 import webapp.models
 from webapp.journal_plugins import classes
+from webapp.journal_plugins.validation import validate
+
 from webapp.extensions import db
 from webapp import app
 from . import views
@@ -13,6 +15,9 @@ import flask
 import re
 import flask_login
 import json
+from nltk.corpus import stopwords
+
+all_stopwords = stopwords.words('english')
 
 # create new db connection to avoid ruining the main db connection
 db = SQLAlchemy(app)
@@ -40,30 +45,38 @@ class Plugin(classes.BasePlugin):
 
     def _parse_entry(self, e):
         seen = set()
-        words = list(pattern.findall(e.contents))
+        words = list(w for w in pattern.findall(e.contents) if w.lower() not in all_stopwords)
         out = []
         for w in words:
             try:
-                if w[0].isalpha() and w[0] == w[0].upper():
+                if w[0] == w[0].upper():
                     if w not in seen:
                         c = count_occurrences(w)
-                        label = f'{w} ({c}),'
+                        label = f'{w}'
                         url = flask.url_for(f'site.plugins-{self.safe_name}-index', page=1, search=w)
                         out.append(
-                            f'<a href="{url}" >{label}</a>'
+                            dict(
+                                html=f'<a href="{url}" >{label}</a>',
+                                url=url,
+                                label=label,
+                            )
                         )
                     seen.add(w)
             except IndexError:
                 pass
-        yield 'Names found: {}'.format(len(out))
         yield from out
 
+    @validate
     def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
         session = db.session.object_session(e)
 
-
         found = models.NameSearchCache.query.filter(models.NameSearchCache.parent == e).first()
+
         if found:
+            if session is None:
+                session = db.session.object_session(found)
+            if session is None:
+                session = db.session()
             if (found.updated_at < e.updated_at):
 
                 results = list(self._parse_entry(e))

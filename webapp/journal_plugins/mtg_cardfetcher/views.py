@@ -1,4 +1,3 @@
-from . import models as mymodels
 from webapp import models
 from webapp.journal_plugins import extensions
 from flask.views import MethodView
@@ -21,10 +20,11 @@ class IndexView(MethodView):
             for e in self.get_objects(context)]
         context['objects'] = objects
         seen_cards = list()
+        print(objects)
         for i in objects:
             for card in i['output']:
-                seen_cards.append(card)
-        ctr = Counter(seen_cards)
+                seen_cards.append(card['html'])
+        ctr = Counter(c for c in seen_cards)
         summary = list(ctr.most_common())
         context['summary'] = summary
 

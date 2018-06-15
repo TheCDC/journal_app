@@ -25,10 +25,10 @@
 
                     </a>
                 </div>
-                {% for card in item.output %}
+                {% for column in item.output %}
                 <div class="col col-sm-4">
 
-                    {{card|safe}}
+                    {{column.html|safe}}
                 </div>
                 {% endfor %}
             </div>
