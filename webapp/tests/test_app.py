@@ -1,4 +1,5 @@
 from webapp import models
+from webapp import api
 from webapp.extensions import db
 from flask_login import current_user
 import webapp.tests as tests
@@ -30,3 +31,12 @@ class TestJournalUpload(tests.TestEnfranchisedUser):
         q = models.JournalEntry.query.order_by(models.JournalEntry.create_date).all()
         self.assertIn('FIRSTENTRY', q[0].contents)
         self.assertIn('LASTENTRY', q[-1].contents)
+
+
+class TestViewingEntries(tests.TestEnfranchisedUser):
+    def test_view_all_entries(self):
+        with self.client:
+            es = db.session.query(models.JournalEntry).all()
+            for e in es:
+                response = self.client.get(api.link_for_entry(e))
+                self.assertEqual(response._status_code, 200)

@@ -211,8 +211,8 @@ class HomeView(MethodView, EnableLoggingMixin):
     @flask_login.login_required
     def get(self, **kwargs):
         upload_form = forms.UploadForm()
-
-        latest_entry = models.JournalEntry.query.filter(models.JournalEntry.owner == flask_login.current_user).order_by(
+        db.session.add(flask_login.current_user)
+        latest_entry = db.session.query(models.JournalEntry).filter(models.JournalEntry.owner == flask_login.current_user).order_by(
             models.JournalEntry.create_date.desc()).first()
         # form the context with default values
         context = dict(
@@ -231,6 +231,7 @@ class HomeView(MethodView, EnableLoggingMixin):
         for key in context:
             if key in flask.request.args:
                 context[key] = flask.request.args.get(key)
+        db.session.close()
         return flask.render_template(self.get_template_name(), context=context)
 
 
@@ -279,6 +280,7 @@ class EntryEditView(MethodView):
         context.update(dict(back=api.link_for_entry(found), action=flask.url_for('edit_entry', id=form.id.data),
                             form=form))
         context.update(kwargs)
+        db.session.close()
         return flask.render_template('edit_entry.html', context=context)
 
     @flask_login.login_required

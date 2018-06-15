@@ -16,11 +16,10 @@ class IndexView(MethodView):
         args = flask.request.args
         context = dict(plugin=extensions.mtg_cardfetcher.to_dict())
         objects = [
-            dict(entry=models.journal_entry_schema.dump(obj=e).data, output=extensions.mtg_cardfetcher.parse_entry(e))
+            dict(entry=models.journal_entry_schema.dump(obj=e).data, output=list(extensions.mtg_cardfetcher.parse_entry(e)))
             for e in self.get_objects(context)]
         context['objects'] = objects
         seen_cards = list()
-        print(objects)
         for i in objects:
             for card in i['output']:
                 seen_cards.append(card['html'])

@@ -43,10 +43,12 @@ class Plugin(classes.BasePlugin):
             f'{self.url_rule_base_name}-index'))
         # _ = models.NameSearchCache.query.first()
 
-    def _parse_entry(self, e):
-        session = db.session()
+    def _parse_entry(self, e,session=None):
+        if session is None:
+            session = db.session.object_session(e)
+        if session is None:
+            session = db.session()
         session.add(e)
-        session.add(e.owner)
         seen = set()
         words = list(w for w in pattern.findall(e.contents) if w.lower() not in all_stopwords)
         out = []
@@ -54,7 +56,7 @@ class Plugin(classes.BasePlugin):
             try:
                 if w[0] == w[0].upper():
                     if w not in seen:
-                        c = count_occurrences(e.owner, w)
+                        c = count_occurrences(webapp.models.User.query.filter(webapp.models.User.id ==e.owner_id).first(), w)
                         label = f'{w}'
                         url = flask.url_for(f'site.plugins-{self.safe_name}-index', page=1, search=w)
                         out.append(
@@ -71,15 +73,11 @@ class Plugin(classes.BasePlugin):
 
     @validate
     def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
-        session = db.session.object_session(e)
+        session = db.session()
 
-        found = models.NameSearchCache.query.filter(models.NameSearchCache.parent == e).first()
+        found = session.query(models.NameSearchCache).filter(models.NameSearchCache.parent == e).first()
 
         if found:
-            if session is None:
-                session = db.session.object_session(found)
-            if session is None:
-                session = db.session()
             if (found.updated_at < e.updated_at):
 
                 results = list(self._parse_entry(e))
@@ -92,11 +90,6 @@ class Plugin(classes.BasePlugin):
 
             return results
         else:
-            if session is None:
-                session = db.session()
             results = list(self._parse_entry(e))
             found = models.NameSearchCache(parent=e, json=json.dumps(results))
-            session.add(found.parent)
-            session.add(found)
-            session.commit()
             return results

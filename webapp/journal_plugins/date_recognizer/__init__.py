@@ -5,7 +5,7 @@ from webapp import api
 import parsedatetime as pdt
 from webapp.journal_plugins import classes
 from webapp.journal_plugins.validation import validate
-
+from webapp.extensions import db
 import logging
 from . import views
 
@@ -40,12 +40,14 @@ class Plugin(classes.BasePlugin):
         self.manager.blueprint.add_url_rule(self.endpoint,
                                             view_func=views.IndexView.as_view(f'{self.url_rule_base_name}-index'))
         logger.info('Registered MTG Cardfetcher plugin view with url %s', self.url)
+
     @validate
     def parse_entry(self, e: 'models.JournalEntry') -> 'iterable[str]':
         """Find all dates mentioned in the entry body."""
         logger.disabled = False
         seen = set()
         cal = pdt.Calendar()
+        db.session.add(e)
         parsed_dates = cal.nlp(e.contents, e.create_date.timetuple())
 
         if parsed_dates is None:
@@ -66,7 +68,7 @@ class Plugin(classes.BasePlugin):
             dates_group = ' | '.join(date_str)
 
             if not found_entry:
-                yield dict(html=f'<del>{dates_group}: {prettify(date)}</del>',url='')
+                yield dict(html=f'<del>{dates_group}: {prettify(date)}</del>', url='')
             else:
                 # get a link to the entry referred to by the found date
                 url = api.link_for_entry(

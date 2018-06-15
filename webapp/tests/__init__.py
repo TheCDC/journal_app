@@ -21,9 +21,11 @@ class BaseTest(TestCase):
         app.config[
             'SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
         app.config['TESTING'] = True
+        app.config['SERVER_NAME'] = '127.0.0.1:5000'
         # it is too much extra work to handle CSRF tokens during testing so just disable them
         app.config['WTF_CSRF_ENABLED'] = False
-        self.client = self.app.test_client()
+        with self.app.app_context():
+            self.client = self.app.test_client()
 
         db.create_all()
 

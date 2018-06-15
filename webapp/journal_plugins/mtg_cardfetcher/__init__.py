@@ -101,6 +101,7 @@ class Plugin(classes.BasePlugin):
                                             view_func=views.IndexView.as_view(f'{self.url_rule_base_name}-index'))
 
     def _parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
+        results = list()
         if self.card_matcher is None:
             if self.thread.isAlive():
                 return
