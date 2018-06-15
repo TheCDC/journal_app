@@ -1,6 +1,7 @@
-from webapp.tests import BaseTest
+from webapp.tests import BaseTest, TestEnfranchisedUser
 from webapp.extensions import db
 from webapp import models
+from webapp.journal_plugins.extensions import plugin_manager
 
 class TestVisitPluginHome(BaseTest):
     def test_visit_without_auth(self):
@@ -16,3 +17,8 @@ class TestVisitPluginHome(BaseTest):
             self.assertEqual(response._status_code, 200)
 
 
+class TestParsing(TestEnfranchisedUser):
+    def test_parse(self):
+        with self.client:
+            for e in models.JournalEntry.query.all():
+                plugin_manager.parse_entry(e)

@@ -16,8 +16,3 @@ class TestNameSearchAccess(BaseTest):
             response = self.client.get(date_recognizer.url)
             self.assertEqual(response._status_code, 302)
 
-class TestParsing(TestEnfranchisedUser):
-    def test_parse(self):
-        with self.client:
-            for e in models.JournalEntry.query.all():
-                date_recognizer.parse_entry(e)
