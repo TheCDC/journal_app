@@ -1,26 +1,40 @@
 {% extends 'base.html' %} {% block content %} {{super()}}
-	<div class="container">
-		<h1> [LOGO HERE] </h1>
-		Welcome to the journal app!
-		<div class="container container-fluid">
-			<div class="row text-center">
-				<div class="col col-sm-3">
-				</div>
-				<div class="col col-sm-3">
-					<a href="{{url_for('security.login')}}">Log in</a>
-				</div>
-				<div class="col col-sm-3">
-					<a href="{{url_for('security.register')}}">Register</a>
-				</div>
-				<div class="col col-sm-3">
-				</div>
-			</div>
-			<div class="text-center">
-				<p>
-				Read our privacy policy <a href="{{url_for('privacy')}}">here.</a>
+<div class="container text-center">
+    <h1> [LOGO HERE] </h1>
+    <p>
+        Welcome to the journal app!
 
-				</p>
-			</div>
-		</div>
-	</div>
+    </p>
+
+    <div >
+        <p>
+        We have screenshots!
+
+        </p>
+        <blockquote class="imgur-embed-pub" lang="en" data-id="a/F32VsSQ"><a href="//imgur.com/F32VsSQ"></a>
+        </blockquote>
+        <script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>
+
+    </div>
+    <div class="container container-fluid">
+        <div class="row text-center">
+            <div class="col col-sm-3">
+            </div>
+            <div class="col col-sm-3">
+                <a href="{{url_for('security.login')}}">Log in</a>
+            </div>
+            <div class="col col-sm-3">
+                <a href="{{url_for('security.register')}}">Register</a>
+            </div>
+            <div class="col col-sm-3">
+            </div>
+        </div>
+        <div class="text-center">
+            <p>
+                Read our privacy policy <a href="{{url_for('privacy')}}">here.</a>
+
+            </p>
+        </div>
+    </div>
+</div>
 {% endblock %}
