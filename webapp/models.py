@@ -143,7 +143,8 @@ class JournalEntry(db.Model):
 
     @property
     def next(self):
-        found = JournalEntry.query.filter(JournalEntry.owner_id == self.owner.id).filter(
+        found = JournalEntry.query.filter(JournalEntry.owner_id == self.owner.id).order_by(
+            JournalEntry.create_date).filter(
             JournalEntry.create_date > self.create_date).first()
         if found:
             if found.id != self.id:
