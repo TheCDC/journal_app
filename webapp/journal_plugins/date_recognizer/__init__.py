@@ -13,8 +13,9 @@ logger = logging.getLogger(__name__)
 
 
 def shorten_phrase(s, max_length=15):
-    if len(s) > 10:
-        return s[:10] + '...'
+
+    if len(s) > max_length:
+        return s[:max_length] + '...'
     else:
         return s
 
