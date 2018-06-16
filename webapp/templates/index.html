@@ -6,9 +6,9 @@
 
     </p>
 
-    <div >
+    <div>
         <p>
-        We have screenshots, put them into your eyes!
+            We have screenshots, put them into your eyes!
 
         </p>
         <blockquote class="imgur-embed-pub" lang="en" data-id="a/F32VsSQ"><a href="//imgur.com/F32VsSQ"></a>
@@ -18,8 +18,8 @@
     </div>
     <div class="container container-fluid">
         <div class="row text-center">
-                <a href="{{url_for('security.login')}}" class="btn btn-success">Log in</a>
-                                <a href="{{url_for('security.register')}}" class="btn btn-primary">Register</a>
+            <a href="{{url_for('security.login')}}" class="btn btn-success">Log in</a>
+            <a href="{{url_for('security.register')}}" class="btn btn-primary">Register</a>
 
         </div>
         <div class="text-center">
@@ -27,6 +27,26 @@
                 Read our privacy policy <a href="{{url_for('privacy')}}">here.</a>
 
             </p>
+        </div>
+        <div>
+            <ul>
+                <li class="social">
+                    &copy;2018
+                    <a href="https://github.com/TheCDC">Christopher Chen</a>
+                </li>
+                <li class="social">
+                    <a class="img-link" href="https://github.com/TheCDC/card_codex">
+                        <img class="social-logo" src="{{ url_for('static', filename='img/octocat.svg') }}"
+                             alt="Fork me on GitHub"/>
+                    </a>
+                </li>
+                <li class="social">
+                    <a class="img-link" href="https://twitter.com/chrischen1995">
+                        <img class="social-logo" src="{{ url_for('static', filename='img/twitter.svg') }}"
+                             alt="@chrischen1995 on Twitter"/>
+                    </a>
+                </li>
+            </ul>
         </div>
     </div>
 </div>
