@@ -78,20 +78,20 @@
         <h2>
             Summary
         </h2>
-        <ul>
+        <ol>
 
             {% for tup in context.summary.most_common %}
             <li>
                 <a href="{{url_for('site.plugins-name_search-index',search=tup[0])}}">
                     <span class="btn btn-default">
-                    {{tup[0]}} - {{tup[1]}}
+                    {{tup[0]}}
 
                     </span>
-                </a>
+                </a> - {{tup[1]}} times
 
             </li>
             {% endfor %}
-        </ul>
+        </ol>
 
     </div>
     {% endif %}

@@ -7,24 +7,24 @@ from webapp import models
 from webapp import api
 from webapp.journal_plugins import extensions
 from collections import Counter
+import datetime
 
 class NameExtractorPluginView(MethodView):
-    def foo(self, context):
+    def get_summary(self, context):
         objects = [
             dict(entry=models.journal_entry_schema.dump(obj=e).data,
                  output=extensions.name_search.parse_entry(e))
             for e in self.get_objects(context).items]
         context['summary_objects'] = objects
-        seen_cards = list()
+        seen_names = list()
         for i in objects:
-            for card in i['output']:
+            for name in i['output']:
                 try:
-                    seen_cards.append(card['label'])
+                    seen_names.append(name['label'])
                 except TypeError:
-                    seen_cards.append(card)
+                    seen_names.append(name)
 
-
-        ctr = Counter(seen_cards)
+        ctr = Counter(seen_names)
         most_common = list(ctr.most_common())
         context['summary'] = dict(most_common=most_common, objects=objects)
 
@@ -34,15 +34,13 @@ class NameExtractorPluginView(MethodView):
         context['page'] = int(data.get('page', 0))
         context['search'] = data.get('search', '')
         if 'search' in data:
-
-
             pagination = self.get_objects(context)
             context['pagination'] = pagination
             context['pagination_annotated'] = [dict(item=item, link=api.link_for_entry(item)) for item in
                                                pagination.items]
         else:
             args = flask.request.args
-            self.foo(context)
+            self.get_summary(context)
 
         return context
 
@@ -52,13 +50,16 @@ class NameExtractorPluginView(MethodView):
         if len(context['search']) > 0:
             filtered_by_search = all_entries.filter(
                 models.JournalEntry.contents.contains(context['search'])).order_by(models.JournalEntry.create_date)
+            return filtered_by_search.order_by(models.JournalEntry.create_date).paginate(context['page'], 10, False)
+
         else:
+            now = datetime.datetime.now().date()
+            then = now - datetime.timedelta(days=30)
             filtered_by_search = all_entries.order_by(models.JournalEntry.create_date.desc())
+            return filtered_by_search.order_by(models.JournalEntry.create_date).filter(models.JournalEntry.create_date > then).paginate(context['page'], 30, False)
+
         # Flask-SQLalchemy pagination docs
         # http://flask-sqlalchemy.pocoo.org/2.1/api/?highlight=pagination#flask.ext.sqlalchemy.Pagination
-        return filtered_by_search.order_by(models.JournalEntry.create_date).paginate(
-            context['page'], 10,
-            False)
 
     @flask_login.login_required
     def get(self, **kwargs):
