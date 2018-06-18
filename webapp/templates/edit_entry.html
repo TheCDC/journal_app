@@ -64,9 +64,16 @@ window.onbeforeunload = function() {
   return "Are you sure you want to navigate away?";
 }
 
+</script>
 
+<!-- Include the required files -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+<script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
 
-
-
+<!-- Start simple MDE -->
+<script>
+    var simplemde = new SimpleMDE({
+        element: document.getElementById("contents")
+    });
 </script>
 {% endblock %}
