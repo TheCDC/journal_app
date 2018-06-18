@@ -116,6 +116,7 @@ class EntrySearchView(MethodView):
 
         e = found[0]
         plugins_output = list(plugin_manager.parse_entry(e))
+        plugins_output.sort(key = lambda d: len(d['output']))
         session = db.session()
         e = session.query(models.JournalEntry).filter(models.JournalEntry.id == e.id).first()
         for o in [e.next, e.previous]:
