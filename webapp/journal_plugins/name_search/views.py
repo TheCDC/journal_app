@@ -56,7 +56,7 @@ class NameExtractorPluginView(MethodView):
             now = datetime.datetime.now().date()
             then = now - datetime.timedelta(days=30)
             filtered_by_search = all_entries.order_by(models.JournalEntry.create_date.desc())
-            return filtered_by_search.order_by(models.JournalEntry.create_date).filter(models.JournalEntry.create_date > then).paginate(context['page'], 30, False)
+            return filtered_by_search.order_by(models.JournalEntry.create_date).filter(models.JournalEntry.create_date >= then).paginate(context['page'], 30, False)
 
         # Flask-SQLalchemy pagination docs
         # http://flask-sqlalchemy.pocoo.org/2.1/api/?highlight=pagination#flask.ext.sqlalchemy.Pagination

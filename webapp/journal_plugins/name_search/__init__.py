@@ -92,4 +92,6 @@ class Plugin(classes.BasePlugin):
         else:
             results = list(self._parse_entry(e))
             found = models.NameSearchCache(parent=e, json=json.dumps(results))
+            session.add(found)
+            session.commit()
             return results
