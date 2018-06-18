@@ -1,81 +1,77 @@
 {% extends 'base.html' %} {% block content %} {{super()}}
 <div class="container">
-    <div class="container">
-        <ul class="pager pull-left">
-            {% if context.previous%}
-            <!--  -->
-            <li>
-                <a class="btn btn-default" href="{{context.previous.url}}">
-                    Previous
-                    ({{context.previous.date_string}})</a>
-            </li>
-            <!--  -->
-            {% endif %}
-            <!--  -->
-            {% if context.next %}
-            <!--  -->
-            <li>
-                <a class="btn btn-default" href="{{context.next.url}}">Next ({{context.next.date_string}})</a>
-            </li>
-            <!--  -->
-            {% endif %}
-        </ul>
-        <div class="pull-right">
-            <p>
-            <form action="{{url_for('delete_entry',id=context.entry.id)}}" method="POST">
-                <a class="btn btn-success" href="{{url_for('edit_entry',id=context.entry.id)}}">Edit</a>
+    <ul class="pager pull-left">
+        {% if context.previous%}
+        <!--  -->
+        <li>
+            <a class="btn btn-default" href="{{context.previous.url}}">
+                Previous
+                ({{context.previous.date_string}})</a>
+        </li>
+        <!--  -->
+        {% endif %}
+        <!--  -->
+        {% if context.next %}
+        <!--  -->
+        <li>
+            <a class="btn btn-default" href="{{context.next.url}}">Next ({{context.next.date_string}})</a>
+        </li>
+        <!--  -->
+        {% endif %}
+    </ul>
+    <div class="pull-right">
+        <p>
+        <form action="{{url_for('delete_entry',id=context.entry.id)}}" method="POST">
+            <a class="btn btn-success" href="{{url_for('edit_entry',id=context.entry.id)}}">Edit</a>
 
-                <input type="submit" class="btn btn-danger" value="Delete">
-            </form>
-            </p>
-        </div>
+            <input type="submit" class="btn btn-danger" value="Delete">
+        </form>
+        </p>
     </div>
+</div>
 
-    <div class="container ">
-        <div class="row">
-            <div class="col col-md-8">
-                <div class="jumbotron">
-                    <h2>
-                        {{context.entry.date_human}}
-                    </h2>
-                    <p>
-                        {{context.entry.html|safe}}
-                    </p>
-                </div>
+<div class="container ">
+    <div class="row">
+        <div class="col col-md-8">
+            <div class="jumbotron">
+                <h2>
+                    {{context.entry.date_human}}
+                </h2>
+                <p>
+                    {{context.entry.html|safe}}
+                </p>
             </div>
-            <div class="col col-md-4">
+        </div>
+        <div class="col col-md-4">
 
-                <h2 class="text-center">Insights</h2>
-                <div class="plugins_output" style="">
-                    {% for obj in context.plugins_output %}
-                    <div class="plugin_output panel panel-default">
-                        <!--  -->
-                        {% if obj.output %}
-                        <div class="panel-heading">
-                            <a href="{{obj.plugin.url}}">{{obj.plugin.name}}</a>
-                        </div>
-                        <ul class="panel-body list-group">
-                            {% for word in obj.output %}
-                            <li class="list-group-item">
-                                {% if word.html is defined %}
-                                {{word.html|safe}}
-                                {% else %}
-                                {{word|safe}}
-
-                                {% endif %}
-                            </li>
-                            {% endfor %}
-                        </ul>
-                        {% endif %}
-                        <!--  -->
+            <h2 class="text-center">Insights</h2>
+            <div class="plugins_output" style="">
+                {% for obj in context.plugins_output %}
+                <div class="plugin_output panel panel-default">
+                    <!--  -->
+                    {% if obj.output %}
+                    <div class="panel-heading">
+                        <a href="{{obj.plugin.url}}">{{obj.plugin.name}}</a>
                     </div>
-                    {% endfor %}
+                    <ul class="panel-body list-group">
+                        {% for word in obj.output %}
+                        <li class="list-group-item">
+                            {% if word.html is defined %}
+                            {{word.html|safe}}
+                            {% else %}
+                            {{word|safe}}
+
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    <!--  -->
                 </div>
+                {% endfor %}
             </div>
         </div>
     </div>
+</div>
 
-</div>
-<!--  -->
-</div>
 {% endblock %}
