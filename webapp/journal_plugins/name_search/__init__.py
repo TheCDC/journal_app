@@ -73,7 +73,7 @@ class Plugin(classes.BasePlugin):
 
     @validate
     def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
-        session = db.session()
+        session = db.session
 
         found = session.query(models.NameSearchCache).filter(models.NameSearchCache.parent == e).first()
 
@@ -92,6 +92,7 @@ class Plugin(classes.BasePlugin):
         else:
             results = list(self._parse_entry(e))
             found = models.NameSearchCache(parent=e, json=json.dumps(results))
+            session = db.session.object_session(e)
             session.add(found)
             session.commit()
             return results
