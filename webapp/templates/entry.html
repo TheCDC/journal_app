@@ -31,41 +31,50 @@
         </div>
     </div>
 
-    <div class="jumbotron">
-        <h2>
-            {{context.entry.date_human}}
-        </h2>
-        <p>
-            {{context.entry.html|safe}}
-        </p>
-    </div>
-
-    <h2 class="text-center">Insights</h2>
-    <div class="plugins_output" style="">
-        {% for obj in context.plugins_output %}
-        <div class="plugin_output panel panel-default">
-            <!--  -->
-            {% if obj.output %}
-            <div class="panel-heading">
-                <a href="{{obj.plugin.url}}">{{obj.plugin.name}}</a>
+    <div class="container ">
+        <div class="row">
+            <div class="col col-md-8">
+                <div class="jumbotron">
+                    <h2>
+                        {{context.entry.date_human}}
+                    </h2>
+                    <p>
+                        {{context.entry.html|safe}}
+                    </p>
+                </div>
             </div>
-            <ul class="panel-body list-group">
-                {% for word in obj.output %}
-                <li class="list-group-item">
-                    {% if word.html is defined %}
-                    {{word.html|safe}}
-                    {% else %}
-                    {{word|safe}}
+            <div class="col col-md-4">
 
-                    {% endif %}
-                </li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-            <!--  -->
+                <h2 class="text-center">Insights</h2>
+                <div class="plugins_output" style="">
+                    {% for obj in context.plugins_output %}
+                    <div class="plugin_output panel panel-default">
+                        <!--  -->
+                        {% if obj.output %}
+                        <div class="panel-heading">
+                            <a href="{{obj.plugin.url}}">{{obj.plugin.name}}</a>
+                        </div>
+                        <ul class="panel-body list-group">
+                            {% for word in obj.output %}
+                            <li class="list-group-item">
+                                {% if word.html is defined %}
+                                {{word.html|safe}}
+                                {% else %}
+                                {{word|safe}}
+
+                                {% endif %}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        <!--  -->
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
-        {% endfor %}
     </div>
+
 </div>
 <!--  -->
 </div>
