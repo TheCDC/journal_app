@@ -13,7 +13,7 @@
             <!--  -->
             <li {% if request.path==url_for('site.plugins-index') %} class="active" {% endif %}>
 
-                <a class="btn" href="{{url_for('site.plugins-index')}}">Plugins</a>
+                <a class="btn" href="{{url_for('site.plugins-index')}}">Insights</a>
             </li>
             {% if current_user.get_latest_entry() %}
             <li {% if request.path==link_for_entry(current_user.get_latest_entry()) %} class="active" {% endif %}>

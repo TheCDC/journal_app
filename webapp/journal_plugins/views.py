@@ -30,7 +30,7 @@ class PluginsSettingsOverviewView(MethodView):
 
 
 def add_views(plugin_manager: classes.PluginManager):
-    plugin_manager.blueprint.add_url_rule('/plugins/settings',
+    plugin_manager.blueprint.add_url_rule('/settings',
                                           view_func=PluginsSettingsOverviewView.as_view('plugins-settings'))
     plugin_manager.blueprint.add_url_rule('', view_func=ExampleView.as_view(
         'plugins-index'))
