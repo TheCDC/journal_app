@@ -82,6 +82,8 @@ window.onbeforeunload = function() {
     var simplemde = new SimpleMDE({
         element: document.getElementById("contents"),
         styleSelectedText: false,
+        <!--spell checker might be the culprit of editing glitches on mobile-->
+        spellChecker: false,
     });
 
 
