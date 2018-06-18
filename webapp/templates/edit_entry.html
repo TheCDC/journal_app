@@ -27,17 +27,6 @@
                 formatting of your entries that still looks good as raw text!</p>
             <textarea name="contents" id="contents" class="form-control entry_editor" rows="15">{{context.form.contents.data}}</textarea>
 
-            <script>
-
-
-            <!-- Start simple MDE -->
-
-    var simplemde = new SimpleMDE({
-        element: document.getElementById("contents")
-    });
-
-
-            </script>
             {% if not context.create %}
 
             <div class="hidden">
@@ -78,15 +67,25 @@ window.onbeforeunload = function() {
 
 
 
+
 </script>
-<!-- Include the required files -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
-<script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
 
 
 <!-- Include the required files -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
 <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+<script>
+
+
+            <!-- Start simple MDE -->
+
+    var simplemde = new SimpleMDE({
+        element: document.getElementById("contents")
+    });
+
+
+
+</script>
 
 
 {% endblock %}
