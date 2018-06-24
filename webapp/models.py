@@ -64,8 +64,8 @@ class User(db.Model, UserMixin):
 
     def get_latest_entry(self, ) -> "JournalEntry":
         """Return the chronologically latest JournalEntry."""
-        # session = db.session()
-        # session.add(self)
+        session = db.session()
+        session.add(self)
         return db.session.query(JournalEntry).filter(JournalEntry.owner_id == self.id).order_by(
             JournalEntry.create_date.desc()).first()
 
