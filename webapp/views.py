@@ -138,8 +138,8 @@ class EntrySearchView(MethodView):
                 flask.abort(404)
         except ValueError:
             flask.abort(404)
-        forward = flask_login.current_user.next_entry(e)
-        backward = flask_login.current_user.previous_entry(e)
+        forward = e.next
+        backward = e.previous
         return flask.render_template(
             'entry.html',
             context=context)
