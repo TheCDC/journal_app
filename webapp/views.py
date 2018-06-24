@@ -376,6 +376,16 @@ class DeleteEntryView(MethodView):
         session.commit()
         return flask.redirect(flask.url_for('home', success=f'Deleted entry for {old_date}'))
 
+    def get(self,**kwargs):
+        my_id = kwargs['id']
+
+        obj = models.JournalEntry.query.filter_by(id=my_id).first()
+
+        context = dict(entry=obj,
+                       delete_url=flask.url_for('delete_entry',id=my_id),
+                       back_url=api.link_for_entry(obj))
+        return flask.render_template('delete_entry.html',context=context)
+
 
 class LatestView(MethodView):
     def get(self, **kwargs):
