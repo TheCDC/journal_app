@@ -1,24 +1,38 @@
 {% extends 'base.html' %} {% block content %} {{super()}}
 <div class="container">
     <h1>Your Insights</h1>
-    <div class="">
+    <div>
         {% for item in context.plugins %}
-        <a href="{{item.plugin.url}}" class="plugin_overview_card">
-            <div class="card_title">
-                {{item.plugin.name}}
+        <div class="plugin_overview_card">
 
+            <div class="card_title">
+                <a href="{{item.plugin.url}}">
+
+                    {{item.plugin.name}}
+                </a>
             </div>
-            <div>
-                {{item.plugin.description}}
+            <div class="contents">
+                <div class="description">
+                    {{item.plugin.description}}
+                </div>
+                <div class="options">
+                    <a href="{{item.plugin.url}}" class="btn btn-default">Visit
+                    </a>
+                    <div>
+                        {% if item.preference.enabled %}
+                        <a href="" class="btn btn-success">
+                            Enabled
+                        </a>
+                        {% else %}
+                        <a href="" class="btn btn-warning">
+                            Disabled
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
-            <div>
-                {% if item.preference.enabled %}
-                <div class="btn btn-success">Enabled</div>
-                {% else %}
-                <div class="btn btn-warning">Disabled</div>
-                {% endif %}
-            </div>
-        </a>
+
+        </div>
         {% endfor %}
 
         <div>
