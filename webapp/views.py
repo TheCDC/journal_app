@@ -119,7 +119,6 @@ class EntrySearchView(MethodView):
         plugins_output.sort(key = lambda d: len(d['output']))
         session = db.session()
         e = session.query(models.JournalEntry).filter(models.JournalEntry.id == e.id).first()
-        session.add(flask_login.current_user)
         for o in [e.next, e.previous]:
             if o:
                 session.add(o)
@@ -131,9 +130,6 @@ class EntrySearchView(MethodView):
             plugins_output=plugins_output,
 
         )
-        # handle incompletely specified date
-        # take the user to a search
-        session.close()
         try:
             if e.create_date != self.args_to_date(**my_kwargs):
                 flask.abort(404)
