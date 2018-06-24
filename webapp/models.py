@@ -66,7 +66,7 @@ class User(db.Model, UserMixin):
         """Return the chronologically latest JournalEntry."""
         # session = db.session()
         # session.add(self)
-        return JournalEntry.query.filter(JournalEntry.owner_id == self.id).order_by(
+        return db.session.quer(JournalEntry).filter(JournalEntry.owner_id == self.id).order_by(
             JournalEntry.create_date.desc()).first()
 
     def query_all_entries(self):

@@ -123,7 +123,6 @@ class EntrySearchView(MethodView):
             if o:
                 db.session.add(o)
         # plugins_output = [(obj['plugin']['name'], list(obj['output'])) for obj in plugin_manager.parse_entry(e)]
-        db.session.add(flask_login.current_user)
         context = dict(
             entry=models.journal_entry_schema.dump(obj=e).data,
             next=models.journal_entry_schema.dump(obj=e.next).data,
