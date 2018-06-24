@@ -8,8 +8,9 @@ import flask_login
 class ExampleView(MethodView):
     def get_context(self, **kwargs):
         context = dict(plugins=list())
+        preferences = plugin_manager.get_user_plugin_preferences(flask_login.current_user)
         for k, v in plugin_manager.plugins.items():
-            context['plugins'].append(v.to_dict())
+            context['plugins'].append(dict(plugin=v.to_dict(),preference=preferences[k]))
         return context
 
     @flask_login.login_required

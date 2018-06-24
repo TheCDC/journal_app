@@ -6,6 +6,7 @@ from webapp.extensions import db
 import logging
 from . import models
 
+
 def concat_urls(a, b):
     return '/' + '/'.join(x for x in (a.split('/') + b.split('/')) if len(x) > 0)
 
@@ -39,8 +40,28 @@ class PluginManager:
 
     def parse_entry(self, e):
         """Call all registered plugins on the entry."""
-        for p in self.plugins.items():
-            yield dict(plugin=p[1].to_dict(), output=list(p[1].parse_entry(e)))
+        preferences = self.get_user_plugin_preferences(e.owner)
+        for k,v in self.plugins.items():
+            if preferences[k].enabled:
+                yield dict(plugin=v.to_dict(), output=list(v.parse_entry(e)))
+
+    def get_user_plugin_preferences(self, user_obj):
+        """Get models in charge of recording which plugins the user has enabled."""
+        ret = dict()
+        for plugin_name in self.plugins:
+            obj = db.session.query(models.UserPluginToggle).filter(
+                models.UserPluginToggle.user_id == user_obj.id
+            ).filter(
+                models.UserPluginToggle.plugin_name == plugin_name
+            ).first()
+            if obj is None:
+                session = db.session()
+                obj = models.UserPluginToggle(plugin_name=plugin_name, user_id=user_obj.id)
+                session.add(obj)
+                session.commit()
+
+            ret[plugin_name] = obj
+        return ret
 
 
 class BasePlugin:
