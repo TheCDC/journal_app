@@ -1,7 +1,7 @@
 from flask.views import MethodView
 import flask
 from .extensions import plugin_manager
-from . import classes
+from . import classes, models
 import flask_login
 
 
