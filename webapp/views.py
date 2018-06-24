@@ -117,9 +117,11 @@ class EntrySearchView(MethodView):
         e = found[0]
         plugins_output = list(plugin_manager.parse_entry(e))
         plugins_output.sort(key = lambda d: len(d['output']))
-        session = db.session
+        session = db.session.object_session(flask_login.current_user)
+        if session is None:
+            session = db.session()
+            session.add(flask_login.current_user)
         e = session.query(models.JournalEntry).filter(models.JournalEntry.id == e.id).first()
-        session.add(flask_login.current_user)
         for o in [e.next, e.previous]:
             if o:
                 session.add(o)
@@ -159,6 +161,7 @@ class HomeView(MethodView, EnableLoggingMixin):
 
     @flask_login.login_required
     def post(self, **kwargs):
+
         upload_form = forms.UploadForm()
         self.logger.debug('Try upload')
         good_parse = False
@@ -195,9 +198,12 @@ class HomeView(MethodView, EnableLoggingMixin):
             good_parse = True
         if good_parse:
             # pre-calculate any plugins that happen to cache things.
+            db.session.add(flask_login.current_user)
+
             q = list(flask_login.current_user.query_all_entries())
 
             for e in q:
+                db.session.add(e)
                 list(plugin_manager.parse_entry(e))
             return self.get(
                 upload_form=upload_form,
