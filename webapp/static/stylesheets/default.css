@@ -56,3 +56,28 @@ img {
     border: 100px solid darken(#DDDDDD, 10%);
     background: darken(#E76C67, 10%);
 }
+
+
+.plugin_overview_card{
+    box-shadow: 2px 6px 25px rgba(0, 0, 0, 0.1);
+    margin: 1em;
+    padding: 1em;
+    border-radius: 0.5em;
+    border: 0.1em solid #efefef;
+    display: flex;
+    flex: 1 1 50%;
+    flex-grow: 1;
+    flex-direction: row;
+    flex-flow: row wrap;
+    justify-content: space-between;
+
+
+}
+
+.plugin_overview_card:hover {
+  box-shadow: 2px 6px 30px rgba(0, 0, 0, 0.2);
+}
+
+.card_title{
+font-size: large;
+}

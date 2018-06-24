@@ -36,7 +36,7 @@ def count_occurrences(user,search):
 class Plugin(classes.BasePlugin):
     """An example plugin that simply splits the entry on spaces."""
     name = 'Name Search'
-
+    description = "Identify names you mention in your entries and find other entries with those names."
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.manager.blueprint.add_url_rule(self.endpoint, view_func=views.NameExtractorPluginView.as_view(
