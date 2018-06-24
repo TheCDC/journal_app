@@ -9,6 +9,7 @@
 .plugin_output{
 	margin: 1em;
 	height: 100%;
+	box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.1);
 }
 
 img {
