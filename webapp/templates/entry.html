@@ -19,28 +19,33 @@
         <!--  -->
         {% endif %}
     </ul>
-    <div class="pull-right">
-        <p>
-        <form action="{{url_for('delete_entry',id=context.entry.id)}}" method="GET">
-            <a class="btn btn-success" href="{{url_for('edit_entry',id=context.entry.id)}}">Edit</a>
 
-            <input type="submit" class="btn btn-danger" value="Delete">
-        </form>
-        </p>
-    </div>
 </div>
 
 <div class="container">
     <div class="row">
         <div class="col col-md-8">
-            <div class="jumbotron">
-                <h2>
+            <div class="jumbotron entry_container">
+                <div class="title_area">
+                <div class="title_text">
                     {{context.entry.date_human}}
-                </h2>
+                </div>
+                <div >
+                    <div>
+                        <form action="{{url_for('delete_entry',id=context.entry.id)}}" method="GET">
+                            <a class="btn btn-success" href="{{url_for('edit_entry',id=context.entry.id)}}">Edit</a>
+
+                            <input type="submit" class="btn btn-danger" value="Delete">
+                        </form>
+                    </div>
+                </div>
+                </div>
+
                 <p>
                     {{context.entry.html|safe}}
                 </p>
             </div>
+
         </div>
         <div class="col col-md-4">
 

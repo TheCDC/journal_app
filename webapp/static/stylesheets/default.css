@@ -96,3 +96,26 @@ img {
 
     padding: 0.5em;
 }
+
+.entry_container{
+    box-shadow: 2px 6px 25px rgba(25, 25, 25, 0.1);
+    border: 0.1em solid #efefef;
+
+
+
+}
+
+
+.entry_container > .title_area{
+    display: flex;
+    flex-direction: row;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    border-bottom: 1px solid #cccccc;
+
+
+}
+
+.entry_container > .title_area > .title_text{
+    font-size: xx-large;
+}
