@@ -8,10 +8,10 @@
     </div>
     <form action="{{url_for('delete_entry',id=context.entry.id)}}" method="POST">
         <div class="big_button_container">
-            <input type="submit" class="btn btn-danger big_button" value="Delete it!">
-            <a class="btn btn-success big_button" href="{{context.back_url}}">
+            <a class="btn btn-primary big_button" href="{{context.back_url}}">
                 No, take me back!
             </a>
+            <input type="submit" class="btn btn-danger big_button" value="Delete it!">
         </div>
     </form>
 </div>
