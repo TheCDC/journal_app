@@ -118,13 +118,10 @@ class EntrySearchView(MethodView):
         plugins_output = list(plugin_manager.parse_entry(e))
         plugins_output.sort(key = lambda d: len(d['output']))
         session = db.session.object_session(flask_login.current_user)
-        if session is None:
-            session = db.session()
-            session.add(flask_login.current_user)
-        e = session.query(models.JournalEntry).filter(models.JournalEntry.id == e.id).first()
+        e = db.session.query(models.JournalEntry).filter(models.JournalEntry.id == e.id).first()
         for o in [e.next, e.previous]:
             if o:
-                session.add(o)
+                db.session.add(o)
         # plugins_output = [(obj['plugin']['name'], list(obj['output'])) for obj in plugin_manager.parse_entry(e)]
         context = dict(
             entry=models.journal_entry_schema.dump(obj=e).data,
