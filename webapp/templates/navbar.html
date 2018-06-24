@@ -1,46 +1,56 @@
 {% block navbar %}
-<nav class="navbar navbar-default navbar-inverse">
+<nav class="navbar navbar-default navbar-inverse" role="navigation">
     <div class="container container-fluid">
         <div class="navbar-header">
             <a class="navbar-brand" href="/">Journal App</a>
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
         </div>
-        <ul class="nav navbar-nav">
-            <li {% if request.path==url_for(
-            'home') %} class="active" {% endif %}>
-            <a class="btn" href="{{url_for('index')}}">Home</a>
-            </li>
-            {% if current_user.is_authenticated %}
-            <!--  -->
-            <li {% if request.path==url_for('site.plugins-index') %} class="active" {% endif %}>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li {% if request.path==url_for(
+                'home') %} class="active" {% endif %}>
+                <a class="btn" href="{{url_for('index')}}">Home</a>
+                </li>
+                {% if current_user.is_authenticated %}
+                <!--  -->
+                <li {% if request.path==url_for('site.plugins-index') %} class="active" {% endif %}>
 
-                <a class="btn" href="{{url_for('site.plugins-index')}}">Insights</a>
-            </li>
-            {% if current_user.get_latest_entry() %}
-            <li {% if request.path==link_for_entry(current_user.get_latest_entry()) %} class="active" {% endif %}>
-                <a class="btn" href="{{url_for('latest_entry')}}">Latest Entry</a>
-            </li>
-            {% endif %}
-            {% endif %}
+                    <a class="btn" href="{{url_for('site.plugins-index')}}">Insights</a>
+                </li>
+                {% if current_user.get_latest_entry() %}
+                <li {% if request.path==link_for_entry(current_user.get_latest_entry()) %} class="active" {% endif %}>
+                    <a class="btn" href="{{url_for('latest_entry')}}">Latest Entry</a>
+                </li>
+                {% endif %}
+                {% endif %}
 
 
-        </ul>
-        <ul class="nav navbar-nav navbar-right">
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
 
-            {% if current_user.is_authenticated %}
-            <li {% if request.path==url_for('settings') %} class="active" {% endif %}>
+                {% if current_user.is_authenticated %}
+                <li {% if request.path==url_for('settings') %} class="active" {% endif %}>
 
-                <a class="btn" href="{{url_for('settings')}}">{{current_user.first_name if current_user.first_name else
-                    "You"}}</a>
-            </li>
-            <li>
-                <a class="btn" href="{{url_for('security.logout')}}">Log out</a>
-            </li>
-            {% else %}
-            <li>
-                <a class="btn" href="{{url_for('security.logout')}}">Log in</a>
-            </li>
-            {% endif %}
-        </ul>
+                    <a class="btn" href="{{url_for('settings')}}">{{current_user.first_name if current_user.first_name
+                        else
+                        "You"}}</a>
+                </li>
+                <li>
+                    <a class="btn" href="{{url_for('security.logout')}}">Log out</a>
+                </li>
+                {% else %}
+                <li>
+                    <a class="btn" href="{{url_for('security.logout')}}">Log in</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
     </div>
 </nav>
 {% endblock %}
