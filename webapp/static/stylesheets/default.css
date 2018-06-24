@@ -40,12 +40,18 @@ img {
 }
 
 .big_button {
-     flex-grow: 1;
-  flex-shrink: 1;
-  flex-basis: 0;
-    font-size: xx-large;
-    border-radius: 0.25em;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+    font-size: large;
+    border: 1px solid #DDDDDD;
+    border-radius: 0.5em;
     padding: 1em;
     margin: 0.5em;
 
+}
+
+.big_button:hover{
+    border: 100px solid darken(#DDDDDD, 10%);
+    background: darken(#E76C67, 10%);
 }
