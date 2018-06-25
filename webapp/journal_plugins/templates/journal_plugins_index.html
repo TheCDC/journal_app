@@ -3,6 +3,8 @@
     <h1>Your Insights</h1>
     <div>
         {% for item in context.plugins %}
+        {% if item.preference.enabled %}
+
         <div class="card">
 
             <div class="card_title">
@@ -16,28 +18,25 @@
                     {{item.plugin.description}}
                 </div>
                 <div class="options">
-                    <a href="{{item.plugin.url}}" class="btn btn-default">Visit
+                    <a href="{{item.plugin.url}}" class="btn btn-default">Visit Summary
                     </a>
                     <div>
-                        {% if item.preference.enabled %}
-                        <a href="" class="btn btn-success">
-                            Enabled
-                        </a>
-                        {% else %}
-                        <a href="" class="btn btn-warning">
-                            Disabled
-                        </a>
-                        {% endif %}
+                        <form action="{{url_for('site.plugins-index')}}" method="POST" enctype="multipart/form-data">
+                            <input id="disable-id" name="disable-id" type="hidden" value="{{item.preference.id}}">
+                            <input class="btn btn-warning" type="submit" value="Disable">
+                        </form>
                     </div>
                 </div>
             </div>
 
         </div>
+        {% endif %}
+
         {% endfor %}
 
         <div>
 
-            <a href="{{url_for('site.plugins-settings')}}">Customize your Insights</a>
+            <a class="btn btn-primary" href="{{url_for('site.plugins-settings')}}">Shop for Insights</a>
         </div>
 
     </div>
