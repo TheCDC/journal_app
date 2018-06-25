@@ -80,21 +80,34 @@ img {
     flex-direction: row;
     flex-flow: row wrap;
     justify-content: space-between;
-    border-bottom: 1px solid #efefef;
+    border-bottom: 1px solid #cccccc;
 
 }
 
 .card > .contents{
-    margin: 0.5em;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    width: 100%;
+
 }
 
+.card > .contents > .description{
+    margin-bottom: 0.5em;
+
+
+}
 .card > .contents > .options {
     display: flex;
     flex-direction: row;
     flex-flow: row wrap;
     justify-content: space-between;
 
-    padding: 0.5em;
+        border-top: 1px solid #cccccc;
+
+
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+
 }
 
 .entry_container{
