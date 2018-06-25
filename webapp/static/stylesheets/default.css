@@ -58,7 +58,7 @@ img {
 }
 
 
-.plugin_overview_card{
+.card{
     box-shadow: 2px 6px 25px rgba(0, 0, 0, 0.1);
     margin: 1em;
     padding: 1em;
@@ -70,11 +70,11 @@ img {
 
 }
 
-.plugin_overview_card:hover {
+.card:hover {
   box-shadow: 2px 6px 30px rgba(0, 0, 0, 0.2);
 }
 
-.plugin_overview_card > .card_title{
+.card > .card_title{
     font-size: x-large;
     display: flex;
     flex-direction: row;
@@ -84,11 +84,11 @@ img {
 
 }
 
-.plugin_overview_card > .contents{
+.card > .contents{
     margin: 0.5em;
 }
 
-.plugin_overview_card > .contents > .options {
+.card > .contents > .options {
     display: flex;
     flex-direction: row;
     flex-flow: row wrap;
