@@ -16,16 +16,14 @@
         <p class="">{{ context.success }}</p>
     </div>
     {% endif %}
-    <div class="jumbotron">
         {% if context.latest_entry%}
         {% if context.days_since_latest > 0 %}
-        <h2> Remember this from {{context.days_since_latest}} day(s) ago?</h2>
+        <h1 > Remember this from {{context.days_since_latest}} day(s) ago?</h1>
         {% else %}
-        <h2> Today's entry </h2>
+        <h1> Today's entry</h1>
+
         {% endif %}
-        <p>
-            {{context.latest_entry.html|safe}}
-        </p>
+    {{render_entry_card(context.latest_entry)|safe}}
         {% else %}
         <h2> Hi {% if current_user.first_name %} {{current_user.first_name}}. {% else %} there! {% endif %} It looks
             pretty empty in here. Upload a journal? </h2>
@@ -38,7 +36,6 @@ Remember remember the fifth of November.</pre>
         It's just that easy.
         </p>
         {% endif %}
-    </div>
     <div class="container">
         <div class="row">
 

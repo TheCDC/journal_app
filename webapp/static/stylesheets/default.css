@@ -135,3 +135,7 @@ img {
 .entry_container > .title_area > .title_text{
     font-size: xx-large;
 }
+
+.card hr  {
+    border-color: rgb(175, 175, 175);
+}
