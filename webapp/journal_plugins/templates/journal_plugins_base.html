@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% macro render_plugin_card(plugin_and_preference) %}
+
+<div class="card">
+
+    <div class="card_title">
+        <a href="{{plugin_and_preference.plugin.url}}">
+
+            {{plugin_and_preference.plugin.name}}
+        </a>
+    </div>
+    <div class="contents">
+        <div class="description">
+            {{plugin_and_preference.plugin.description}}
+        </div>
+        <div class="options">
+            <a href="{{plugin_and_preference.plugin.url}}" class="btn btn-default">Summary
+            </a>
+            <div>
+                <form action="{{url_for('site.plugins-index')}}" method="POST" enctype="multipart/form-data">
+                    {% if plugin_and_preference.preference.enabled %}
+                    <input id="disable-id" name="disable-id" type="hidden"
+                           value="{{plugin_and_preference.preference.id}}">
+                    <input class="btn btn-warning" type="submit" value="Disable">
+
+                    {% else %}
+                    <input id="enable-id" name="enable-id" type="hidden"
+                           value="{{plugin_and_preference.preference.id}}">
+                    <input class="btn btn-success" type="submit" value="Enable">
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endmacro %}
