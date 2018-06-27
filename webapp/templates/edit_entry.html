@@ -25,7 +25,7 @@
             <label for="contents">Entry contents</label>
             <p>We support <a href="https://daringfireball.net/projects/markdown/syntax">Markdown</a> syntax for fancy
                 formatting of your entries that still looks good as raw text!</p>
-            <textarea data-provide="markdown" name="contents" id="contents" class="form-control entry_editor" rows="15">{{context.form.contents.data}}</textarea>
+            <textarea data-provide="markdown" name="contents" id="contents" class=" form-control entry_editor" rows="30" autofocus>{{context.form.contents.data}}</textarea>
 
             {% if not context.create %}
 
@@ -64,6 +64,28 @@ document.getElementById('create_date').value = isodate();
 window.onbeforeunload = function() {
   return "Are you sure you want to navigate away?";
 }
+
+
+
+var fun = function(el){
+    el.style.cssText = 'height:auto; padding:0';
+    // for box-sizing other than "content-box" use:
+    // el.style.cssText = '-moz-box-sizing:content-box';
+    el.style.cssText = 'height:' + el.scrollHeight + 'px';
+    console.log('resized textarea ' + el);
+}
+
+function autosize(){
+    var el = this;
+  fun(el);
+
+}
+var textarea = document.getElementById('contents');
+
+textarea.addEventListener('keydown', autosize);
+
+fun(textarea);
+
 
 </script>
     <link rel="stylesheet" type="text/css" media="screen" href="/static/css/bootstrap.min.css">

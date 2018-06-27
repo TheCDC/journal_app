@@ -18,7 +18,8 @@ img {
 }
 
 .entry_editor{
-    height: 100vh;
+    margin-left: 10em;
+    margin-right: 10em;
 }
 
 #upload_div > div{
@@ -139,3 +140,9 @@ img {
 .card hr  {
     border-color: rgb(175, 175, 175);
 }
+
+textarea {
+    height: 100%;
+    resize: both;
+}
+
