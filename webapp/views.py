@@ -213,7 +213,10 @@ class HomeView(MethodView, EnableLoggingMixin):
     @flask_login.login_required
     def get(self, **kwargs):
         upload_form = forms.UploadForm()
-        db.session.add(flask_login.current_user)
+        try:
+            db.session.add(flask_login.current_user)
+        except sqlalchemy.exc.InvalidRequestError:
+            pass
         latest_entry = db.session.query(models.JournalEntry).filter(models.JournalEntry.owner == flask_login.current_user).order_by(
             models.JournalEntry.create_date.desc()).first()
         # form the context with default values

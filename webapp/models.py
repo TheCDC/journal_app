@@ -13,6 +13,8 @@ from flask_security import UserMixin, RoleMixin
 from flask_security import Security, SQLAlchemyUserDatastore
 from sqlalchemy.orm import backref
 from sqlalchemy.sql import func
+import sqlalchemy
+
 
 
 logger = logging.getLogger(__name__)
@@ -64,8 +66,12 @@ class User(db.Model, UserMixin):
 
     def get_latest_entry(self, ) -> "JournalEntry":
         """Return the chronologically latest JournalEntry."""
-        session = db.session()
-        session.add(self)
+        sess = db.session.object_session(self)
+        if sess is None:
+            try:
+                db.session.add(self)
+            except sqlalchemy.exc.InvalidRequestError:
+                pass
         return db.session.query(JournalEntry).filter(JournalEntry.owner_id == self.id).order_by(
             JournalEntry.create_date.desc()).first()
 
