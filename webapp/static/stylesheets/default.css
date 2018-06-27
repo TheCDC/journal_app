@@ -18,8 +18,7 @@ img {
 }
 
 .entry_editor{
-    margin-left: 10em;
-    margin-right: 10em;
+    overflow: auto;
 }
 
 #upload_div > div{
