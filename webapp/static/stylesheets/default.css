@@ -58,16 +58,13 @@ img {
 }
 
 
-.card{
+.card {
     box-shadow: 2px 6px 12px rgba(0, 0, 0, 0.4);
     margin: 1em;
     padding: 1em;
     padding-bottom: 0.1em;
     border-radius: 0.5em;
     border: 0.1em solid #efefef;
-
-
-
 }
 
 .card:hover {
@@ -89,11 +86,7 @@ img {
 .card > .contents{
     margin-top: 0.5em;
     margin-bottom: 0.5em;
-
     width: 100%;
-
-
-
 }
 
 .card > .contents > .description{
@@ -111,30 +104,9 @@ img {
     justify-content: space-between;
     padding-top: 0.5em;
     padding-bottom: 0.5em;
-
     border-top: 1px solid #cccccc;
-
 }
 
-.entry_container{
-    box-shadow: 2px 6px 25px rgba(25, 25, 25, 0.1);
-    border: 0.1em solid #efefef;
-}
-
-
-.entry_container > .title_area{
-    display: flex;
-    flex-direction: row;
-    flex-flow: row wrap;
-    justify-content: space-between;
-    border-bottom: 1px solid #cccccc;
-
-
-}
-
-.entry_container > .title_area > .title_text{
-    font-size: xx-large;
-}
 
 .card hr  {
     border-color: rgb(175, 175, 175);
@@ -145,3 +117,9 @@ textarea {
     resize: both;
 }
 
+.card_archive > .card_title {
+    font-size: x-large;
+    flex: none;
+    text-align: center;
+    display: block;
+}

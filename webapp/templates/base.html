@@ -43,10 +43,17 @@
 {% endmacro %}
 <!--  -->
 {% macro render_year(year, year_obj) %}
-<div>
-    <h2 class="year_div text-center">{{year}} ({{year_obj.num_entries}})</h2> {% for month in year_obj.months|reverse %}
-    {{render_month(month, year_obj.months[month])}} {% endfor %}
-    <hr>
+<div class="card card_archive">
+    <div class="card_title text-center">
+        {{year}} ({{year_obj.num_entries}})
+    </div>
+    <div class="contents">
+        <div class="description">
+            {% for month in year_obj.months|reverse %}
+            {{render_month(month, year_obj.months[month])}} {% endfor %}
+        </div>
+
+    </div>
 </div>
 {% endmacro %}
 

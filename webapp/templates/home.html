@@ -16,26 +16,28 @@
         <p class="">{{ context.success }}</p>
     </div>
     {% endif %}
-        {% if context.latest_entry%}
-        {% if context.days_since_latest > 0 %}
-        <h1 > Remember this from {{context.days_since_latest}} day(s) ago?</h1>
-        {% else %}
-        <h1> Today's entry</h1>
+    {% if context.latest_entry%}
+    {% if context.days_since_latest > 0 %}
+    <h1> Remember this from {{context.days_since_latest}} day(s) ago?</h1>
+    {% else %}
+    <h1> Today's entry</h1>
 
-        {% endif %}
+    {% endif %}
     {{render_entry_card(context.latest_entry)|safe}}
-        {% else %}
-        <h2> Hi {% if current_user.first_name %} {{current_user.first_name}}. {% else %} there! {% endif %} It looks
-            pretty empty in here. Upload a journal? </h2>
-        <p>
-            Make sure it's a text file in this format:
-        <pre>2018-03-15
-Something about the Ides of March.
-2018-11-05
-Remember remember the fifth of November.</pre>
-        It's just that easy.
-        </p>
-        {% endif %}
+    {% else %}
+    <div class="card">
+        <div class="card_title"> Hi {% if current_user.first_name %} {{current_user.first_name}}. {% else %} there! {%
+            endif %} It looks
+            pretty empty in here.
+        </div>
+        <div class="contents">
+            <div class="description">
+                <a href="{{url_for('create_entry')}}" class="btn btn-success">Write your first entry</a>
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
     <div class="container">
         <div class="row">
 
