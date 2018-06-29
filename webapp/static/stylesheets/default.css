@@ -59,7 +59,7 @@ img {
 
 
 .card {
-    box-shadow: 2px 6px 12px rgba(0, 0, 0, 0.4);
+    box-shadow: 2px 6px 12px rgba(0, 0, 0, 0.2);
     margin: 1em;
     padding: 1em;
     padding-bottom: 0.1em;
@@ -68,7 +68,7 @@ img {
 }
 
 .card:hover {
-  box-shadow: 2px 6px 30px rgba(0, 0, 0, 0.6);
+  box-shadow: 2px 6px 30px rgba(0, 0, 0, 0.3);
 }
 
 .card > .card_title{
