@@ -13,9 +13,11 @@ class IndexView(MethodView):
 
     def get_context(self, **kwargs):
         context = dict(plugin=extensions.word_counter.to_dict())
-        objs = [dict(entry=models.journal_entry_schema.dump(obj=e).data,
-                     output=list(extensions.word_counter.parse_entry(e))) for e in self.get_objects(context)]
+        objs = [extensions.word_counter._parse_entry(e) for e in self.get_objects(context)]
         context['objects'] = objs
+        word_sum = [d['num_words'] for d in objs]
+        unique_word_sum = [d['num_unique_words'] for d in objs]
+        summary_obj=dict(num_words=word_sum)
         return context
 
     @flask_login.login_required

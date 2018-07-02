@@ -17,10 +17,17 @@ class Plugin(classes.BasePlugin):
         super().__init__(*args, **kwargs)
         self.manager.blueprint.add_url_rule(self.endpoint,
                                             view_func=views.IndexView.as_view(f'{self.url_rule_base_name}-index'))
+
+    def _parse_entry(selfself, e: 'models.JournalEntry'):
+        words = list(pattern.findall(e.contents.lower()))
+        unique_words = set(words)
+        return dict(num_words=len(words), num_unique_words=len(unique_words),
+                    entry=models.journal_entry_schema.dump(obj=e).data)
+
     @validate
     def parse_entry(self, e: 'models.JournalEntry') -> 'iterable[str]':
-        words = list(pattern.findall(e.contents.lower()))
+        obj = self._parse_entry(e)
         yield dict(html='Word count: {} '.format(
-            len(words)))
+            obj['num_words']))
         yield dict(html='Unique words: {} '.format(
-            len(set(words))))
+            obj['num_unique_words']))

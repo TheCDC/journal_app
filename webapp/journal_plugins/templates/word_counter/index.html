@@ -7,38 +7,51 @@
         </h1>
     </div>
     <div>
-        <h2>Entries</h2>
-
-        {% for item in context.objects %}
-        {% if item.output|length > 0 %}
-
-        <p>
+        <h2>Summary</h2>
         <div class="container container-fluid">
-            <div class="row">
-                <div class="col col-sm-4">
+            <table>
+
+            <tr class="row">
+                <td class="col col-xs-4">
+                    Entry
+                </td>
+                <td class="col col-xs-4">
+                    Word count
+                </td>
+                <td class="col col-xs-4">
+                    Unique
+                </td>
+            </tr>
+
+            {% for item in context.objects %}
+
+
+            <tr class="row">
+                <td class="col col-xs-4">
 
                     <a class="class=" pull-left" href="{{item.entry.url}}">
                     <span class="btn btn-default">
 
-                    {{item.entry.date_human}}
+                    {{item.entry.date_string}}
     </span>
 
                     </a>
-                </div>
-                {% for column in item.output %}
-                <div class="col col-sm-4">
+                </td>
+                <td class="col col-xs-4">
 
-                    {{column.html|safe}}
-                </div>
-                {% endfor %}
-            </div>
+                    {{item.num_words}}
+                </td>
+                <td class="col col-xs-4">
+                    {{item.num_unique_words}}
+                </td>
+            </tr>
+
+
+
+        {% endfor %}
+                            </table>
 
         </div>
-
-        </p>
-
-        {% endif %}
-        {% endfor %}
 
     </div>
 
