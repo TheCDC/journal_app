@@ -15,9 +15,14 @@ class IndexView(MethodView):
         context = dict(plugin=extensions.word_counter.to_dict())
         objs = [extensions.word_counter._parse_entry(e) for e in self.get_objects(context)]
         context['objects'] = objs
-        word_sum = [d['num_words'] for d in objs]
-        unique_word_sum = [d['num_unique_words'] for d in objs]
-        summary_obj=dict(num_words=word_sum)
+        word_sum = 0
+        num_unique_words = 0
+        for d in objs:
+            word_sum +=d['num_words']
+            num_unique_words += d['num_unique_words']
+
+        summary_obj=dict(num_words=word_sum, num_unique_words=num_unique_words)
+        context['summary']=summary_obj
         return context
 
     @flask_login.login_required

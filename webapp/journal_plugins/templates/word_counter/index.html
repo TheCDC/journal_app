@@ -7,49 +7,66 @@
         </h1>
     </div>
     <div>
-        <h2>Summary</h2>
+        <div class="card">
+            <div class="card_title">Stats</div>
+            <div class="contents">
+                <div class="description">
+                    <h3>
+                        Words in this period:
+                        {{context.summary.num_words}}
+
+                    </h3>
+                    <h3>
+                        Unique words in this period:
+                        {{context.summary.num_unique_words}}
+
+                    </h3>
+
+                </div>
+            </div>
+        </div>
+        <h2>List</h2>
         <div class="container container-fluid">
             <table>
 
-            <tr class="row">
-                <td class="col col-xs-4">
-                    Entry
-                </td>
-                <td class="col col-xs-4">
-                    Word count
-                </td>
-                <td class="col col-xs-4">
-                    Unique
-                </td>
-            </tr>
+                <tr class="row">
+                    <td class="col col-xs-4">
+                        Entry
+                    </td>
+                    <td class="col col-xs-4">
+                        Word count
+                    </td>
+                    <td class="col col-xs-4">
+                        Unique
+                    </td>
+                </tr>
 
-            {% for item in context.objects %}
+                {% for item in context.objects %}
 
 
-            <tr class="row">
-                <td class="col col-xs-4">
+                <tr class="row">
+                    <td class="col col-xs-4">
 
-                    <a class="class=" pull-left" href="{{item.entry.url}}">
-                    <span class="btn btn-default">
+                        <a class="class=" pull-left" href="{{item.entry.url}}">
+                        <span class="btn btn-default">
 
                     {{item.entry.date_string}}
     </span>
 
-                    </a>
-                </td>
-                <td class="col col-xs-4">
+                        </a>
+                    </td>
+                    <td class="col col-xs-4">
 
-                    {{item.num_words}}
-                </td>
-                <td class="col col-xs-4">
-                    {{item.num_unique_words}}
-                </td>
-            </tr>
+                        {{item.num_words}}
+                    </td>
+                    <td class="col col-xs-4">
+                        {{item.num_unique_words}}
+                    </td>
+                </tr>
 
 
-
-        {% endfor %}
-                            </table>
+                {% endfor %}
+            </table>
 
         </div>
 
