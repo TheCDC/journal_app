@@ -49,14 +49,14 @@ class NameExtractorPluginView(MethodView):
         all_entries = models.JournalEntry.query.filter(models.JournalEntry.owner_id == flask_login.current_user.id)
         if len(context['search']) > 0:
             filtered_by_search = all_entries.filter(
-                models.JournalEntry.contents.contains(context['search'])).order_by(models.JournalEntry.create_date)
-            return filtered_by_search.order_by(models.JournalEntry.create_date).paginate(context['page'], 10, False)
+                models.JournalEntry.contents.contains(context['search'])).order_by(models.JournalEntry.create_date.desc())
+            return filtered_by_search.paginate(context['page'], 10, False)
 
         else:
             now = datetime.datetime.now().date()
             then = now - datetime.timedelta(days=30)
-            filtered_by_search = all_entries.order_by(models.JournalEntry.create_date.desc())
-            return filtered_by_search.order_by(models.JournalEntry.create_date).filter(models.JournalEntry.create_date >= then).paginate(context['page'], 30, False)
+            filtered_by_search = all_entries.order_by(models.JournalEntry.create_date)
+            return filtered_by_search.filter(models.JournalEntry.create_date >= then).paginate(context['page'], 30, False)
 
         # Flask-SQLalchemy pagination docs
         # http://flask-sqlalchemy.pocoo.org/2.1/api/?highlight=pagination#flask.ext.sqlalchemy.Pagination
