@@ -89,7 +89,7 @@ img {
     width: 100%;
 }
 
-.card > .contents > .description{
+.card > .contents  .description{
     margin-bottom: 0.5em;
     margin-top: 0.5em;
     padding-top: 0.5em;
@@ -97,7 +97,7 @@ img {
 
 
 }
-.card > .contents > .options {
+.card > .contents  .options {
     display: flex;
     flex-direction: row;
     flex-flow: row wrap;
