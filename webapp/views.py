@@ -349,7 +349,7 @@ class EntryCreateView(MethodView):
 class ExportJournalView(MethodView):
     @flask_login.login_required
     def get(self, **kwargs):
-        cu = flask_login.current_user
+        cu: models.User = flask_login.current_user
         entries = models.JournalEntry.query.filter_by(owner=cu).order_by(models.JournalEntry.create_date)
 
         def generate():
@@ -360,7 +360,13 @@ class ExportJournalView(MethodView):
                 yield '\n'
 
         response = flask.Response(flask.stream_with_context(generate()))
-        filename = f'{cu.first_name} {cu.last_name} journal exported {datetime.datetime.now().isoformat()}.txt'
+        vals = [cu.first_name,cu.last_name]
+        tokens = []
+        for v in vals:
+            if v:
+                tokens.append(v)
+        tokens.extend([cu.email,f'journal exported {datetime.datetime.now().isoformat()}.txt'])
+        filename = ' '.join(tokens)
         cd = f'attachment; filename="{filename}"'
         response.headers['Content-Disposition'] = cd
         response.mimetype = 'application/octet-stream'
