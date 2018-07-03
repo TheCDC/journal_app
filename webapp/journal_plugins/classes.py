@@ -41,9 +41,14 @@ class PluginManager:
     def parse_entry(self, e):
         """Call all registered plugins on the entry."""
         preferences = self.get_user_plugin_preferences(e.owner)
-        for k,v in self.plugins.items():
-            if preferences[k].enabled:
-                yield dict(plugin=v.to_dict(), output=list(v.parse_entry(e)))
+        for plugin_name, plugin_instance in self.plugins.items():
+            # ensure plugin toggle models are in the session in order to access attributes
+            try:
+                db.session.add(preferences[plugin_name])
+            except:
+                pass
+            if preferences[plugin_name].enabled:
+                yield dict(plugin=plugin_instance.to_dict(), output=list(plugin_instance.parse_entry(e)))
 
     def get_user_plugin_preferences(self, user_obj):
         """Get models in charge of recording which plugins the user has enabled."""
