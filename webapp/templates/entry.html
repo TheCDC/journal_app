@@ -38,19 +38,20 @@
                         {{obj.plugin.name}}
                     </div>
                     <div class="contents">
-                        <div class="description panel-body list-group">
-                            {% for word in obj.output %}
-                            <div class="list-group-item">
-                                {% if word.html is defined %}
-                                {{word.html|safe}}
-                                {% else %}
-                                {{word|safe}}
+                        <div class="description">
 
-                                {% endif %}
-                            </div>
-                            {% endfor %}
-                            <!--  -->
+                        {% for word in obj.output %}
+                        <div class="">
+                            {% if word.html is defined %}
+                            {{word.html|safe}}
+                            {% else %}
+                            {{word|safe}}
+
+                            {% endif %}
                         </div>
+                        {% endfor %}
+                        </div>
+
                         <div class="options">
                             <a class="btn btn-primary" href="{{obj.plugin.url}}">Visit</a>
                         </div>
