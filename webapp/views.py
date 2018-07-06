@@ -224,7 +224,7 @@ class HomeView(MethodView, EnableLoggingMixin):
             upload_form=upload_form,
             entries_tree=api.get_entries_tree(flask_login.current_user),
             plugin_manager=plugin_manager,
-            latest_entry=latest_entry,
+            latest_entry=models.journal_entry_schema.dump(obj=latest_entry).data,
             now=datetime.datetime.now(),
             days_since_latest=(
                     datetime.datetime.now().date() - latest_entry.create_date).days if latest_entry else None,
