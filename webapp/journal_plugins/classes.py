@@ -47,7 +47,7 @@ class PluginManager:
                 db.session.add(preferences[plugin_name])
             except:
                 pass
-            if preferences[plugin_name].enabled:
+            if preferences[plugin_name]['enabled']:
                 yield dict(plugin=plugin_instance.to_dict(), output=list(plugin_instance.parse_entry(e)))
 
     def get_user_plugin_preferences(self, user_obj):
