@@ -25,54 +25,42 @@
 <div class="container">
     <div class="row">
         <div class="col col-md-8">
-                {{render_entry_card(context.entry)|safe}}
-
-            <!--<div class="jumbotron card">-->
-                <!--<div class="card_title" >-->
-                        <!--{{context.entry.date_human}}-->
-                <!--</div>-->
-
-                <!--<div class="contents">-->
-                    <!--<div class="description">-->
-                        <!--{{context.entry.html|safe}}-->
-
-                    <!--</div>-->
-                    <!--<form class="options" action="{{url_for('delete_entry',id=context.entry.id)}}" method="GET">-->
-                        <!--<a class="btn btn-success"-->
-                           <!--href="{{url_for('edit_entry',id=context.entry.id)}}">Edit</a>-->
-
-                        <!--<input type="submit" class="btn btn-warning" value="Delete">-->
-                    <!--</form>-->
-                <!--</div>-->
-            <!--</div>-->
-
+            {{render_entry_card(context.entry)|safe}}
         </div>
         <div class="col col-md-4">
 
             <h2 class="text-center">Insights</h2>
             <div class="plugins_output" style="">
                 {% for obj in context.plugins_output %}
-                <div class="panel panel-default plugin_output ">
-                    <!--  -->
-                    {% if obj.output %}
-                    <div class="panel-heading">
-                        <a class="btn btn-default" href="{{obj.plugin.url}}">{{obj.plugin.name}}</a>
+                {% if obj.output %}
+                <div class="panel panel-default card ">
+                    <div class="card_title ">
+                        {{obj.plugin.name}}
                     </div>
-                    <ul class="panel-body list-group">
-                        {% for word in obj.output %}
-                        <li class="list-group-item">
-                            {% if word.html is defined %}
-                            {{word.html|safe}}
-                            {% else %}
-                            {{word|safe}}
+                    <div class="contents">
+                        <div class="description panel-body list-group">
+                            {% for word in obj.output %}
+                            <div class="list-group-item">
+                                {% if word.html is defined %}
+                                {{word.html|safe}}
+                                {% else %}
+                                {{word|safe}}
 
-                            {% endif %}
-                        </li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
-                    <!--  -->
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                            <!--  -->
+                        </div>
+                        <div class="options">
+                            <a class="btn btn-primary" href="{{obj.plugin.url}}">Visit</a>
+                        </div>
+
+                    </div>
+
                 </div>
+
+                {% endif %}
+
                 {% endfor %}
             </div>
         </div>

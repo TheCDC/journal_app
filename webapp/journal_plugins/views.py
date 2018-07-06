@@ -22,9 +22,8 @@ class IndexView(MethodView):
         # enable
         args = flask.request.form
         print(flask.request.form)
+
         target_id = args.get('enable-id', None)
-
-
         if target_id:
             target_id = int(target_id)
             print('Enable ', target_id)
@@ -33,8 +32,8 @@ class IndexView(MethodView):
             obj.enabled = True
             db.session.add(obj)
             db.session.commit()
-        target_id = args.get('disable-id', None)
 
+        target_id = args.get('disable-id', None)
         if target_id:
             target_id = int(target_id)
             print('Disable ', target_id)

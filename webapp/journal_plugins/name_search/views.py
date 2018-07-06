@@ -9,6 +9,7 @@ from webapp.journal_plugins import extensions
 from collections import Counter
 import datetime
 
+
 class NameExtractorPluginView(MethodView):
     def get_summary(self, context):
         objects = [
@@ -30,7 +31,11 @@ class NameExtractorPluginView(MethodView):
 
     def get_context(self, request):
         data = request.args
-        context = dict(plugin=extensions.name_search.to_dict())
+        plugin = extensions.name_search
+        pdict = plugin.to_dict()
+        context = dict(plugin=pdict, plugin_and_preference=dict(plugin=pdict,
+                                                                preference=plugin.get_preference_model(
+                                                                    flask_login.current_user)))
         context['page'] = int(data.get('page', 0))
         context['search'] = data.get('search', '')
         if 'search' in data:
@@ -49,14 +54,16 @@ class NameExtractorPluginView(MethodView):
         all_entries = models.JournalEntry.query.filter(models.JournalEntry.owner_id == flask_login.current_user.id)
         if len(context['search']) > 0:
             filtered_by_search = all_entries.filter(
-                models.JournalEntry.contents.contains(context['search'])).order_by(models.JournalEntry.create_date.desc())
+                models.JournalEntry.contents.contains(context['search'])).order_by(
+                models.JournalEntry.create_date.desc())
             return filtered_by_search.paginate(context['page'], 10, False)
 
         else:
             now = datetime.datetime.now().date()
             then = now - datetime.timedelta(days=30)
             filtered_by_search = all_entries.order_by(models.JournalEntry.create_date)
-            return filtered_by_search.filter(models.JournalEntry.create_date >= then).paginate(context['page'], 30, False)
+            return filtered_by_search.filter(models.JournalEntry.create_date >= then).paginate(context['page'], 30,
+                                                                                               False)
 
         # Flask-SQLalchemy pagination docs
         # http://flask-sqlalchemy.pocoo.org/2.1/api/?highlight=pagination#flask.ext.sqlalchemy.Pagination

@@ -18,11 +18,20 @@ class IndexView(MethodView):
         word_sum = 0
         num_unique_words = 0
         for d in objs:
-            word_sum +=d['num_words']
+            word_sum += d['num_words']
             num_unique_words += d['num_unique_words']
 
-        summary_obj=dict(num_words=word_sum, num_unique_words=num_unique_words)
-        context['summary']=summary_obj
+        summary_obj = dict(num_words=word_sum, num_unique_words=num_unique_words)
+        context['summary'] = summary_obj
+
+        plugin = extensions.mtg_cardfetcher
+        pdict = plugin.to_dict()
+        context.update(dict(
+            plugin=pdict, plugin_and_preference=dict(
+                plugin=pdict,
+                preference=plugin.get_preference_model(
+                    flask_login.current_user))
+        ))
         return context
 
     @flask_login.login_required

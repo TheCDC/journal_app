@@ -57,6 +57,7 @@
 </div>
 {% endmacro %}
 
+
 {% macro render_entry_card(entry) %}
 <div class="jumbotron card">
     <div class="card_title">
@@ -89,9 +90,10 @@
 </head>
 
 <body>
+<div class="container"
 {% block content %}{{super()}}{% include "navbar.html" %}
 
 {% endblock %}
-
+</body>
 
 </body>

@@ -17,4 +17,14 @@ class UserPluginToggle(db.Model):
         server_default=func.now())
     created_at = db.Column(
         db.Date, default=func.now(), index=True)
+    __table_args__ = (db.UniqueConstraint('user_id', 'plugin_name', name='_user_plugin_preference'),)
 
+
+
+# ========== Marshmallow Schemas ==========
+
+class UserPluginToggleSchema(extensions.marshmallow.ModelSchema):
+    class Meta:
+        model = UserPluginToggle
+
+user_plugin_toggle_schema = UserPluginToggleSchema()

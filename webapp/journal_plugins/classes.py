@@ -53,17 +53,9 @@ class PluginManager:
     def get_user_plugin_preferences(self, user_obj):
         """Get models in charge of recording which plugins the user has enabled."""
         ret = dict()
-        for plugin_name in self.plugins:
-            obj = db.session.query(models.UserPluginToggle).filter(
-                models.UserPluginToggle.user_id == user_obj.id
-            ).filter(
-                models.UserPluginToggle.plugin_name == plugin_name
-            ).first()
-            if obj is None:
-                session = db.session()
-                obj = models.UserPluginToggle(plugin_name=plugin_name, user_id=user_obj.id)
-                session.add(obj)
-                session.commit()
+        for plugin_name, plugin_instance in self.plugins.items():
+            obj = plugin_instance.get_preference_model(user_obj)
+
 
             ret[plugin_name] = obj
         return ret
@@ -107,6 +99,19 @@ class BasePlugin:
         """A JSON ready representation of this plugin."""
         return dict(name=self.name, url=self.url, safe_name=self.safe_name, type='journal_plugin',
                     description=self.description, back=flask.url_for('site.plugins-index'))
+
+    def get_preference_model(self, user_obj):
+        obj = db.session.query(models.UserPluginToggle).filter(
+            models.UserPluginToggle.user_id == user_obj.id
+        ).filter(
+            models.UserPluginToggle.plugin_name == self.name
+        ).first()
+        if obj is None:
+            session = db.session()
+            obj = models.UserPluginToggle(plugin_name=self.name, user_id=user_obj.id)
+            session.add(obj)
+            session.commit()
+        return models.user_plugin_toggle_schema.dump(obj=obj).data
 
 
 class PluginReturnValue:

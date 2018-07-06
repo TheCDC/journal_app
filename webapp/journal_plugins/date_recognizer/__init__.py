@@ -40,7 +40,7 @@ class Plugin(classes.BasePlugin):
         super().__init__(*args, **kwargs)
         self.manager.blueprint.add_url_rule(self.endpoint,
                                             view_func=views.IndexView.as_view(f'{self.url_rule_base_name}-index'))
-        logger.info('Registered MTG Cardfetcher plugin view with url %s', self.url)
+        logger.info('Registered Date Recognizer plugin view with url %s', self.url)
 
     @validate
     def parse_entry(self, e: 'models.JournalEntry') -> 'iterable[str]':
