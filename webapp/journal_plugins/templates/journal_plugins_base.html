@@ -19,7 +19,6 @@
             </a>
             <div>
                 <form action="{{url_for('site.plugins-index')}}" method="POST" enctype="multipart/form-data">
-                    preference id {{plugin_and_preference.preference.id}}
                     {% if plugin_and_preference.preference.enabled %}
                     <input id="disable-id" name="disable-id" type="hidden"
                            value="{{plugin_and_preference.preference.id}}">
