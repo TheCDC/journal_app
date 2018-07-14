@@ -1,53 +1,60 @@
 {% extends 'base.html' %} {% block content %} {{super()}}
 <div class="container text-center">
-    <h1> The logo would go here...IF WE HAD ONE! </h1>
-    <p>
-        Welcome to the journal app!
+    <div class="card">
 
-    </p>
+        <h1> The logo would go here...IF WE HAD ONE! </h1>
+        <div class="contents">
+            <div class="description">
+                <p>
+                    Welcome to the journal app!
 
-    <div>
+                </p>
+
+                <div>
+                    <p>
+                        We have screenshots, put them into your eyes!
+
+                    </p>
+                    <blockquote class="imgur-embed-pub" lang="en" data-id="a/h5BAGVv"><a href="//imgur.com/h5BAGVv"></a>
+                    </blockquote>
+                    <script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>
+                </div>
+
+            </div>
+            <div class="options">
+                <a href="{{url_for('security.login')}}" class="btn btn-success big_button">Log in</a>
+                <a href="{{url_for('security.register')}}" class="btn btn-primary big_button">Register</a>
+
+            </div>
+        </div>
+
+    </div>
+    <div class="text-center">
         <p>
-            We have screenshots, put them into your eyes!
+            Read our privacy policy <a href="{{url_for('privacy')}}">here.</a>
 
         </p>
-        <blockquote class="imgur-embed-pub" lang="en" data-id="a/h5BAGVv"><a href="//imgur.com/h5BAGVv"></a>
-        </blockquote>
-        <script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>
     </div>
-    </a>
-    </li>
-    <div class="container container-fluid">
-        <div class="row text-center">
-            <a href="{{url_for('security.login')}}" class="btn btn-success">Log in</a>
-            <a href="{{url_for('security.register')}}" class="btn btn-primary">Register</a>
+    <div class="text-center">
+        <ul>
+            <li class="social">
+                &copy;2018
+                <a href="https://github.com/TheCDC">Christopher Chen</a>
+            </li>
+            <li class="social">
+                <a class="img-link" href="https://github.com/TheCDC/journal_app">
+                    <img class="social-logo" src="{{ url_for('static', filename='img/octocat.svg') }}"
+                         alt="Fork me on GitHub"/>
 
-        </div>
-        <div class="text-center">
-            <p>
-                Read our privacy policy <a href="{{url_for('privacy')}}">here.</a>
-
-            </p>
-        </div>
-        <div class="text-center">
-            <ul>
-                <li class="social">
-                    &copy;2018
-                    <a href="https://github.com/TheCDC">Christopher Chen</a>
-                </li>
-                <li class="social">
-                    <a class="img-link" href="https://github.com/TheCDC/journal_app">
-                        <img class="social-logo" src="{{ url_for('static', filename='img/octocat.svg') }}"     alt="Fork me on GitHub"/>
-
-                    </a>
-                <li class="social">
-                    <a class="img-link" href="https://twitter.com/chrischen1995">
-                        <img class="social-logo" src="{{ url_for('static', filename='img/twitter.svg') }}"
-                             alt="@chrischen1995 on Twitter"/>
-                    </a>
-                </li>
-            </ul>
-        </div>
+                </a>
+            <li class="social">
+                <a class="img-link" href="https://twitter.com/chrischen1995">
+                    <img class="social-logo" src="{{ url_for('static', filename='img/twitter.svg') }}"
+                         alt="@chrischen1995 on Twitter"/>
+                </a>
+            </li>
+        </ul>
     </div>
+
 </div>
 {% endblock %}
