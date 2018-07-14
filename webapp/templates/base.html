@@ -32,15 +32,15 @@
     <div class="day_buttons text-center">
         <!--  -->
         {% for entry in entries %}
-        <a href="{{link_for_entry(entry)}}">
-            <button class="btn btn-default">{{entry.create_date.day}}</button>
+        <a class="btn btn-default"  href="{{link_for_entry(entry)}}">
+                {{entry.create_date.day}}
         </a>
         <!--  -->
         {% endfor %}
     </div>
 </div>
 <!--  -->
-{% endmacro %}
+{% endmacro %}<!---->
 <!--  -->
 {% macro render_year(year, year_obj) %}
 <div class="card card_archive">
@@ -94,7 +94,8 @@
 
 <body>
 <div class="container"
-{% block content %}{{super()}}{% include "navbar.html" %}
+     {% block content %}{{super()}}{% include
+"navbar.html" %}
 
 {% endblock %}
 </body>
