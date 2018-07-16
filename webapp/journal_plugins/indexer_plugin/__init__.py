@@ -25,7 +25,7 @@ pattern = re.compile(r'^#+.+',flags=re.MULTILINE)
 
 
 def extract_headings(entry):
-    return list('# ' + i.split('#')[-1].strip() for i in pattern.findall(entry.contents))
+    return list(i.strip() for i in pattern.findall(entry.contents))
 
 
 class Plugin(classes.BasePlugin):
