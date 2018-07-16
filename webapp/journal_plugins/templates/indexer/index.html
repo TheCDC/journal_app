@@ -66,7 +66,40 @@
     {% if context.summary %}
     <div>
         <h2>
-            Summary
+            Index
+        </h2>
+        {% for obj in context.summary_objects %}
+        <div class="card">
+            <a href="{{obj.entry.url}}" class="card_title">
+
+                {{obj.entry.date_string}}
+
+            </a>
+            <div class="contents">
+                <div class="description">
+                    <ul>
+
+                        {% for parse_result in obj.output %}
+                        <li>
+                            {{parse_result.html }}
+
+                        </li>
+                        {% endfor %}
+                    </ul>
+
+
+                </div>
+                <div class="options">
+                    <a class="btn btn-success" href="{{obj.entry.url}}">Visit this entry</a>
+                </div>
+
+
+            </div>
+
+        </div>
+        {% endfor %}
+        <h2>
+            Stats
         </h2>
         <ol>
 
