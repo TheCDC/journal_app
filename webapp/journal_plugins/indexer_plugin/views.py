@@ -53,7 +53,7 @@ class IndexerPluginView(MethodView):
 
         now = datetime.datetime.now().date()
         then = now - datetime.timedelta(days=30)
-        filtered_by_search = all_entries.order_by(models.JournalEntry.create_date)
+        filtered_by_search = all_entries.order_by(models.JournalEntry.create_date.desc())
         return filtered_by_search.filter(models.JournalEntry.create_date >= then).paginate(0, 30,
                                                                                            False)
 
