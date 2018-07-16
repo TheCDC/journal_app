@@ -85,7 +85,7 @@ class BasePlugin:
 
     def parse_entry(self, e):
         """The developer must override this in order to provide entry parsing functionality"""
-        raise NotImplementedError()
+        raise NotImplementedError("This plugin must override parse_entry!")
 
     def get_default_context(self):
         return dict(name=self.name, url=self.url)

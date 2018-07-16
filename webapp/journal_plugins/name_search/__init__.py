@@ -69,8 +69,8 @@ class Plugin(classes.BasePlugin):
                     seen.add(w)
             except IndexError:
                 pass
-        yield from out
 
+        yield from out
     @validate
     def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
         session = db.session
@@ -87,12 +87,16 @@ class Plugin(classes.BasePlugin):
 
             else:
                 results = json.loads(found.json)
+            try:
+                return classes.PluginReturnValue(results).dict
+            except ValueError:
+                session.delete(found)
+                session.commit()
 
-            return results
-        else:
-            results = list(self._parse_entry(e))
-            found = models.NameSearchCache(parent=e, json=json.dumps(results))
-            session = db.session.object_session(e)
-            session.add(found)
-            session.commit()
-            return results
+
+        results = list(self._parse_entry(e))
+        found = models.NameSearchCache(parent=e, json=json.dumps(results))
+        session = db.session.object_session(e)
+        session.add(found)
+        session.commit()
+        return results

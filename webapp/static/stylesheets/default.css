@@ -66,6 +66,7 @@ img {
     border-radius: 0.5em;
     border: 0.1em solid #efefef;
     transition: box-shadow 0.5s;
+    height: 100%;
 }
 
 .card:hover {
@@ -92,6 +93,7 @@ img {
 }
 
 .card > .contents  .description{
+
     margin-bottom: 0.5em;
     margin-top: 0.5em;
     padding-top: 0.5em;

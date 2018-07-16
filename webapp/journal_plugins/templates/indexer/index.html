@@ -1,0 +1,123 @@
+{% macro render_pagination(pagination, endpoint, search) %}
+<div class=pagination>
+    {%- for page in pagination.iter_pages() %}
+    {% if page %}
+    {% if page != pagination.page %}
+    <a class="btn btn-default" href="{{ url_for(endpoint, page=page, search=search) }}">{{ page }}</a>
+    {% else %}
+    <strong>{{ page }}</strong>
+    {% endif %}
+    {% else %}
+    <span class=ellipsis>…</span>
+    {% endif %}
+    {%- endfor %}
+</div>
+{% endmacro %}
+
+
+{% extends 'journal_plugins_plugin_index_base.html' %} {% block content %} {{super()}}
+<!--  -->
+<div class="container">
+    {% if context.search|length == 0 %}
+
+    <div class="jumbotron">
+
+        <h1>
+            Indexer
+        </h1>
+    </div>
+    {% else %}
+    <div class="jumbotron">
+
+        <h1>
+            Indexer
+        </h1>
+    </div>
+    <h1>
+        Found {{context.pagination.total}} entries containing "{{context.search}}".
+    </h1>
+    <div class="text-center">
+
+        {{render_pagination(context.pagination,'site.plugins-name_search-index',context.search)}}
+
+    </div>
+    <!--  -->
+    {% for annotation in context.pagination_annotated %}
+    <div>
+        <h2>
+            <a href="{{annotation.link}}">
+                {{annotation.item.date_string}}, {{annotation.item.create_date.strftime('%A')}}
+            </a>
+
+        </h2>
+
+        <p>
+            {{annotation.item.contents[:100]}}...
+        </p>
+    </div>
+    {% endfor %}
+    <!--  -->
+    <div class="text-center">
+
+        {{render_pagination(context.pagination,'site.plugins-name_search-index',context.search)}}
+
+    </div>
+    {% endif %}
+    {% if context.summary %}
+    <div>
+        <h2>
+            Index
+        </h2>
+        {% for obj in context.summary_objects %}
+        <div class="card">
+            <a href="{{obj.entry.url}}" class="card_title">
+
+                {{obj.entry.date_string}}
+
+            </a>
+            <div class="contents">
+                <div class="description">
+                    <ul>
+
+                        {% for parse_result in obj.output %}
+                        <li>
+                            {{parse_result.html }}
+
+                        </li>
+                        {% endfor %}
+                    </ul>
+
+
+                </div>
+                <div class="options">
+                    <a class="btn btn-success" href="{{obj.entry.url}}">Visit this entry</a>
+                </div>
+
+
+            </div>
+
+        </div>
+        {% endfor %}
+        <h2>
+            Stats
+        </h2>
+        <ol>
+
+            {% for tup in context.summary.most_common %}
+            <li>
+                <a href="{{url_for('site.plugins-name_search-index',search=tup[0])}}">
+                    <span class="btn btn-default">
+                    {{tup[0]}}
+
+                    </span>
+                </a> - {{tup[1]}} times
+
+            </li>
+            {% endfor %}
+        </ol>
+
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
