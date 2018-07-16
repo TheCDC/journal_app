@@ -77,15 +77,13 @@
             </a>
             <div class="contents">
                 <div class="description">
-                    <ul>
 
                         {% for parse_result in obj.output %}
-                        <li>
+                        <p>
                             {{parse_result.html }}
 
-                        </li>
+                        </p>
                         {% endfor %}
-                    </ul>
 
 
                 </div>
