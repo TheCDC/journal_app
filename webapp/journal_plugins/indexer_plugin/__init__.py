@@ -21,11 +21,11 @@ all_stopwords = stopwords.words('english')
 # create new db connection to avoid ruining the main db connection
 db = SQLAlchemy(app)
 
-pattern = re.compile(r'#+.+[$\n]')
+pattern = re.compile(r'^#+.+',flags=re.MULTILINE)
 
 
 def extract_headings(entry):
-    return list(i.strip() for i in pattern.findall(entry.contents))
+    return list('# ' + i.split('#')[-1].strip() for i in pattern.findall(entry.contents))
 
 
 class Plugin(classes.BasePlugin):

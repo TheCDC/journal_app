@@ -14,7 +14,7 @@ class IndexerPluginView(MethodView):
     def get_summary(self, context):
         objects = [
             dict(entry=models.journal_entry_schema.dump(obj=e).data,
-                 output=extensions.name_search.parse_entry(e))
+                 output=extensions.indexer_plugin.parse_entry(e))
             for e in self.get_objects(context).items]
         context['summary_objects'] = objects
         seen_names = list()
@@ -74,7 +74,7 @@ class IndexerPluginView(MethodView):
         context = self.get_context(request)
 
         try:
-            return flask.render_template(f'{extensions.name_search.safe_name}/index.html', context=context)
+            return flask.render_template(f'indexer/index.html', context=context)
             # return 'Name Recognizer {pagination.items[0].contents} {pagination.items}'.format(pagination=context['pagination'])
         except IndexError:
             flask.abort(400)

@@ -28,3 +28,9 @@ word_counter = word_counter.Plugin(plugin_manager)
 from . import mtg_cardfetcher
 
 mtg_cardfetcher = mtg_cardfetcher.Plugin(plugin_manager)
+
+
+# Headings Indexer
+from . import indexer_plugin
+
+indexer_plugin = indexer_plugin.Plugin(plugin_manager)
