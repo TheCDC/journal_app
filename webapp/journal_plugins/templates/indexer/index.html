@@ -74,17 +74,17 @@
                 <div class="card">
                     <a href="{{obj.entry.url}}" class="card_title">
 
-                        {{obj.entry.date_string}}
+                        {{obj.entry.date_human}}
 
                     </a>
                     <div class="contents">
                         <div class="description">
 
                             {% for parse_result in obj.output %}
-                            <p>
+                            <div>
                                 {{parse_result.html }}
 
-                            </p>
+                            </div>
                             {% endfor %}
 
 
