@@ -14,61 +14,37 @@
 </div>
 {% endmacro %}
 
-
 {% extends 'journal_plugins_plugin_index_base.html' %} {% block content %} {{super()}}
 <!--  -->
 <div class="container container-fluid">
-    {% if context.search|length == 0 %}
-
     <div class="jumbotron">
 
         <h1>
             Indexer
         </h1>
     </div>
-    {% else %}
-    <div class="jumbotron">
 
-        <h1>
-            Indexer
-        </h1>
+    <div class="card">
+        <div class="card_title">
+            Index of the 30 day period leading up to {{context.end}}
+
+        </div>
+        <div class="contents">
+            <div class="description text-center">
+                <form action="{{url_for('site.plugins-headings_indexer-index')}}" method="GET">
+                    Got to the index for a different day:
+                    <input id="end" label="test" name="end" type="date" value="{{context.end}}">
+                    <input class="btn btn-primary" type="submit" label="Submit" value="Submit">
+                </form>
+            </div>
+        </div>
     </div>
-    <h1>
-        Found {{context.pagination.total}} entries containing "{{context.search}}".
-    </h1>
-    <div class="text-center">
-
-        {{render_pagination(context.pagination,'site.plugins-name_search-index',context.search)}}
-
-    </div>
-    <!--  -->
-    {% for annotation in context.pagination_annotated %}
-    <div>
-        <h2>
-            <a href="{{annotation.link}}">
-                {{annotation.item.date_string}}, {{annotation.item.create_date.strftime('%A')}}
-            </a>
-
-        </h2>
-
-        <p>
-            {{annotation.item.contents[:100]}}...
-        </p>
-    </div>
-    {% endfor %}
-    <!--  -->
-    <div class="text-center">
-
-        {{render_pagination(context.pagination,'site.plugins-name_search-index',context.search)}}
-
-    </div>
-    {% endif %}
     {% if context.summary %}
     <div class="container">
         <div class="row">
             <div class="col col-md-8">
                 <h2>
-                    Index
+
                 </h2>
                 {% for obj in context.summary_objects %}
                 <div class="card">
@@ -78,6 +54,15 @@
 
                     </a>
                     <div class="contents">
+                        {% if obj.output|length == 0 %}
+
+                        <div class="description alert alert-warning">
+                            [ No headings ]
+
+
+                        </div>
+                        {% else %}
+
                         <div class="description">
 
                             {% for parse_result in obj.output %}
@@ -89,11 +74,12 @@
 
 
                         </div>
+
+                        {% endif %}
+
                         <div class="options">
                             <a class="btn btn-success" href="{{obj.entry.url}}">Visit this entry</a>
                         </div>
-
-
                     </div>
 
                 </div>
@@ -107,12 +93,11 @@
 
                     {% for tup in context.summary.most_common %}
                     <li>
-                        <a href="{{url_for('site.plugins-name_search-index',search=tup[0])}}">
-                    <span class="btn btn-default">
-                    {{tup[0]}}
+                        <a class="btn btn-default" href="{{url_for('site.plugins-name_search-index',search=tup[0])}}">
+                            {{tup[0]}}
 
-                    </span>
-                        </a> - {{tup[1]}} times
+                            - {{tup[1]}} times
+                        </a>
 
                     </li>
                     {% endfor %}
@@ -124,5 +109,28 @@
     </div>
     {% endif %}
 </div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+{{super()}}
+<script type="text/javascript">
+var isodate = function(){
+    var local = new Date();
+    local.setMinutes(local.getMinutes() - local.getTimezoneOffset());
+    return local.toJSON().slice(0,10);
+}
+
+var el = document.getElementById('end_date') ;
+if (el.value.length == 0){
+el.value = isodate();
+
+}
+
+
+
+</script>
 
 {% endblock %}
