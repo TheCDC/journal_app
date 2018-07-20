@@ -31,39 +31,47 @@ class IndexerPluginView(MethodView):
 
     def get_context(self, request):
         data = request.args
+
         plugin = extensions.name_search
-        context = dict()
-        context['end'] = data.get('end', models.JournalEntry.query.filter(models.JournalEntry.owner_id == flask_login.current_user.id).order_by(
-                models.JournalEntry.create_date.desc()).first().date_string)
-        context['search'] = data.get('search', '')
-        if 'search' in data:
-            pagination = self.get_objects(context)
-            context['pagination'] = pagination
-            context['pagination_annotated'] = [dict(item=item, link=api.link_for_entry(item)) for item in
-                                               pagination.items]
-        else:
-            args = flask.request.args
-            self.get_summary(context)
+        context = dict(args=data)
+
+        context['latest_date'] = models.JournalEntry.query.filter(
+            models.JournalEntry.owner_id == flask_login.current_user.id).order_by(
+            models.JournalEntry.create_date.desc()).first().date_string
+
+        end_date = data.get('end', context['latest_date'])
+        context['end'] = end_date
+        self.get_summary(context)
 
         return context
 
     def get_objects(self, context):
+        now = datetime.date(*map(int,context['end'].split('-')))
+        print('now',now)
 
-        all_entries = models.JournalEntry.query.filter(models.JournalEntry.owner_id == flask_login.current_user.id)
+        owned_entries = models.JournalEntry.query.filter(models.JournalEntry.owner_id == flask_login.current_user.id)
 
-        now = datetime.datetime.now().date()
         then = now - datetime.timedelta(days=30)
-        filtered_by_search = all_entries.order_by(models.JournalEntry.create_date.desc())
-        return filtered_by_search.filter(models.JournalEntry.create_date >= then).paginate(0, 30,
-                                                                                           False)
+        print('then',then)
+        ordered_entries = owned_entries.order_by(models.JournalEntry.create_date.desc())
+        pagination = ordered_entries.filter(models.JournalEntry.create_date <= now).paginate(0, 30,
+                                                                                      False)
+        print(pagination.items)
+        return pagination
 
         # Flask-SQLalchemy pagination docs
         # http://flask-sqlalchemy.pocoo.org/2.1/api/?highlight=pagination#flask.ext.sqlalchemy.Pagination
 
     @flask_login.login_required
     def get(self, **kwargs):
+        if 'end'not in request.args:
+            return flask.redirect(flask.url_for('site.plugins-headings_indexer-index', end=models.JournalEntry.query.filter(
+            models.JournalEntry.owner_id == flask_login.current_user.id).order_by(
+            models.JournalEntry.create_date.desc()).first().date_string))
+
         name = flask_login.current_user.first_name
         context = self.get_context(request)
+
 
         try:
             return flask.render_template(f'indexer/index.html', context=context)

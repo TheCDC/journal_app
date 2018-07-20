@@ -52,12 +52,9 @@
 {{super()}}
 <script type="text/javascript">
 
-var isodate = function(){
-    var local = new Date();
-    local.setMinutes(local.getMinutes() - local.getTimezoneOffset());
-    return local.toJSON().slice(0,10);
-}
+
 if (document.getElementById('create_date').value.length == 0){
+<!--isodate defined in base.html-->
 document.getElementById('create_date').value = isodate();
 
 }

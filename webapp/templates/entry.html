@@ -1,24 +1,25 @@
 {% extends 'base.html' %} {% block content %} {{super()}}
 <div class="container">
-    <ul class="pager pull-left">
+    <ul class="pager">
         {% if context.previous%}
         <!--  -->
-        <li>
-            <a class="btn btn-default" href="{{context.previous.url}}">
-                Previous
-                ({{context.previous.date_string}})</a>
+        <li class="">
+                <a  href="{{context.previous.url}}"><div>Previous </div><div>({{context.previous.date_string}})</div></a>
+
         </li>
         <!--  -->
         {% endif %}
         <!--  -->
         {% if context.next %}
         <!--  -->
-        <li>
-            <a class="btn btn-default" href="{{context.next.url}}">Next ({{context.next.date_string}})</a>
+        <li class="">
+                <a  href="{{context.next.url}}"><div>Next </div><div>({{context.next.date_string}})</div></a>
+
         </li>
         <!--  -->
         {% endif %}
     </ul>
+<hr>
 
 </div>
 
