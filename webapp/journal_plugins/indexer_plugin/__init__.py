@@ -9,7 +9,6 @@ from webapp.journal_plugins.validation import validate
 from webapp.extensions import db
 from webapp import app
 from . import views
-from . import models
 
 from flask_sqlalchemy import SQLAlchemy
 import re
@@ -21,7 +20,7 @@ all_stopwords = stopwords.words('english')
 # create new db connection to avoid ruining the main db connection
 db = SQLAlchemy(app)
 
-pattern = re.compile(r'^#+.+',flags=re.MULTILINE)
+pattern = re.compile(r'^#+.+', flags=re.MULTILINE)
 
 
 def extract_headings(entry):
@@ -48,14 +47,15 @@ class Plugin(classes.BasePlugin):
         session.add(e)
         out = []
         for h in extract_headings(e):
-            item = dict(html=h,label=h)
+            item = dict(html=h, label=h)
             yield item
 
     @validate
     def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'List[str]':
         session = db.session
 
-        found = session.query(models.PluginOutputCache).filter(models.PluginOutputCache.parent == e).filter(models.PluginOutputCache.plugin_name == self.safe_name).first()
+        found = session.query(models.PluginOutputCache).filter(models.PluginOutputCache.parent == e).filter(
+            models.PluginOutputCache.plugin_name == self.safe_name).first()
 
         if found:
             if (found.updated_at < e.updated_at):
@@ -74,7 +74,7 @@ class Plugin(classes.BasePlugin):
                 session.commit()
 
         results = list(self._parse_entry(e))
-        found = models.PluginOutputCache(parent=e, json=json.dumps(results),plugin_name=self.safe_name)
+        found = models.PluginOutputCache(parent=e, json=json.dumps(results), plugin_name=self.safe_name)
         session = db.session.object_session(e)
         session.add(found)
         session.commit()
