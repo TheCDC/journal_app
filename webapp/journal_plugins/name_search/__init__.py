@@ -43,7 +43,8 @@ class Plugin(classes.BasePlugin):
             f'{self.url_rule_base_name}-index'))
         # _ = models.NameSearchCache.query.first()
 
-    def _parse_entry(self, e, session=None):
+    @validate
+    def parse_entry(self, e, session=None):
         if session is None:
             session = db.session.object_session(e)
         if session is None:
@@ -73,32 +74,3 @@ class Plugin(classes.BasePlugin):
 
         yield from out
 
-    @validate
-    def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'List[str]':
-        session = db.session
-
-        found = session.query(models.PluginOutputCache).filter(models.PluginOutputCache.parent == e).filter(
-            models.PluginOutputCache.plugin_name == self.safe_name).first()
-
-        if found:
-            if (found.updated_at < e.updated_at):
-
-                results = list(self._parse_entry(e))
-                found.json = json.dumps(results)
-                session.add(found)
-                session.commit()
-
-            else:
-                results = json.loads(found.json)
-            try:
-                return classes.PluginReturnValue(results).dict
-            except ValueError:
-                session.delete(found)
-                session.commit()
-
-        results = list(self._parse_entry(e))
-        found = models.PluginOutputCache(parent=e, json=json.dumps(results), plugin_name=self.safe_name)
-        session = db.session.object_session(e)
-        session.add(found)
-        session.commit()
-        return results

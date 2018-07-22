@@ -1,11 +1,11 @@
 from flask import Blueprint
 import flask
 import os
+import json
 from webapp import config
 from webapp.extensions import db
 import logging
 from . import models
-
 
 def concat_urls(a, b):
     return '/' + '/'.join(x for x in (a.split('/') + b.split('/')) if len(x) > 0)
@@ -48,7 +48,7 @@ class PluginManager:
             except:
                 pass
             if preferences[plugin_name]['enabled']:
-                yield dict(plugin=plugin_instance.to_dict(), output=list(plugin_instance.parse_entry(e)))
+                yield dict(plugin=plugin_instance.to_dict(), output=list(plugin_instance._parse_entry_cached(e)))
 
     def get_user_plugin_preferences(self, user_obj):
         """Get models in charge of recording which plugins the user has enabled."""
@@ -82,6 +82,37 @@ class BasePlugin:
             logging.info('created plugin data directory: %s', self.resources_path)
         except FileExistsError:
             pass
+
+    def _parse_entry_cached(self, e: 'webapp.models.JournalEntry') -> 'List[str]':
+        session = db.session
+
+        found = session.query(models.PluginOutputCache).filter(models.PluginOutputCache.parent == e).filter(
+            models.PluginOutputCache.plugin_name == self.safe_name).first()
+
+        if found:
+            if (found.updated_at < e.updated_at):
+
+                results = list(self._parse_entry(e))
+                found.json = json.dumps(results)
+                session.add(found)
+                session.commit()
+
+            else:
+                results = json.loads(found.json)
+            try:
+                return PluginReturnValue(results).dict
+            except ValueError:
+                session.delete(found)
+                session.commit()
+
+        results = list(self.parse_entry(e))
+        found = models.PluginOutputCache(parent=e, json=json.dumps(results), plugin_name=self.safe_name)
+        session = db.session.object_session(e)
+        if session is None:
+            session = db.session()
+        session.add(found)
+        session.commit()
+        return results
 
     def parse_entry(self, e):
         """The developer must override this in order to provide entry parsing functionality"""

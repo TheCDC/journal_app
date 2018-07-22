@@ -99,8 +99,8 @@ class Plugin(classes.BasePlugin):
         self.card_matcher = None
         self.manager.blueprint.add_url_rule(self.endpoint,
                                             view_func=views.IndexView.as_view(f'{self.url_rule_base_name}-index'))
-
-    def _parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
+    @validate
+    def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
         results = list()
         if self.card_matcher is None:
             if self.thread.isAlive():
@@ -121,38 +121,3 @@ class Plugin(classes.BasePlugin):
                     ), cardname=cardname
                 )
 
-    @validate
-    def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
-        if self.thread.is_alive():
-            return
-
-        found = models.MTGCardFetcherCache.query.filter(models.MTGCardFetcherCache.parent == e).first()
-
-        if found:
-            # try to get the session the object is already in
-            session = db.session.object_session(found)
-            # if it isn't in a session, make a new onw
-            if session is None:
-                session = db.session()
-
-            found_obj = json.loads(found.json)
-            if (found.updated_at < e.updated_at or len(found_obj) < 0):
-
-                results = list(self._parse_entry(e))
-                found.json = json.dumps(results)
-                session.add(found)
-                session.commit()
-
-            else:
-                results = json.loads(found.json)
-
-            return results
-        else:
-            results = list(self._parse_entry(e))
-            found = models.MTGCardFetcherCache(parent=e, json=json.dumps(results))
-            session = db.session.object_session(e)
-            if not session:
-                session = db.session()
-            session.add(found)
-            session.commit()
-            return results
