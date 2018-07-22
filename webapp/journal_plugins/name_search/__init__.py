@@ -2,13 +2,12 @@
 
 It identifies capitalized words in the text of journal entries."""
 import webapp.models
-from webapp.journal_plugins import classes
+from webapp.journal_plugins import classes, models
 from webapp.journal_plugins.validation import validate
 
 from webapp.extensions import db
 from webapp import app
 from . import views
-from . import models
 
 from flask_sqlalchemy import SQLAlchemy
 import flask
@@ -26,7 +25,7 @@ pattern = re.compile(r'\b[^\W\d_]+\b')
 
 
 # pattern = re.compile("/^[a-z ,.'-]+$/i")
-def count_occurrences(user,search):
+def count_occurrences(user, search):
     all_entries = webapp.models.JournalEntry.query.filter(
         webapp.models.JournalEntry.owner_id == user.id)
     return all_entries.filter(
@@ -37,13 +36,15 @@ class Plugin(classes.BasePlugin):
     """An example plugin that simply splits the entry on spaces."""
     name = 'Name Search'
     description = "Identify names you mention in your entries and find other entries with those names."
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.manager.blueprint.add_url_rule(self.endpoint, view_func=views.NameExtractorPluginView.as_view(
             f'{self.url_rule_base_name}-index'))
         # _ = models.NameSearchCache.query.first()
 
-    def _parse_entry(self, e,session=None):
+    @validate
+    def parse_entry(self, e, session=None):
         if session is None:
             session = db.session.object_session(e)
         if session is None:
@@ -56,7 +57,8 @@ class Plugin(classes.BasePlugin):
             try:
                 if w[0] == w[0].upper():
                     if w not in seen:
-                        c = count_occurrences(webapp.models.User.query.filter(webapp.models.User.id ==e.owner_id).first(), w)
+                        c = count_occurrences(
+                            webapp.models.User.query.filter(webapp.models.User.id == e.owner_id).first(), w)
                         label = f'{w}'
                         url = flask.url_for(f'site.plugins-{self.safe_name}-index', page=1, search=w)
                         out.append(
@@ -71,32 +73,4 @@ class Plugin(classes.BasePlugin):
                 pass
 
         yield from out
-    @validate
-    def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'iterable[str]':
-        session = db.session
 
-        found = session.query(models.NameSearchCache).filter(models.NameSearchCache.parent == e).first()
-
-        if found:
-            if (found.updated_at < e.updated_at):
-
-                results = list(self._parse_entry(e))
-                found.json = json.dumps(results)
-                session.add(found)
-                session.commit()
-
-            else:
-                results = json.loads(found.json)
-            try:
-                return classes.PluginReturnValue(results).dict
-            except ValueError:
-                session.delete(found)
-                session.commit()
-
-
-        results = list(self._parse_entry(e))
-        found = models.NameSearchCache(parent=e, json=json.dumps(results))
-        session = db.session.object_session(e)
-        session.add(found)
-        session.commit()
-        return results

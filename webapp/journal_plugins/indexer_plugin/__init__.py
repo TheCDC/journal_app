@@ -3,13 +3,12 @@
 It identifies capitalized words in the text of journal entries."""
 from typing import List
 import webapp.models
-from webapp.journal_plugins import classes
+from webapp.journal_plugins import classes, models
 from webapp.journal_plugins.validation import validate
 
 from webapp.extensions import db
 from webapp import app
 from . import views
-from . import models
 
 from flask_sqlalchemy import SQLAlchemy
 import re
@@ -21,7 +20,7 @@ all_stopwords = stopwords.words('english')
 # create new db connection to avoid ruining the main db connection
 db = SQLAlchemy(app)
 
-pattern = re.compile(r'^#+.+',flags=re.MULTILINE)
+pattern = re.compile(r'^#+.+', flags=re.MULTILINE)
 
 
 def extract_headings(entry):
@@ -40,7 +39,8 @@ class Plugin(classes.BasePlugin):
             f'{self.url_rule_base_name}-index'))
         # _ = models.NameSearchCache.query.first()
 
-    def _parse_entry(self, e, session=None):
+    @validate
+    def parse_entry(self, e, session=None):
         if session is None:
             session = db.session.object_session(e)
         if session is None:
@@ -48,34 +48,5 @@ class Plugin(classes.BasePlugin):
         session.add(e)
         out = []
         for h in extract_headings(e):
-            item = dict(html=h,label=h)
+            item = dict(html=h, label=h)
             yield item
-
-    @validate
-    def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'List[str]':
-        session = db.session
-
-        found = session.query(models.IndexerPluginCache).filter(models.IndexerPluginCache.parent == e).first()
-
-        if found:
-            if (found.updated_at < e.updated_at):
-
-                results = list(self._parse_entry(e))
-                found.json = json.dumps(results)
-                session.add(found)
-                session.commit()
-
-            else:
-                results = json.loads(found.json)
-            try:
-                return classes.PluginReturnValue(results).dict
-            except ValueError:
-                session.delete(found)
-                session.commit()
-
-        results = list(self._parse_entry(e))
-        found = models.IndexerPluginCache(parent=e, json=json.dumps(results))
-        session = db.session.object_session(e)
-        session.add(found)
-        session.commit()
-        return results

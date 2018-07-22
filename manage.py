@@ -12,7 +12,7 @@ manager = Manager(app)
 def re_process_all_plugins():
     logging.warning('Long running operation has been initiated! All entries are being processed by plugins.')
     for e in models.JournalEntry.query.all():
-        for item in (plugin_manager.parse_entry(e)):
+        for item in (plugin_manager._parse_entry_cached(e)):
             list(item['output'])
     logging.warning('All entries have been processed by plugins.')
 
