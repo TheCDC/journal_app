@@ -64,7 +64,7 @@ class PluginManager:
 class BasePlugin:
     name = 'Default Plugin Name'
     description = 'Description for the BasePlugin'
-
+    cache_schema_version = -1
     def __init__(self, plugin_manager: PluginManager):
         self.name = self.__class__.name
         self.description = self.__class__.description
