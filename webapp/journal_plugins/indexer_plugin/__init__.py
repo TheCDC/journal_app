@@ -3,7 +3,7 @@
 It identifies capitalized words in the text of journal entries."""
 from typing import List
 import webapp.models
-from webapp.journal_plugins import classes
+from webapp.journal_plugins import classes, models
 from webapp.journal_plugins.validation import validate
 
 from webapp.extensions import db
@@ -55,7 +55,7 @@ class Plugin(classes.BasePlugin):
     def parse_entry(self, e: 'webapp.models.JournalEntry') -> 'List[str]':
         session = db.session
 
-        found = session.query(models.IndexerPluginCache).filter(models.IndexerPluginCache.parent == e).first()
+        found = session.query(models.PluginOutputCache).filter(models.PluginOutputCache.parent == e).filter(models.PluginOutputCache.plugin_name == self.safe_name).first()
 
         if found:
             if (found.updated_at < e.updated_at):
@@ -74,7 +74,7 @@ class Plugin(classes.BasePlugin):
                 session.commit()
 
         results = list(self._parse_entry(e))
-        found = models.IndexerPluginCache(parent=e, json=json.dumps(results))
+        found = models.PluginOutputCache(parent=e, json=json.dumps(results),plugin_name=self.safe_name)
         session = db.session.object_session(e)
         session.add(found)
         session.commit()

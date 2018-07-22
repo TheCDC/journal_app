@@ -92,7 +92,7 @@ class BasePlugin:
 
     @property
     def safe_name(self):
-        """A URL self version of this plugin's name."""
+        """A URL safe version of this plugin's name."""
         return self.__class__.name.lower().replace(' ', '_')
 
     def to_dict(self):

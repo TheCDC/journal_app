@@ -22,8 +22,8 @@ class UserPluginToggle(db.Model):
 
 class PluginOutputCache(db.Model):
     """Document store for plugin output"""
-    plugin_name = db.Column(db.String)
     parent_id = db.Column(db.Integer, db.ForeignKey(models.JournalEntry.id, ondelete="cascade"), primary_key=True, )
+    plugin_name = db.Column(db.String)
     parent = db.relationship(models.JournalEntry, foreign_keys='PluginOutputCache.parent_id')
     created_at = db.Column(
         db.DateTime, default=func.now(), nullable=False)
