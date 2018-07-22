@@ -100,6 +100,8 @@ class BasePlugin:
             else:
                 results = json.loads(found.json)
             try:
+                if len(results) == 0:
+                    results = list(self.parse_entry(e))
                 return PluginReturnValue(results).dict
             except ValueError:
                 session.delete(found)
