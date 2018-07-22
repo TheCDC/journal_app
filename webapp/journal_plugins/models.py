@@ -20,6 +20,19 @@ class UserPluginToggle(db.Model):
     __table_args__ = (db.UniqueConstraint('user_id', 'plugin_name', name='_user_plugin_preference'),)
 
 
+class PluginOutputCache(db.Model):
+    """Document store for plugin output"""
+    plugin_name = db.Column(db.String)
+    parent_id = db.Column(db.Integer, db.ForeignKey(models.JournalEntry.id, ondelete="cascade"), primary_key=True, )
+    parent = db.relationship(models.JournalEntry, foreign_keys='PluginOutputCache.parent_id')
+    created_at = db.Column(
+        db.DateTime, default=func.now(), nullable=False)
+    updated_at = db.Column(
+        db.DateTime, default=func.now(), onupdate=func.now(), nullable=False)
+    json = db.Column(db.String)
+    schema_version = db.Column(db.Integer)
+
+
 
 # ========== Marshmallow Schemas ==========
 
