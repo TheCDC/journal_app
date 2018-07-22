@@ -92,7 +92,7 @@ class BasePlugin:
         if found:
             if (found.updated_at < e.updated_at):
 
-                results = list(self._parse_entry(e))
+                results = list(self.parse_entry(e))
                 found.json = json.dumps(results)
                 session.add(found)
                 session.commit()
