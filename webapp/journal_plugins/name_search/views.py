@@ -14,7 +14,7 @@ class NameExtractorPluginView(MethodView):
     def get_summary(self, context):
         objects = [
             dict(entry=models.journal_entry_schema.dump(obj=e).data,
-                 output=extensions.name_search.parse_entry(e))
+                 output=extensions.name_search._parse_entry_cached(e))
             for e in self.get_objects(context).items]
         context['summary_objects'] = objects
         seen_names = list()

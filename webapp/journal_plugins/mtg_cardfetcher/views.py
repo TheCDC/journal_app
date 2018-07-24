@@ -17,7 +17,7 @@ class IndexView(MethodView):
         context = dict(plugin=extensions.mtg_cardfetcher.to_dict())
         objects = [
             dict(entry=models.journal_entry_schema.dump(obj=e).data,
-                 output=list(extensions.mtg_cardfetcher.parse_entry(e)))
+                 output=list(extensions.mtg_cardfetcher._parse_entry_cached(e)))
             for e in self.get_objects(context)]
         context['objects'] = objects
         seen_cards = list()

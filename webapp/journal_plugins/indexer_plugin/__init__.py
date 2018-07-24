@@ -32,6 +32,7 @@ class Plugin(classes.BasePlugin):
     name = 'Headings Indexer'
     description = """Identify headings you use in your entries. Headings are any number of octothorpes, #, followed by any text.
     Use them to organize your thoughts. This plugin will create a summary index for you to browse."""
+    cache_schema_version = 1
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

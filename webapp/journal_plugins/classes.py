@@ -7,6 +7,7 @@ from webapp.extensions import db
 import logging
 from . import models
 
+
 def concat_urls(a, b):
     return '/' + '/'.join(x for x in (a.split('/') + b.split('/')) if len(x) > 0)
 
@@ -56,7 +57,6 @@ class PluginManager:
         for plugin_name, plugin_instance in self.plugins.items():
             obj = plugin_instance.get_preference_model(user_obj)
 
-
             ret[plugin_name] = obj
         return ret
 
@@ -65,6 +65,7 @@ class BasePlugin:
     name = 'Default Plugin Name'
     description = 'Description for the BasePlugin'
     cache_schema_version = -1
+
     def __init__(self, plugin_manager: PluginManager):
         self.name = self.__class__.name
         self.description = self.__class__.description
@@ -90,7 +91,8 @@ class BasePlugin:
             models.PluginOutputCache.plugin_name == self.safe_name).first()
 
         if found:
-            if (found.updated_at < e.updated_at):
+            if (
+                    found.updated_at < e.updated_at or found.schema_version is None or found.schema_version < self.__class__.cache_schema_version):
 
                 results = list(self.parse_entry(e))
                 found.json = json.dumps(results)
@@ -108,7 +110,8 @@ class BasePlugin:
                 session.commit()
 
         results = list(self.parse_entry(e))
-        found = models.PluginOutputCache(parent=e, json=json.dumps(results), plugin_name=self.safe_name)
+        found = models.PluginOutputCache(parent=e, json=json.dumps(results), plugin_name=self.safe_name,
+                                         schema_version=self.__class__.cache_schema_version)
         session = db.session.object_session(e)
         if session is None:
             session = db.session()
