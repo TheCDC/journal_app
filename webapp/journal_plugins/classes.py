@@ -86,8 +86,8 @@ class BasePlugin:
 
     def _parse_entry_cached(self, e: 'webapp.models.JournalEntry') -> 'List[str]':
         session = db.session
-
-        found = session.query(models.PluginOutputCache).filter(models.PluginOutputCache.parent == e).filter(
+        session.add(e)
+        found = session.query(models.PluginOutputCache).filter(models.PluginOutputCache.parent_id == e.id).filter(
             models.PluginOutputCache.plugin_name == self.safe_name).first()
 
         if found:

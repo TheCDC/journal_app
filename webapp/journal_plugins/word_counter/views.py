@@ -13,7 +13,12 @@ class IndexView(MethodView):
 
     def get_context(self, **kwargs):
         context = dict(plugin=extensions.word_counter.to_dict())
-        objs = [extensions.word_counter._parse_entry_cached(e) for e in self.get_objects(context)]
+        objs = []
+        for e in self.get_objects(context):
+            # cache results
+            extensions.word_counter.parse_entry(e)
+            # processed results html
+            objs.append(extensions.word_counter._parse_entry(e))
         context['objects'] = objs
         word_sum = 0
         num_unique_words = 0
