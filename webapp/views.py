@@ -230,6 +230,7 @@ class HomeView(MethodView, EnableLoggingMixin):
                     datetime.datetime.now().date() - latest_entry.create_date).days if latest_entry else None,
             error=None,
             success=None,
+            num_entries = db.session.query(models.JournalEntry).filter(models.JournalEntry.owner == flask_login.current_user).count()
         )
         # allow context values to be overridden by kwargs and request
         context.update(kwargs)

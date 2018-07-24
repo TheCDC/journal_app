@@ -85,7 +85,7 @@
 
         </div>
     </div>
-    <h1 class="text-center">Archive</h1>
+    <h1 class="text-center">Archive ({{context.num_entries}})</h1>
     <hr>
     <div>
         {% for year in context.entries_tree|reverse %} {{render_year(year, context.entries_tree[year])}} {% endfor %}
