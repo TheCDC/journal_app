@@ -35,6 +35,7 @@ class Plugin(classes.BasePlugin):
     Finds dates mentioned in entries."""
     name = 'Date Recognizer'
     description = 'Identify dates you mention in your entries and link you to the entries you mentioned.'
+    __cache_enabled__ = False
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

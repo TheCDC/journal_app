@@ -9,7 +9,7 @@ pattern = re.compile(r'\b[^\W\d_]+\b')
 
 
 class Plugin(classes.BasePlugin):
-    """An example plugin that simply splits the entry on spaces."""
+    """Counts the number of words and unique words in an entry."""
     name = 'Word Counter'
     description = 'Count total words as well as number of unique words used in an entry.'
     cache_schema_version = 0

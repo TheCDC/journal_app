@@ -65,6 +65,7 @@ class BasePlugin:
     name = 'Default Plugin Name'
     description = 'Description for the BasePlugin'
     cache_schema_version = -1
+    __cache_enabled__ = True
 
     def __init__(self, plugin_manager: PluginManager):
         self.name = self.__class__.name
@@ -85,6 +86,9 @@ class BasePlugin:
             pass
 
     def _parse_entry_cached(self, e: 'webapp.models.JournalEntry') -> 'List[str]':
+        if not self.__class__.__cache_enabled__:
+            results = list(self.parse_entry(e))
+            return results
         session = db.session
         session.add(e)
         found = session.query(models.PluginOutputCache).filter(models.PluginOutputCache.parent_id == e.id).filter(
