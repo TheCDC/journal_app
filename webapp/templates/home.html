@@ -18,9 +18,15 @@
     {% endif %}
     {% if context.latest_entry%}
     {% if context.days_since_latest > 0 %}
+    <div>
     <h1> Remember this from {{context.days_since_latest}} day(s) ago?</h1>
+
+    </div>
     {% else %}
+    <div>
     <h1> Today's entry</h1>
+
+    </div>
 
     {% endif %}
     {{render_entry_card(context.latest_entry)|safe}}
@@ -38,10 +44,9 @@
     </div>
 
     {% endif %}
-    <div class="container">
         <div class="row">
 
-            <div class="col col-md-6" id="plugins_div">
+            <div class="col col-md-6">
                 <div class="card">
 
                     <div class="card_title"> Write a new entry.</div>
@@ -84,7 +89,6 @@
             </div>
 
         </div>
-    </div>
     <h1 class="text-center">Archive ({{context.num_entries}})</h1>
     <hr>
     <div>
