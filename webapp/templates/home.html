@@ -52,7 +52,7 @@
                     <div class="card_title"> Write a new entry.</div>
                     <div class="contents">
                         <div class="description">
-                            <a href="{{url_for('create_entry')}}" class="btn btn-success">New entry</a>
+                            <a href="{{url_for('create_entry')}}" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span> New entry</a>
 
                         </div>
                     </div>
@@ -77,8 +77,11 @@
 
                             </div>
                             <div class="options">
-                                <input class="btn btn-primary" type="submit" value="submit">
-                                <a class="btn btn-default" href="{{url_for('export_journal')}}">Export</a>
+                                <button type="submit" class="btn btn-primary">
+                                    <span class="glyphicon glyphicon-upload"></span>
+                                    Submit
+                                </button>
+                                <a class="btn btn-default" href="{{url_for('export_journal')}}"><span class="glyphicon glyphicon-circle-arrow-down"></span> Export</a>
                             </div>
                         </form>
 

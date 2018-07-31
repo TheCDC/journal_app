@@ -15,20 +15,28 @@
             {{plugin_and_preference.plugin.description}}
         </div>
         <div class="options">
-            <a href="{{plugin_and_preference.plugin.url}}" class="btn btn-primary">Visit
+            <a href="{{plugin_and_preference.plugin.url}}" class="btn btn-primary"><span
+                    class="glyphicon glyphicon-list"></span> Visit
             </a>
             <div>
                 <form action="{{url_for('site.plugins-index')}}" method="POST" enctype="multipart/form-data">
                     {% if plugin_and_preference.preference.enabled %}
                     <input id="disable-id" name="disable-id" type="hidden"
                            value="{{plugin_and_preference.preference.id}}">
-                    <input class="btn btn-warning" type="submit" value="Disable">
+                    <button class="btn btn-warning" type="submit">
+                        <span class="glyphicon glyphicon-eye-close"></span>
+                        Disable
+                    </button>
 
                     {% else %}
                     <input id="enable-id" name="enable-id" type="hidden"
                            value="{{plugin_and_preference.preference.id}}">
 
-                    <input class="btn btn-success" type="submit" value="Enable">
+                    <button class="btn btn-success" type="submit">
+                        <span class="glyphicon glyphicon-eye-open"></span>
+                        Enable
+                    </button>
+
                     {% endif %}
                 </form>
             </div>
