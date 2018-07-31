@@ -4,7 +4,8 @@
         {% if context.previous%}
         <!--  -->
         <li class="">
-                <a  href="{{context.previous.url}}"><span class="glyphicon glyphicon-chevron-left"></span> {{context.previous.date_string}}</a>
+            <a href="{{context.previous.url}}"><span class="glyphicon glyphicon-chevron-left"></span>
+                {{context.previous.date_string}}</a>
         </li>
         <!--  -->
         {% endif %}
@@ -12,13 +13,14 @@
         {% if context.next %}
         <!--  -->
         <li class="">
-                <a  href="{{context.next.url}}">{{context.next.date_string}} <span class="glyphicon glyphicon-chevron-right"></span></a>
+            <a href="{{context.next.url}}">{{context.next.date_string}} <span
+                    class="glyphicon glyphicon-chevron-right"></span></a>
 
         </li>
         <!--  -->
         {% endif %}
     </ul>
-<hr>
+    <hr>
 
 </div>
 
@@ -40,21 +42,21 @@
                     <div class="contents">
                         <div class="description">
 
-                        {% for word in obj.output %}
-                        <div class="">
-                            {% if word.html is defined %}
-                            {{word.html|safe}}
-                            {% else %}
-                            {{word|safe}}
+                            {% for word in obj.output %}
+                            <div class="">
+                                {% if word.html is defined %}
+                                {{word.html|safe}}
+                                {% else %}
+                                {{word|safe}}
 
-                            {% endif %}
-                        </div>
-                        {% endfor %}
+                                {% endif %}
+                            </div>
+                            {% endfor %}
                         </div>
 
                         <div class="options">
                             <a class="btn btn-primary" href="{{obj.plugin.url}}"><span
-                    class="glyphicon glyphicon-list"></span> Visit</a>
+                                    class="glyphicon glyphicon-list"></span> Visit</a>
                         </div>
 
                     </div>
