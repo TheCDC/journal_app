@@ -4,8 +4,7 @@
         {% if context.previous%}
         <!--  -->
         <li class="">
-                <a  href="{{context.previous.url}}"><div>Previous </div><div>({{context.previous.date_string}})</div></a>
-
+                <a  href="{{context.previous.url}}"><span class="glyphicon glyphicon-chevron-left"></span> {{context.previous.date_string}}</a>
         </li>
         <!--  -->
         {% endif %}
@@ -13,7 +12,7 @@
         {% if context.next %}
         <!--  -->
         <li class="">
-                <a  href="{{context.next.url}}"><div>Next </div><div>({{context.next.date_string}})</div></a>
+                <a  href="{{context.next.url}}">{{context.next.date_string}} <span class="glyphicon glyphicon-chevron-right"></span></a>
 
         </li>
         <!--  -->
