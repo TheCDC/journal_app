@@ -122,7 +122,7 @@ class JournalEntry(db.Model):
         db.DateTime, default=func.now(), onupdate=func.now(), nullable=False,
         server_default=func.now())
     contents = db.Column(db.String)
-    owner_id = db.Column(db.Integer, db.ForeignKey(User.id,ondelete="cascade"))
+    owner_id = db.Column(db.Integer, db.ForeignKey(User.id,ondelete="cascade"), index=True)
     owner = db.relationship(User, backref=backref('entries', cascade="all,delete"), )
     __table_args__ = (db.UniqueConstraint('owner_id', 'create_date', name='_id_date'),)
 
