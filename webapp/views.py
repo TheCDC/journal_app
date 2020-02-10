@@ -123,10 +123,12 @@ class EntrySearchView(MethodView):
             if o:
                 db.session.add(o)
         # plugins_output = [(obj['plugin']['name'], list(obj['output'])) for obj in plugin_manager.parse_entry(e)]
+        forward = models.journal_entry_schema.dump(obj=e.next)
+        backward = models.journal_entry_schema.dump(obj=e.previous)
         context = dict(
-            entry=models.journal_entry_schema.dump(obj=e).data,
-            next=models.journal_entry_schema.dump(obj=e.next).data,
-            previous=models.journal_entry_schema.dump(obj=e.previous).data,
+            entry=models.journal_entry_schema.dump(obj=e),
+            next=forward,
+            previous=backward,
             plugins_output=plugins_output,
 
         )
@@ -135,8 +137,7 @@ class EntrySearchView(MethodView):
                 flask.abort(404)
         except ValueError:
             flask.abort(404)
-        forward = e.next
-        backward = e.previous
+
         return flask.render_template(
             'entry.html',
             context=context)
@@ -219,12 +220,13 @@ class HomeView(MethodView, EnableLoggingMixin):
             pass
         latest_entry = db.session.query(models.JournalEntry).filter(models.JournalEntry.owner == flask_login.current_user).order_by(
             models.JournalEntry.create_date.desc()).first()
+        latest_entry_obj = models.journal_entry_schema.dump(obj=latest_entry) if latest_entry else None
         # form the context with default values
         context = dict(
             upload_form=upload_form,
             entries_tree=api.get_entries_tree(flask_login.current_user),
             plugin_manager=plugin_manager,
-            latest_entry=models.journal_entry_schema.dump(obj=latest_entry).data,
+            latest_entry=latest_entry_obj,
             now=datetime.datetime.now(),
             days_since_latest=(
                     datetime.datetime.now().date() - latest_entry.create_date).days if latest_entry else None,

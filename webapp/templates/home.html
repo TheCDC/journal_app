@@ -16,21 +16,8 @@
         <p class="">{{ context.success }}</p>
     </div>
     {% endif %}
-    {% if context.latest_entry%}
-    {% if context.days_since_latest > 0 %}
-    <div>
-    <h1> Remember this from {{context.days_since_latest}} day(s) ago?</h1>
+    {% if not context.latest_entry%}
 
-    </div>
-    {% else %}
-    <div>
-    <h1> Today's entry</h1>
-
-    </div>
-
-    {% endif %}
-    {{render_entry_card(context.latest_entry)|safe}}
-    {% else %}
     <div class="card">
         <div class="card_title"> Hi {% if current_user.first_name %} {{current_user.first_name}}. {% else %} there! {%
             endif %} It looks
@@ -84,13 +71,10 @@
                                 <a class="btn btn-default" href="{{url_for('export_journal')}}"><span class="glyphicon glyphicon-circle-arrow-down"></span> Export</a>
                             </div>
                         </form>
-
                     </div>
                     {{context.file_contents}}
-
                 </div>
             </div>
-
         </div>
     <h1 class="text-center">Archive ({{context.num_entries}})</h1>
     <hr>

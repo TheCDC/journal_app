@@ -25,7 +25,7 @@ class Plugin(classes.BasePlugin):
         num_words = len(words)
         num_unique_words = len(unique_words)
         obj = dict(num_words=num_words, num_unique_words=num_unique_words, unique_ratio=num_unique_words / num_words,
-                   entry=models.journal_entry_schema.dump(obj=e).data)
+                   entry=models.journal_entry_schema.dump(obj=e))
         return obj
 
     @validate

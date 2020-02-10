@@ -151,7 +151,7 @@ class BasePlugin:
             obj = models.UserPluginToggle(plugin_name=self.name, user_id=user_obj.id)
             session.add(obj)
             session.commit()
-        return models.user_plugin_toggle_schema.dump(obj=obj).data
+        return models.user_plugin_toggle_schema.dump(obj=obj)
 
 
 class PluginReturnValue:

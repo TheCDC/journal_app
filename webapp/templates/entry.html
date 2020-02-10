@@ -1,7 +1,7 @@
 {% extends 'base.html' %} {% block content %} {{super()}}
 <div class="container">
     <ul class="pager">
-        {% if context.previous%}
+        {% if context.previous.url is not none %}
         <!--  -->
         <li class="">
             <a href="{{context.previous.url}}"><span class="glyphicon glyphicon-chevron-left"></span>
@@ -10,7 +10,7 @@
         <!--  -->
         {% endif %}
         <!--  -->
-        {% if context.next %}
+        {% if context.next.url is not none%}
         <!--  -->
         <li class="">
             <a href="{{context.next.url}}">{{context.next.date_string}} <span
