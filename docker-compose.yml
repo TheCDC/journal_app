@@ -1,8 +1,9 @@
-version: "3.8"
+version: "3.3"
+services:
   db:
     image: postgres:12
     volumes:
-      - app-db-data:/var/lib/postgresql/data/pgdata
+      - journal-wiki-db-data:/var/lib/postgresql/data/pgdata
     env_file:
       - .env
     environment:
@@ -21,3 +22,5 @@ version: "3.8"
     build:
       context: ./webapp
       dockerfile: webapp.dockerfile
+volumes:
+  journal-wiki-db-data:
