@@ -1,27 +1,41 @@
 {% block navbar %}
 <nav class="navbar navbar-default navbar-inverse">
-    <div class="container">
+    <div class="container container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">Journal App</a>
+        </div>
         <ul class="nav navbar-nav">
-            <li {% if request.path==url_for( 'home') %} class="active" {% endif %}>
-                <a class="btn" href="{{url_for('index')}}">Home</a>
+            <li {% if request.path==url_for(
+            'home') %} class="active" {% endif %}>
+            <a class="btn" href="{{url_for('index')}}">Home</a>
             </li>
             {% if current_user.is_authenticated %}
             <!--  -->
-             {% if current_user.get_latest_entry() %}
             <li {% if request.path==link_for_entry(current_user.get_latest_entry()) %} class="active" {% endif %}>
-                <a class="btn" href="{{link_for_entry(current_user.get_latest_entry())}}">Latest Entry</a>
+                <a class="btn" href="{{url_for('latest_entry')}}">Latest Entry</a>
             </li>
             {% endif %}
-            <!--  -->
-            <li {% if request.path==url_for( 'settings') %} class="active" {% endif %}>
-                <a class="btn" href="{{url_for('settings')}}">{{current_user.first_name}}</a>
+
+
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+
+            {% if current_user.is_authenticated %}
+            <li {% if request.path==url_for('settings') %} class="active" {% endif %}>
+
+                <a class="btn" href="{{url_for('settings')}}">{{current_user.first_name if current_user.first_name else
+                    "You"}}</a>
+            </li>
+            <li {% if request.path==url_for('site.plugins-index') %} class="active" {% endif %}>
+
+                <a class="btn" href="{{url_for('site.plugins-index')}}">Plugins</a>
             </li>
             <li>
-                <a class="btn" href="{{url_for('logout')}}">Log out</a>
+                <a class="btn" href="{{url_for('security.logout')}}">Log out</a>
             </li>
             {% else %}
             <li>
-                <a class="btn" href="{{url_for('login')}}">Log in</a>
+                <a class="btn" href="{{url_for('security.logout')}}">Log in</a>
             </li>
             {% endif %}
         </ul>

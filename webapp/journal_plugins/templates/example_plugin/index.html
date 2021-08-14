@@ -1,0 +1,8 @@
+{% extends 'base.html' %} {% block content %} {{super()}}
+<div class="container">
+
+    <h1>{{context.plugin.name}}</h1>
+    {{context}}
+</div>
+
+{% endblock %}

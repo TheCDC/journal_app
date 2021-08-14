@@ -1,18 +1,35 @@
-from webapp.app_init import app, db, admin
-import webapp.app_init
+from webapp.api import link_for_entry
+from webapp.extensions import db, admin, marshmallow
+from webapp import app
 from webapp import config
-from webapp import forms
+import webapp
 from flask_admin.contrib.sqla import ModelView
 import datetime
-from webapp import parsing
 import logging
 import flask_migrate
 import alembic
 import markdown
+from flask_security import UserMixin, RoleMixin
+from flask_security import Security, SQLAlchemyUserDatastore
+from sqlalchemy.orm import backref
+
 logger = logging.getLogger(__name__)
 
+# Define models
+roles_users = db.Table('roles_users',
+                       db.Column('user_id', db.Integer(),
+                                 db.ForeignKey('user.id')),
+                       db.Column('role_id', db.Integer(),
+                                 db.ForeignKey('role.id')))
 
-class User(db.Model):
+
+class Role(db.Model, RoleMixin):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    description = db.Column(db.String(255))
+
+
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, index=True)
     password = db.Column(db.String(200))
@@ -20,6 +37,12 @@ class User(db.Model):
     registered_on = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     first_name = db.Column(db.String(200))
     last_name = db.Column(db.String(200))
+    active = db.Column(db.Boolean())
+    confirmed_at = db.Column(db.DateTime())
+    roles = db.relationship(
+        'Role',
+        secondary=roles_users,
+        backref=db.backref('users', lazy='dynamic'))
 
     # ========== flask-login methods ==========
     @property
@@ -39,7 +62,9 @@ class User(db.Model):
 
     def get_latest_entry(self, ) -> "JournalEntry":
         """Return the chronologically latest JournalEntry."""
-        return self.query_all_entries().order_by(
+        # session = db.session()
+        # session.add(self)
+        return JournalEntry.query.filter(JournalEntry.owner_id == self.id).order_by(
             JournalEntry.create_date.desc()).first()
 
     def query_all_entries(self):
@@ -60,8 +85,8 @@ class User(db.Model):
                 found = self.query_all_entries().filter(
                     JournalEntry.create_date >= datetime.datetime(
                         y, 1, 1, 0, 0)).filter(
-                            JournalEntry.create_date < datetime.datetime(
-                                y + 1, 1, 1, 0, 0)).first()
+                    JournalEntry.create_date < datetime.datetime(
+                        y + 1, 1, 1, 0, 0)).first()
                 # only yield this year if has an entry
                 if found:
                     yield datetime.datetime(y, 1, 1, 0, 0)
@@ -77,44 +102,28 @@ class User(db.Model):
         the given entry."""
         return self.query_all_entries().filter(
             JournalEntry.create_date < e.create_date).order_by(
-                JournalEntry.create_date.desc()).first()
-
-    def get_settings_form(self) -> forms.AccountSetingsForm:
-        """return a pre-filled form for changing user data"""
-        form = forms.AccountSetingsForm()
-        form.email.data = self.email
-        form.first_name.data = self.first_name
-        form.last_name.data = self.last_name
-        return form
-
-    def update_settings(self, settings_form: forms.AccountSetingsForm):
-        """Takes a form and updates values from it."""
-        form = settings_form
-        if form.validate_on_submit():
-            self.first_name = form.first_name.data
-            self.last_name = form.last_name.data
-            self.email = form.email.data
-            if form.new_password.data == form.new_password_confirm.data:
-                if form.password.data == self.password:
-                    self.password = form.new_password.data
-            db.session.add(self)
-            db.session.commit()
+            JournalEntry.create_date.desc()).first()
 
 
 class JournalEntry(db.Model):
     """Model for journal entries."""
     id = db.Column(db.Integer, primary_key=True)
     create_date = db.Column(
-        db.DateTime, default=datetime.datetime.utcnow, index=True)
+        db.Date, default=datetime.datetime.utcnow, index=True)
     contents = db.Column(db.String)
     owner_id = db.Column(db.Integer, db.ForeignKey(User.id))
-    owner = db.relationship(User, backref='users')
+    owner = db.relationship(User, backref=backref('entries', cascade="all,delete"), )
+    __table__args = (db.UniqueConstraint('id', 'create_date', name='_id_date'),)
 
     def __str__(self):
-        return str(self.id)
+        return repr(self.id)
 
-    def to_html(self) -> str:
-        """Return HTML necesary to render the entry the same as plain text."""
+    def __repr__(self):
+        return f'< JournaEntry id={self.id} create_date={self.create_date}'
+
+    @property
+    def html(self) -> str:
+        """Return HTML rendering of markdown contents."""
         return markdown.markdown(self.contents)
 
     @property
@@ -125,7 +134,28 @@ class JournalEntry(db.Model):
     @property
     def date_human(self) -> str:
         """A pretty and human readable date."""
-        return self.create_date.strftime('%B %d, %Y')
+        return self.create_date.strftime('%B %d, %Y, a %A')
+
+    @property
+    def next(self):
+        found = JournalEntry.query.filter(JournalEntry.owner_id == self.owner.id).filter(
+            JournalEntry.create_date > self.create_date).first()
+        if found:
+            if found.id != self.id:
+                return found
+        return None
+
+    @property
+    def previous(self):
+
+        found = self.owner.query_all_entries().filter(
+            JournalEntry.create_date < self.create_date).order_by(
+            JournalEntry.create_date.desc()).first()
+
+        if found:
+            if found.id != self.id:
+                return found
+        return None
 
 
 class PluginConfig(db.Model):
@@ -151,6 +181,10 @@ class JournalEntryView(ModelView):
         'contents': summary,
     }
 
+
+# ========== Setup Flask-Security ==========
+user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+security = Security(app, user_datastore)
 
 if config.DEBUG_ENABLED:
     admin.add_view(
@@ -181,3 +215,26 @@ def instantiate_db(app):
         except Exception as e:
             logger.debug('flask db upgrade failed: %s', e)
             raise e
+
+
+# ========== Marshmallow Schemas ==========
+
+class UserSchema(marshmallow.ModelSchema):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email',)
+
+
+class JournalEntrySchema(marshmallow.ModelSchema):
+    class Meta:
+        model = JournalEntry
+        fields = ('id', 'contents', 'create_date', 'url', 'date_human', 'date_string', 'html')
+
+    url = marshmallow.Method('get_url')
+
+    def get_url(self, entry):
+        return link_for_entry(entry)
+
+
+user_schema = UserSchema()
+journal_entry_schema = JournalEntrySchema()
