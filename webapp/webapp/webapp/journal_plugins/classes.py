@@ -88,5 +88,5 @@ class BasePlugin:
             safe_name=self.safe_name,
             type="journal_plugin",
             description=self.description,
-            back=flask.url_for("site.plugins-index"),
+            back=flask.url_for("PluginManager.plugins-index"),
         )
