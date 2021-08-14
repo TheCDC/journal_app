@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "webapp"
+version = "0.1.0"
+description = ""
+authors = ["Christopher Chen <christopher.chen1995@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+Flask = "^2.0.1"
+SQLAlchemy = "^1.4.22"
+Flask-Migrate = "^3.1.0"
+Flask-Admin = "^1.5.8"
+WTForms = "^2.3.3"
+pytest = "^6.2.4"
+Flask-WTF = "^0.15.1"
+Flask-Bootstrap = "^3.3.7"
+parsedatetime = "^2.6"
+Flask-Login = "^0.5.0"
+Markdown = "^3.3.4"
+scrython = "^1.9.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
