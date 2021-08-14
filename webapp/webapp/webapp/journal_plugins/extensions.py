@@ -1,4 +1,4 @@
-from webapp import app
+from webapp.extensions import app
 from webapp.extensions import db
 
 # ==========  Journal Parsing Plugins - Instantiate manager ==========
@@ -31,5 +31,3 @@ word_counter = word_counter.Plugin(plugin_manager)
 # ==========  Journal Parsing Plugins - Apply plugins to app==========
 
 plugin_manager.init_app(app)
-
-print(app.url_map)

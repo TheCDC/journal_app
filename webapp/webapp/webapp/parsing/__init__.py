@@ -3,25 +3,23 @@ import datetime
 import logging
 
 logger = logging.getLogger(__name__)
-# print('__name__', __name__)
 DATE_HEADER_PATTERN = re.compile(r"^[0-9]+-[0-9]+-[0-9]+\s*$")
 
 
 def datestr(y: str, m: str, d: str) -> str:
     a = leftpad(y, 4, "0")
-    b = leftpad(m, 2, '0')
-    c = leftpad(d, 2, '0')
-    return '-'.join((a, b, c))
+    b = leftpad(m, 2, "0")
+    c = leftpad(d, 2, "0")
+    return "-".join((a, b, c))
 
 
-def leftpad(s: str, l: int, c=' ') -> str:
+def leftpad(s: str, l: int, c=" ") -> str:
     if l > len(s):
         return c * (l - len(s)) + s
     return s
 
 
 class Entry:
-
     def __init__(self, date: datetime.date, body: str):
         self._date = date
         self._body = body
@@ -53,7 +51,7 @@ def identify_entries(lines) -> "list[Entry]":
     date = None
     for each_line in lines:
         if DATE_HEADER_PATTERN.search(each_line):
-            e = Entry(date, '\n'.join(cur_body_lines))
+            e = Entry(date, "\n".join(cur_body_lines))
             if date is not None:
                 results.append(e)
 
@@ -65,7 +63,6 @@ def identify_entries(lines) -> "list[Entry]":
         else:
             cur_body_lines.append(each_line)
     if date is not None and len(cur_body_lines) > 0:
-        b = '\n'.join(cur_body_lines)
+        b = "\n".join(cur_body_lines)
         results.append(Entry(date, b))
     return results
-

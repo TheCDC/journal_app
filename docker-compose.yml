@@ -10,8 +10,15 @@ services:
       - PGDATA=/var/lib/postgresql/data/pgdata
 
   webapp:
+    environment:
+      - JUPYTER=jupyter lab --ip=0.0.0.0 --allow-root --NotebookApp.custom_display_url=http://127.0.0.1:8888
+      - SERVER_HOST=http://${DOMAIN?Variable not set}
+
+    ports:
+      - "80:5000"
+      - "5000:5000"
     volumes:
-      - ./webapp/webapp:/app
+      - ./webapp/webapp:/webapp
     image: journal-wiki-webapp
     depends_on:
       - db

@@ -6,27 +6,29 @@ import logging
 
 
 def concat_urls(a, b):
-    return '/' + '/'.join(x for x in (a.split('/') + b.split('/')) if len(x) > 0)
+    return "/" + "/".join(x for x in (a.split("/") + b.split("/")) if len(x) > 0)
 
 
 class PluginManager:
     def __init__(self, view_func=None):
         # the plugin manager creates a a parent endpoint for all the plugins
         self.blueprint = Blueprint(
-            'site',
+            "PluginManager",
             __name__,
-            template_folder=os.path.join(os.path.dirname(__file__), 'templates'),
-            static_folder='static',
-            url_prefix='/plugins'
+            template_folder=os.path.join(os.path.dirname(__file__), "templates"),
+            static_folder="static",
+            url_prefix="/plugins",
         )
 
-        self.url = '/'
+        self.url = "/"
 
         self.plugins = dict()
 
     def register_plugin(self, plugin):
         if plugin.name in self.plugins:
-            raise ValueError(f'Plugins must have unique names! Plugin "{plugin.name}" already registered!')
+            raise ValueError(
+                f'Plugins must have unique names! Plugin "{plugin.name}" already registered!'
+            )
         else:
             self.plugins[plugin.name] = plugin
 
@@ -43,8 +45,9 @@ class PluginManager:
 
 
 class BasePlugin:
-    name = 'Default Plugin Name'
-    description = 'Description for the BasePlugin'
+    name = "Default Plugin Name"
+    description = "Description for the BasePlugin"
+
     def __init__(self, plugin_manager: PluginManager):
         self.name = self.__class__.name
         self.description = self.__class__.description
@@ -53,16 +56,17 @@ class BasePlugin:
         self.manager = plugin_manager
         # create a url endpoint (just the endpoint) for this plugin based on its name
         self.url = concat_urls(self.manager.blueprint.url_prefix, self.safe_name)
-        self.endpoint = f'/{self.safe_name}'
+        self.endpoint = f"/{self.safe_name}"
 
-        self.url_rule_base_name = f'plugins-{self.safe_name}'
-        self.resources_path = os.path.join(config.CONFIG_PATH, 'plugins', self.safe_name)
+        self.url_rule_base_name = f"plugins-{self.safe_name}"
+        self.resources_path = os.path.join(
+            config.CONFIG_PATH, "plugins", self.safe_name
+        )
         try:
             os.makedirs(self.resources_path)
-            logging.info('created plugin data directory: %s', self.resources_path)
+            logging.info("created plugin data directory: %s", self.resources_path)
         except FileExistsError:
             pass
-
 
     def parse_entry(self, e):
         """The developer must override this in order to provide entry parsing functionality"""
@@ -74,8 +78,15 @@ class BasePlugin:
     @property
     def safe_name(self):
         """A URL self version of this plugin's name."""
-        return self.__class__.name.lower().replace(' ', '_')
+        return self.__class__.name.lower().replace(" ", "_")
 
     def to_dict(self):
         """A JSON ready representation of this plugin."""
-        return dict(name=self.name, url=self.url, safe_name=self.safe_name, type='journal_plugin',description=self.description,back=flask.url_for('site.plugins-index'))
+        return dict(
+            name=self.name,
+            url=self.url,
+            safe_name=self.safe_name,
+            type="journal_plugin",
+            description=self.description,
+            back=flask.url_for("site.plugins-index"),
+        )
