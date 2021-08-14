@@ -1,15 +1,17 @@
 FROM python:3.8-buster
 
+
 WORKDIR /webapp/
 
 # Install Poetry
 RUN bash -c "curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | POETRY_HOME=/opt/poetry python && cd /usr/local/bin && ln -s /opt/poetry/bin/poetry && poetry config virtualenvs.create false;"
 
 # Copy poetry.lock* in case it doesn't exist in the repo
-COPY ./pyproject.toml ./poetry.lock* /app/
-
+COPY ./pyproject.toml  ./poetry.lock* /webapp/
 # Allow installing dev dependencies to run tests
-RUN bash -c "poetry install --no-root ; else poetry install --no-root --no-dev ;"
+ARG INSTALL_DEV=false
+RUN bash -c "if [ $INSTALL_DEV == 'true' ] ; then poetry install --no-root ; else poetry install --no-root --no-dev ; fi"
+
 
 # For development, Jupyter remote kernel, Hydrogen
 # Using inside the container:
@@ -17,5 +19,7 @@ RUN bash -c "poetry install --no-root ; else poetry install --no-root --no-dev ;
 ARG INSTALL_JUPYTER=false
 RUN bash -c "if [ $INSTALL_JUPYTER == 'true' ] ; then pip install jupyterlab ; fi"
 
-COPY ./webapp /app
-ENV PYTHONPATH=/app
+COPY ./webapp /webapp
+
+
+ENV PYTHONPATH=/webapp

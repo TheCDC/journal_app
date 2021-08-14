@@ -8,12 +8,10 @@ services:
       - .env
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
-    deploy:
-      placement:
-        constraints:
-          - node.labels.${STACK_NAME?Variable not set}.app-db-data == true
 
   webapp:
+    volumes:
+      - ./webapp/webapp:/app
     image: journal-wiki-webapp
     depends_on:
       - db
@@ -22,5 +20,7 @@ services:
     build:
       context: ./webapp
       dockerfile: webapp.dockerfile
+    # command: bash -c "while true; do sleep 1; done" # Infinite loop to keep container live doing nothing
+    command: flask run
 volumes:
   journal-wiki-db-data:
