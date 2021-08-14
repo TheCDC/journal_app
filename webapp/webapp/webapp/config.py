@@ -30,5 +30,5 @@ user = os.environ.get("POSTGRES_USER")
 hostname = os.environ.get("POSTGRES_SERVER")
 password = os.environ.get("POSTGRES_PASSWORD")
 dbname = os.environ.get("POSTGRES_DB")
-SQLALCHEMY_DATABASE_URI = f"postgresql://{user}:{password}@{hostname}/{dbname}:5432"
+SQLALCHEMY_DATABASE_URI = f"postgresql://{user}:{password}@{hostname}/{dbname}"
 DEBUG_ENABLED = os.environ.get("DEBUG_ENABLED", False)
