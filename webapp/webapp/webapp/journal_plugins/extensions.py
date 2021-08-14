@@ -1,5 +1,6 @@
 from webapp import app
 from webapp.extensions import db
+
 # ==========  Journal Parsing Plugins - Instantiate manager ==========
 from .classes import PluginManager
 
@@ -22,9 +23,10 @@ from . import word_counter
 word_counter = word_counter.Plugin(plugin_manager)
 
 # MTG Cardfetcher
-from . import mtg_cardfetcher
+# disabled 2021-08-13
+# from . import mtg_cardfetcher
 
-mtg_cardfetcher = mtg_cardfetcher.Plugin(plugin_manager)
+# mtg_cardfetcher = mtg_cardfetcher.Plugin(plugin_manager)
 
 # ==========  Journal Parsing Plugins - Apply plugins to app==========
 
