@@ -130,10 +130,14 @@ class EntrySearchView(MethodView):
         # plugins_output = [(obj['plugin']['name'], list(obj['output'])) for obj in plugin_manager.parse_entry(e)]
         context = dict(
             entry=models.journal_entry_schema.dump(obj=e),
-            next=models.journal_entry_schema.dump(obj=e.next),
-            previous=models.journal_entry_schema.dump(obj=e.previous),
             plugins_output=plugins_output,
         )
+        if e.next:
+            context.update({"next": models.journal_entry_schema.dump(obj=e.next)})
+        if e.previous:
+            context.update(
+                {"previous": models.journal_entry_schema.dump(obj=e.previous)}
+            )
         # handle incompletely specified date
         # take the user to a search
         session.close()

@@ -24,8 +24,6 @@ def link_for_date(**kwargs):
 def link_for_entry(entry: "models.JournalEntry"):
     """Return the app's link for the given journal entry.
     This function is a shortcut for link_for_date."""
-    if not entry:
-        return None
     return link_for_date(
         year=entry.create_date.year,
         month=entry.create_date.month,
