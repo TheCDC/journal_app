@@ -59,11 +59,11 @@ from . import views
 views.add_views(app)
 
 
-import webapp.journal_plugins
+from .journal_plugins.views import ExampleView
 
-webapp.journal_plugins.extensions.plugin_manager.init_app(
-    app, view_func=webapp.journal_plugins.views.ExampleView.as_view("plugins-index")
-)
+from .journal_plugins.extensions import plugin_manager
+
+plugin_manager.init_app(app, view_func=ExampleView.as_view("plugins-index"))
 
 
 def main():
