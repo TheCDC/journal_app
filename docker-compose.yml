@@ -1,0 +1,23 @@
+version: "3.8"
+  db:
+    image: postgres:12
+    volumes:
+      - app-db-data:/var/lib/postgresql/data/pgdata
+    env_file:
+      - .env
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    deploy:
+      placement:
+        constraints:
+          - node.labels.${STACK_NAME?Variable not set}.app-db-data == true
+
+  webapp:
+    image: journal-wiki-webapp
+    depends_on:
+      - db
+    env_file:
+      - .env
+    build:
+      context: ./webapp
+      dockerfile: webapp.dockerfile
