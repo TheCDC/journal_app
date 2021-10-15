@@ -11,31 +11,43 @@ class UserPluginToggle(db.Model):
     plugin_name = db.Column(db.String)
     enabled = db.Column(db.Boolean, default=True)
     updated_at = db.Column(
-        db.DateTime, default=func.now(), onupdate=func.now(), nullable=False,
-        server_default=func.now())
-    created_at = db.Column(
-        db.Date, default=func.now(), index=True)
-    __table_args__ = (db.UniqueConstraint('user_id', 'plugin_name', name='_user_plugin_preference'),)
+        db.DateTime,
+        default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+        server_default=func.now(),
+    )
+    created_at = db.Column(db.Date, default=func.now(), index=True)
+    __table_args__ = (
+        db.UniqueConstraint("user_id", "plugin_name", name="_user_plugin_preference"),
+    )
 
 
 class PluginOutputCache(db.Model):
     """Document store for plugin output"""
+
     id = db.Column(db.Integer, primary_key=True)
 
-    parent_id = db.Column(db.Integer, db.ForeignKey(models.JournalEntry.id, ondelete="cascade"), )
+    parent_id = db.Column(
+        db.Integer,
+        db.ForeignKey(models.JournalEntry.id, ondelete="cascade"),
+    )
     plugin_name = db.Column(db.String)
-    parent = db.relationship(models.JournalEntry, foreign_keys='PluginOutputCache.parent_id')
-    created_at = db.Column(
-        db.DateTime, default=func.now(), nullable=False)
+    parent = db.relationship(
+        models.JournalEntry, foreign_keys="PluginOutputCache.parent_id"
+    )
+    created_at = db.Column(db.DateTime, default=func.now(), nullable=False)
     updated_at = db.Column(
-        db.DateTime, default=func.now(), onupdate=func.now(), nullable=False)
+        db.DateTime, default=func.now(), onupdate=func.now(), nullable=False
+    )
     json = db.Column(db.String)
     schema_version = db.Column(db.Integer)
 
 
 # ========== Marshmallow Schemas ==========
 
-class UserPluginToggleSchema(extensions.marshmallow.ModelSchema):
+
+class UserPluginToggleSchema(extensions.marshmallow.SQLAlchemyAutoSchema):
     class Meta:
         model = UserPluginToggle
 

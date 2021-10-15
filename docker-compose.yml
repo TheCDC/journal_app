@@ -1,0 +1,33 @@
+version: "3.3"
+services:
+  db:
+    image: postgres:12
+    volumes:
+      - journal-wiki-db-data:/var/lib/postgresql/data/pgdata
+    env_file:
+      - .env
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+
+  webapp:
+    environment:
+      - JUPYTER=jupyter lab --ip=0.0.0.0 --allow-root --NotebookApp.custom_display_url=http://127.0.0.1:8888
+      - SERVER_HOST=http://${DOMAIN?Variable not set}
+
+    ports:
+      - "80:5000"
+      - "5000:5000"
+    volumes:
+      - ./webapp/webapp:/webapp
+    image: journal-wiki-webapp
+    depends_on:
+      - db
+    env_file:
+      - .env
+    build:
+      context: ./webapp
+      dockerfile: webapp.dockerfile
+    # command: bash -c "while true; do sleep 1; done" # Infinite loop to keep container live doing nothing
+    command: flask run
+volumes:
+  journal-wiki-db-data:
